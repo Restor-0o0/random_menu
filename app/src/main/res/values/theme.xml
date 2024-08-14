@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--  Dark theme  -->
+
+    <style name="DarkTheme">
+        <item name="colorBackground">@color/darkColorBackground</item>
+        <item name="colorPrimary">@color/darkColorPrimary</item>
+        <item name="colorSecondary">@color/darkColorSecondary</item>
+        <item name="colorFont">@color/darkColorFont</item>
+        <item name="colorBorder">@color/darkColorBorder</item>
+    </style>
+
+
+    <!--  Light theme  -->
+
+    <style name="LightTheme">
+        <item name="colorBackground">@color/lightColorBackground</item>
+        <item name="colorPrimary">@color/lightColorPrimary</item>
+        <item name="colorSecondary">@color/lightColorSecondary</item>
+        <item name="colorFont">@color/lightColorFont</item>
+        <item name="colorBorder">@color/lightColorBorder</item>
+    </style>
+</resources>

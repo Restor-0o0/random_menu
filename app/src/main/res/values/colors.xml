@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="lightColorBackground">#5F5D5D</color>
+    <color name="lightColorPrimary">#4A4848</color>
+    <color name="lightColorSecondary">#353333</color>
+    <color name="lightColorFont">#CAC5C5</color>
+    <color name="lightColorBorder">#252424</color>
+
+    <color name="darkColorBackground">#5F5D5D</color>
+    <color name="darkColorPrimary">#4A4848</color>
+    <color name="darkColorSecondary">#353333</color>
+    <color name="darkColorFont">#CAC5C5</color>
+    <color name="darkColorBorder">#252424</color>
+
+</resources>
