@@ -32,25 +32,25 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         RecycleItem currentItem = itemList.get(position);
-        holder.binding.itemName.setText(currentItem.getName());
+        holder.binding.itemName2.setText(currentItem.getName());
 
 
         if(currentItem.isButtonActive()){
-            holder.binding.checkBut.setImageResource(R.drawable.baseline_check_box_24);
+            holder.binding.checkBut2.setImageResource(R.drawable.baseline_check_box_24);
         }
         else{
-            holder.binding.checkBut.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
+            holder.binding.checkBut2.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
         }
 
-        holder.binding.checkBut.setOnClickListener(v ->{
+        holder.binding.checkBut2.setOnClickListener(v ->{
             boolean newState = !currentItem.isButtonActive();
             currentItem.setButtonActive(newState);
 
             if(newState){
-                holder.binding.checkBut.setImageResource(R.drawable.baseline_check_box_24);
+                holder.binding.checkBut2.setImageResource(R.drawable.baseline_check_box_24);
             }
             else{
-                holder.binding.checkBut.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
+                holder.binding.checkBut2.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
             }
         });
     }
@@ -63,7 +63,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ListMenuItemCheckBinding binding;
         public ViewHolder(ListMenuItemCheckBinding binding){
-            super(binding.itemName.getRootView());
+            super(binding.itemName2.getRootView());
             this.binding = binding;
         }
     }

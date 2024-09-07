@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/item_name"
+            android:id="@+id/item_name2"
             android:layout_width="330dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
@@ -34,11 +34,12 @@
             android:textSize="20sp" />
 
         <ImageButton
-            android:id="@+id/check_but"
+            android:id="@+id/check_but2"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:layout_marginEnd="10dp"
             android:layout_weight="1"
+            android:contentDescription="check"
             android:src="@drawable/baseline_check_box_outline_blank_24" />
 
     </LinearLayout>
