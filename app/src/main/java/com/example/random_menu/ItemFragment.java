@@ -8,11 +8,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.random_menu.Data.Item;
+import com.example.random_menu.databinding.ListElemFragmentBinding;
+import com.example.random_menu.placeholder.PlaceholderContent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +27,8 @@ import java.util.List;
 public class ItemFragment extends Fragment {
 
     // TODO: Customize parameter argument names
-    private static ArrayList<Item> ITEMS;
+    ListElemFragmentBinding binding;
+    //private static List<Item> ITEMS;
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
@@ -34,19 +38,21 @@ public class ItemFragment extends Fragment {
      * fragment (e.g. upon screen orientation changes).
      */
     public ItemFragment(){
-        super(R.layout.fragment_item);
+        //super(R.layout.list_elem_fragment);
         //mColumnCount = items.size();
     }
-    public ItemFragment(ArrayList<Item> items){
-        ITEMS= items;
+    public ItemFragment(List<Item> items){
+        //super(R.layout.list_elem_fragment);
+        //ITEMS= items;
         //mColumnCount = items.size();
+        //Log.e("eee", String.valueOf(ITEMS.size()));
     }
-    public static boolean add(List<Item> items){
-        return ITEMS.addAll(items);
-    }
-    public static void clear(){
-        ITEMS.clear();
-    }
+   // public static boolean add(List<Item> items){
+    //    return ITEMS.addAll(items);
+   // }
+    //public static void clear(){
+   //    ITEMS.clear();
+   // }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
@@ -63,7 +69,7 @@ public class ItemFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_item_list, container, false);
+        View view = inflater.inflate(R.layout.list_elem_fragment, container, false);
 
 
         // Set the adapter
@@ -75,11 +81,13 @@ public class ItemFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            ITEMS.clear();
-            ITEMS.addAll((ArrayList<Item>) requireArguments().getSerializable("itemsList"));
-            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(ITEMS));
+            //ITEMS.clear();
+            //ITEMS.addAll((ArrayList<Item>) requireArguments().getSerializable("itemsList"));
+            //Log.e("errrrrr",String.valueOf(ITEMS.size()));
+            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(PlaceholderContent.ITEMS));
         }
         return view;
     }
+
 
 }

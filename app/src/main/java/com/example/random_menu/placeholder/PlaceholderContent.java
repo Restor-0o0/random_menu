@@ -1,7 +1,5 @@
 package com.example.random_menu.placeholder;
 
-import com.example.random_menu.Data.Item;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,64 +16,57 @@ public class PlaceholderContent {
     /**
      * An array of sample (placeholder) items.
      */
-    public static final List<Item> ITEMS = new ArrayList<Item>();
+    public static final List<PlaceholderItem> ITEMS = new ArrayList<PlaceholderItem>();
 
     /**
      * A map of sample (placeholder) items, by ID.
      */
-    public static final Map<String, Item> ITEM_MAP = new HashMap<String, Item>();
+    public static final Map<String, PlaceholderItem> ITEM_MAP = new HashMap<String, PlaceholderItem>();
 
     private static final int COUNT = 25;
 
-    /*static {
+    static {
         // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
-            addItem(createPlaceholderItem(i));
-        }
-    }*/
+        //for (int i = 1; i <= COUNT; i++) {
+            //addItem(createPlaceholderItem(i));
+        //}
+    }
 
-    /*private static void addItem(Item item) {
+    private static void addItem(PlaceholderItem item) {
         ITEMS.add(item);
         ITEM_MAP.put(item.id, item);
+    }
+
+    /*private static PlaceholderItem createPlaceholderItem(int position) {
+        return new PlaceholderItem(String.valueOf(position), "Item " + position,);
     }*/
 
-    public static boolean LoadData(List<Item> Items){
-        return ITEMS.addAll(Items);
-    }
-    public static void Clear(){
-        ITEMS.clear();
-    }
-
-    private static Item createPlaceholderItem(String id, String name, Boolean act) {
-        return new Item(id,name,act);
-    }
-
-    private static String makeDetails(int position) {
+    /*private static String makeDetails(int position) {
         StringBuilder builder = new StringBuilder();
         builder.append("Details about Item: ").append(position);
         for (int i = 0; i < position; i++) {
             builder.append("\nMore details information here.");
         }
         return builder.toString();
-    }
+    }*/
 
     /**
      * A placeholder item representing a piece of content.
      */
-    /*public static class PlaceholderItem {
+    public static class PlaceholderItem {
         public final String id;
         public final String content;
-        public final String details;
+        public final String priority;
 
-        public PlaceholderItem(String id, String content, String details) {
+        public PlaceholderItem(String id, String content, String priority) {
             this.id = id;
             this.content = content;
-            this.details = details;
+            this.priority = priority;
         }
 
         @Override
         public String toString() {
             return content;
         }
-    }*/
+    }
 }

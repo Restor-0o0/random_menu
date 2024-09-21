@@ -2,7 +2,7 @@
 <resources>
     <!--  Dark theme  -->
 
-    <style name="DarkTheme">
+    <style name="DarkTheme" parent="Theme.AppCompat">
         <item name="colorBackground">@color/darkColorBackground</item>
         <item name="colorPrimary">@color/darkColorPrimary</item>
         <item name="colorSecondary">@color/darkColorSecondary</item>
@@ -13,11 +13,11 @@
 
     <!--  Light theme  -->
 
-    <style name="LightTheme">
+    <style name="LightTheme" parent="Theme.AppCompat">
         <item name="colorBackground">@color/lightColorBackground</item>
         <item name="colorPrimary">@color/lightColorPrimary</item>
         <item name="colorSecondary">@color/lightColorSecondary</item>
-        <item name="colorFont">@color/lightColorFont</item>
+        <item name="colorFont">@color/darkColorFont</item>
         <item name="colorBorder">@color/lightColorBorder</item>
     </style>
 </resources>
