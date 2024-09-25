@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Helper class for providing sample content for user interfaces created by
@@ -16,6 +17,7 @@ public class PlaceholderContent {
     /**
      * An array of sample (placeholder) items.
      */
+    private static Random randomizer = new Random();
     public static final List<PlaceholderItem> ITEMS = new ArrayList<PlaceholderItem>();
 
     /**
@@ -32,9 +34,13 @@ public class PlaceholderContent {
         //}
     }
 
+    public static PlaceholderItem getRandom(){
+        return ITEMS.get(randomizer.nextInt(ITEMS.size()));
+    }
+
     private static void addItem(PlaceholderItem item) {
         ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
+        ITEM_MAP.put(item.priority, item);
     }
 
     /*private static PlaceholderItem createPlaceholderItem(int position) {

@@ -1,7 +1,6 @@
 package com.example.random_menu;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 
 import android.content.ContentValues;
@@ -45,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         try{
-            //DB.rawQuery("SELECT MAX(" + MainBaseContract.Groups.COLUMN_NAME_PRIORITY + ") FROM " + MainBaseContract.Groups.TABLE_NAME,null);
 
             Cursor cursor = DB.query(MainBaseContract.Groups.TABLE_NAME,null,null,null,null,null,MainBaseContract.Groups.COLUMN_NAME_PRIORITY);
             Log.e("Fuck", String.valueOf(cursor.getCount()));
@@ -78,10 +76,14 @@ public class MainActivity extends AppCompatActivity {
                     .beginTransaction()
                     .setReorderingAllowed(true)
                     .add(R.id.frameMain, ItemFragment.class,null)
-                    .add(R.id.barFragment, BottomBarFragment.class,null)
+                    .add(R.id.barFragment, BottomBarGroupsFragment.class,null)
                     .commit();
 
         }
+        PlaceholderContent.ITEMS.add(new PlaceholderContent.PlaceholderItem("20","20","20"));
+
+    }
+    public void rand(){
 
     }
 }
