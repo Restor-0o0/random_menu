@@ -5,12 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
-
-import com.example.random_menu.placeholder.PlaceholderContent;
-
-import java.util.List;
-
 public class DBController extends SQLiteOpenHelper {
 
     public static final int DATABASE_VERRSION = 1;

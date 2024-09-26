@@ -1,7 +1,4 @@
-package com.example.random_menu;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+package com.example.random_menu.Elements;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,9 +7,13 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.random_menu.Data.Item;
 import com.example.random_menu.databinding.ItemElemSettFragmentBinding;
-import com.example.random_menu.placeholder.PlaceholderContent;
+import com.example.random_menu.databinding.ListElemFragmentBinding;
+import com.example.random_menu.placeholder.ElemPlaceholderContent;
 
 import java.util.List;
 
@@ -20,12 +21,25 @@ import java.util.List;
  * {@link RecyclerView.Adapter} that can display a {@link Item}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
+public class ElementsRecyclerViewAdapter extends RecyclerView.Adapter<ElementsRecyclerViewAdapter.ViewHolder> {
 
-    private static List<PlaceholderContent.PlaceholderItem> mValues;
+    private static List<ElemPlaceholderContent.PlaceholderItem> mValues;
+    private static OnSettingItemClickListener settingClickListener;
+    private static OnItemClickListener itemClickListener;
 
-    public MyItemRecyclerViewAdapter(List<PlaceholderContent.PlaceholderItem> items) {
+
+    public interface OnSettingItemClickListener {
+        void onButtonClick(String position, String number);
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(String position, String number);
+    }
+
+    public ElementsRecyclerViewAdapter(List<ElemPlaceholderContent.PlaceholderItem> items, OnSettingItemClickListener settingClickListener, OnItemClickListener itemClickListener) {
         mValues = items;
+        this.settingClickListener = settingClickListener;
+        this.itemClickListener = itemClickListener;
     }
 
     @Override
@@ -38,10 +52,10 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     @Override
     public void onBindViewHolder( ViewHolder holder, int position) {
         try{
-            Log.e("errrrrr",mValues.get(0).content);
+            Log.e("errrrrr",mValues.get(0).name);
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).priority);
-            holder.mNameView.setText(mValues.get(position).content);
+            holder.mIdView.setText(String.valueOf(position+1));
+            holder.mNameView.setText(mValues.get(position).name);
             /*if(mValues.get(position).details == false){
                 holder.mImageBut.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
             }
@@ -66,10 +80,11 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         private TextView mIdView;
         private TextView mNameView;
         private ImageButton mImageBut;
-        private PlaceholderContent.PlaceholderItem mItem;
+        private ElemPlaceholderContent.PlaceholderItem mItem;
 
         public ViewHolder(@NonNull ItemElemSettFragmentBinding binding) {
             super(binding.getRoot());
+            ListElemFragmentBinding bind;
             mIdView = binding.itemNumberS;
             mNameView = binding.contentS;
            //mIdView.setText(mItem.name);
@@ -83,9 +98,14 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             binding.settButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.e("list111",String.valueOf(Integer.valueOf(String.valueOf(mIdView.getText()))+10));
+
+                    settingClickListener.onButtonClick((String) mIdView.getText(),(String) mNameView.getText());
+
                 }
             });
+
+
+
             /*if(mValues.get(getAbsoluteAdapterPosition()).details == true){
                 this.mImageBut.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
             }

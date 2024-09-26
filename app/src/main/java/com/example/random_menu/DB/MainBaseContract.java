@@ -19,6 +19,7 @@ public final class MainBaseContract {
         public static final String COLUMN_NAME_COMMENT = "Comment";
         public static final String COLUMN_NAME_PRIORITY = "Priority";
         public static final String TRIGGER_NAME_PRIORITY = "PriorityTrigger";
+        //public static final String[] COLUMS_NAME = {"Name","Comment","Priority"};
     }
 
     public static class Components implements BaseColumns{
