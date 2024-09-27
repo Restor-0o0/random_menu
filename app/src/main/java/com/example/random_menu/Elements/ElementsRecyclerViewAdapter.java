@@ -29,7 +29,7 @@ public class ElementsRecyclerViewAdapter extends RecyclerView.Adapter<ElementsRe
 
 
     public interface OnSettingItemClickListener {
-        void onButtonClick(String position, String number);
+        void onButtonClick(int position,String id, String number);
     }
 
     public interface OnItemClickListener {
@@ -98,8 +98,10 @@ public class ElementsRecyclerViewAdapter extends RecyclerView.Adapter<ElementsRe
             binding.settButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    settingClickListener.onButtonClick((String) mIdView.getText(),(String) mNameView.getText());
+                    int[] cord = {0,0};
+                    binding.settButton.getLocationOnScreen(cord);
+                    Log.e("cord",String.valueOf(cord[0]) + " " + String.valueOf(cord[1]));
+                    settingClickListener.onButtonClick(cord[1],(String) mItem.id,(String) mNameView.getText());
 
                 }
             });

@@ -1,5 +1,7 @@
 package com.example.random_menu.Elements;
 
+import static android.widget.RelativeLayout.*;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,10 +10,14 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.Data.Item;
 import com.example.random_menu.Groups.GroupsRecyclerViewAdapter;
@@ -33,6 +39,7 @@ public class ElementsRecycleFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
+    private int moreViewItemId;
 
     private ElementsRecyclerViewAdapter adapter;
 
@@ -44,8 +51,19 @@ public class ElementsRecycleFragment extends Fragment {
         //View view = inflater.inflate(R.layout.list_elem_fragment, container, false);
 
 
-        adapter = new ElementsRecyclerViewAdapter(ElemPlaceholderContent.getElements(),(position, number) ->{
+        adapter = new ElementsRecyclerViewAdapter(ElemPlaceholderContent.getElements(),(position,id, number) ->{
 
+            moreViewItemId = Integer.valueOf(id);
+            MarginLayoutParams lay = (MarginLayoutParams) binding.moreItemView.getLayoutParams();
+            lay.topMargin = position;
+            if((binding.moreItemView.getHeight() + position) * 1.1 < binding.getRoot().getHeight()){
+                Log.e("cord",String.valueOf(binding.moreItemView.getHeight() + position)+ " " + String.valueOf(binding.getRoot().getHeight()));
+               binding.moreItemView.setLayoutParams(lay);
+            }
+            else{
+                lay.topMargin = position - binding.moreItemView.getHeight();
+                binding.moreItemView.setLayoutParams(lay);
+            }
             Log.e("texst","in");
             binding.moreItemView.setVisibility(View.VISIBLE);
 
@@ -92,6 +110,41 @@ public class ElementsRecycleFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        binding.deleteItemBut.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ContentProviderDB.delete(MainBaseContract.ElemGroup.TABLE_NAME,MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " = " + String.valueOf(moreViewItemId),null);
+                ContentProviderDB.delete(MainBaseContract.Components.TABLE_NAME,MainBaseContract.Components.COLUMN_NAME_ELEMENT + " = " + String.valueOf(moreViewItemId),null);
+                ContentProviderDB.delete(MainBaseContract.Elements.TABLE_NAME,MainBaseContract.Elements._ID + " = " + String.valueOf(moreViewItemId),null);
+                Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(),R.anim.anim_hide);
+                anim.setDuration(100);
+                anim.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        binding.closeView.setScaleY(0.0f);
+                        binding.moreItemView.setScaleY(0.0f);
+                        binding.closeView.setVisibility(View.INVISIBLE);
+                        binding.moreItemView.setVisibility(View.INVISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+
+
+
+                binding.moreItemView.startAnimation(anim);
+                ElemPlaceholderContent.loadElements();
+                binding.list1.setAdapter(adapter);
+            }
+        });
         binding.closeView.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View view) {
@@ -155,6 +208,7 @@ public class ElementsRecycleFragment extends Fragment {
         ElementsRecycleFragment fragment = new ElementsRecycleFragment(items);
         return fragment;
     }
+
 
 
 

@@ -1,6 +1,8 @@
 package com.example.random_menu.Groups;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,6 +16,8 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import com.example.random_menu.ContentProvider.ContentProviderDB;
+import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.Data.Item;
 import com.example.random_menu.Elements.ElementsActivity;
 import com.example.random_menu.R;
@@ -35,6 +39,7 @@ public class GroupsRecycleFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
+    private int moreViewItemId;
 
     private GroupsRecyclerViewAdapter adapter;
 
@@ -46,8 +51,19 @@ public class GroupsRecycleFragment extends Fragment {
         //View view = inflater.inflate(R.layout.list_elem_fragment, container, false);
 
 
-        adapter = new GroupsRecyclerViewAdapter(GroupPlaceholderContent.getGroups(),(id, name) ->{
+        adapter = new GroupsRecyclerViewAdapter(GroupPlaceholderContent.getGroups(),(position,id, name) ->{
 
+            moreViewItemId = Integer.valueOf(id);
+            ViewGroup.MarginLayoutParams lay = (ViewGroup.MarginLayoutParams) binding.moreItemView.getLayoutParams();
+            lay.topMargin = position;
+            if((binding.moreItemView.getHeight() + position) * 1.1 < binding.getRoot().getHeight()){
+                Log.e("cord",String.valueOf(binding.moreItemView.getHeight() + position)+ " " + String.valueOf(binding.getRoot().getHeight()));
+                binding.moreItemView.setLayoutParams(lay);
+            }
+            else{
+                lay.topMargin = position - binding.moreItemView.getHeight();
+                binding.moreItemView.setLayoutParams(lay);
+            }
             Log.e("texst","in");
             binding.moreItemView.setVisibility(View.VISIBLE);
 
@@ -75,6 +91,7 @@ public class GroupsRecycleFragment extends Fragment {
             binding.moreItemView.setScaleY(1.0f);
             binding.moreItemView.startAnimation(anim);
 
+
         },
                 (id,name) ->{
                     ElemPlaceholderContent.idSelectGroup = id;
@@ -95,6 +112,65 @@ public class GroupsRecycleFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        binding.deleteItemBut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.e("coooon","_+_"+String.valueOf(ContentProviderDB.query(MainBaseContract.ElemGroup.TABLE_NAME,null,MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + " = " + moreViewItemId + " and "+ MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " NOT IN (SELECT " +MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " FROM "+MainBaseContract.ElemGroup.TABLE_NAME+" WHERE " +MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + " != " + moreViewItemId + " and "+MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT+ " IN (SELECT "+MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT+" FROM "+MainBaseContract.ElemGroup.TABLE_NAME+" WHERE "+MainBaseContract.ElemGroup.COLUMN_NAME_GROUP+" = "+moreViewItemId+"))",null,null,null,null).getCount()));
+                Cursor curr;
+                curr = ContentProviderDB.query(MainBaseContract.ElemGroup.TABLE_NAME,null,MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + " = " + moreViewItemId + " and "+ MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " NOT IN (SELECT " +MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " FROM "+MainBaseContract.ElemGroup.TABLE_NAME+" WHERE " +MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + " != " + moreViewItemId + " and "+MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT+ " IN (SELECT "+MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT+" FROM "+MainBaseContract.ElemGroup.TABLE_NAME+" WHERE "+MainBaseContract.ElemGroup.COLUMN_NAME_GROUP+" = "+moreViewItemId+"))",null,null,null,null);
+                Log.e("coooon",String.valueOf(curr.getCount())+"_"+moreViewItemId);
+                List<String> ids = new ArrayList<String>();
+
+                if(curr.getCount() > 0){
+                    curr.moveToFirst();
+                    do{
+                        ids.add(curr.getString(curr.getColumnIndexOrThrow(MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT)));
+                        Log.e("coooon","_"+curr.getString(curr.getColumnIndexOrThrow(MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT)));
+                    }while(curr.moveToNext());
+                }
+                ContentProviderDB.delete(MainBaseContract.ElemGroup.TABLE_NAME,MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + " = " + String.valueOf(moreViewItemId),null);
+
+                if(ids.size() > 0){
+                    for(int i = 0;i < ids.size();i++){
+                        Log.e("coooon","_"+ids.get(i));
+                        ContentProviderDB.delete(MainBaseContract.Components.TABLE_NAME,MainBaseContract.Components.COLUMN_NAME_ELEMENT + " = "+ ids.get(i),null);
+                        ContentProviderDB.delete(MainBaseContract.Elements.TABLE_NAME,MainBaseContract.Elements._ID + " = "+ ids.get(i),null);
+                    }
+
+                }
+                ContentProviderDB.delete(MainBaseContract.Groups.TABLE_NAME,MainBaseContract.Groups._ID + " = " + String.valueOf(moreViewItemId),null);
+
+
+                Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(),R.anim.anim_hide);
+                anim.setDuration(100);
+                anim.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        binding.closeView.setScaleY(0.0f);
+                        binding.moreItemView.setScaleY(0.0f);
+                        binding.closeView.setVisibility(View.INVISIBLE);
+                        binding.moreItemView.setVisibility(View.INVISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+
+
+
+                binding.moreItemView.startAnimation(anim);
+                GroupPlaceholderContent.loadGroups();
+                binding.list1.setAdapter(adapter);
+            }
+        });
 
         binding.closeView.setOnClickListener(new View.OnClickListener() {
              @Override

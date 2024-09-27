@@ -29,12 +29,14 @@ public class ContentProviderDB {
     }
 
     public static Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy){
-        Cursor curs;
-        curs = DB.query(table, columns, selection, selectionArgs,groupBy,having,orderBy);
-        return curs;
+        return DB.query(table, columns, selection, selectionArgs,groupBy,having,orderBy);
+
     }
 
     public static long insert(String table, String nullColumnHack, ContentValues values){
         return DB.insert(table, nullColumnHack, values);
+    }
+    public static void delete(String table, String whereClause, String[] whereArgs){
+        DB.delete(table, whereClause, whereArgs);
     }
 }

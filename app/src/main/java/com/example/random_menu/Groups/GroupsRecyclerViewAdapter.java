@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.random_menu.ContentProvider.ContentProviderDB;
+import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.Data.Item;
 import com.example.random_menu.databinding.ItemElemSettFragmentBinding;
 import com.example.random_menu.databinding.ListElemFragmentBinding;
@@ -29,7 +31,7 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
 
 
     public interface OnSettingItemClickListener {
-        void onButtonClick(String id, String name);
+        void onButtonClick(int position,String id, String number);
     }
 
     public interface OnItemClickListener {
@@ -100,7 +102,14 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
                 @Override
                 public void onClick(View view) {
 
-                    settingClickListener.onButtonClick((String) mIdView.getText(),(String) mNameView.getText());
+                    int[] cord = {0,0};
+                    binding.settButton.getLocationOnScreen(cord);
+
+                    Log.e("cord",String.valueOf(cord[0]) + " " + String.valueOf(cord[1]));
+                    settingClickListener.onButtonClick(cord[1],(String) mItem.id,(String) mNameView.getText());
+                    Log.e("coooon",String.valueOf(ContentProviderDB.query(MainBaseContract.ElemGroup.TABLE_NAME,null,MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + " = " + String.valueOf(mItem.id) + " and "+ MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " NOT IN (SELECT " +MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " FROM "+MainBaseContract.ElemGroup.TABLE_NAME+" WHERE " +MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + " != " + mItem.id + " and "+MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT+ " IN (SELECT "+MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT+" FROM "+MainBaseContract.ElemGroup.TABLE_NAME+" WHERE "+MainBaseContract.ElemGroup.COLUMN_NAME_GROUP+" = "+mItem.id+"))",null,null,null,null).getCount()));
+                    Log.e("coooon",String.valueOf(ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME,null,null,null,null,null,null).getCount()));
+                    Log.e("coooon",String.valueOf(ContentProviderDB.query(MainBaseContract.ElemGroup.TABLE_NAME,null,null,null,null,null,null).getCount()));
 
                 }
             });

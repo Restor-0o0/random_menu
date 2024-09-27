@@ -12,7 +12,7 @@ android:layout_height="wrap_content">
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="110dp"
         app:layoutManager="LinearLayoutManager"
         tools:context=".Groups.GroupsRecycleFragment"
         tools:listitem="@layout/item_elem_checkbox_fragment" />
@@ -29,52 +29,42 @@ android:layout_height="wrap_content">
 <LinearLayout
     android:id="@+id/more_item_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="center|bottom"
+    android:layout_height="400dp"
+    android:layout_gravity="top"
     android:background="@drawable/back_item"
     android:clickable="true"
     android:orientation="vertical"
     android:visibility="invisible"
     android:padding="10dp"
     android:scaleY="0.0"
-    android:layout_marginBottom="100dp"
-    android:layout_marginTop="60dp"
     android:layout_marginStart="20dp"
     android:layout_marginEnd="60dp">
 
 
-    <Button
-        android:id="@+id/submit_button"
+    <LinearLayout
+        android:id="@+id/delete_item_but"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:text="Добавить"
-        android:background="@drawable/back_item"/>
-    <Button
-        android:id="@+id/submit_button1"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:text="Добавить"
-        android:background="@drawable/back_item"/>
-    <Button
-        android:id="@+id/submit_button2"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:text="Добавить"
-        android:background="@drawable/back_item"/>
-    <Button
-        android:id="@+id/submit_button3"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:text="Добавить"
-        android:background="@drawable/back_item"/>
-    <Button
-        android:id="@+id/submit_button4"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:text="Добавить"
-        android:background="@drawable/back_item"/>
+        android:orientation="horizontal"
+        android:background="@drawable/back_more_view_item"
+        >
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/baseline_delete_24"/>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Удалить"
+            android:layout_weight="1"
+            android:gravity="center"
+            />
+
+    </LinearLayout>
 
 
 </LinearLayout>

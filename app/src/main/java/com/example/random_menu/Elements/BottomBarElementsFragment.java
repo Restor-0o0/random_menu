@@ -174,10 +174,15 @@ public class BottomBarElementsFragment extends Fragment {
                 Log.e("adada","_"+ name+"_");
                 if(name.length() != 0){
                     ContentValues cv = new ContentValues();
-                    cv.put(MainBaseContract.Groups.COLUMN_NAME_NAME,name);
-                    cv.put(MainBaseContract.Groups.COLUMN_NAME_COMMENT,comment);
+                    cv.put(MainBaseContract.Elements.COLUMN_NAME_NAME,name);
+                    cv.put(MainBaseContract.Elements.COLUMN_NAME_COMMENT,comment);
 
-                    ContentProviderDB.insert(MainBaseContract.Groups.TABLE_NAME,null,cv);
+                    long id_ = ContentProviderDB.insert(MainBaseContract.Elements.TABLE_NAME,null,cv);
+                    cv.clear();
+                    cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_GROUP,ElemPlaceholderContent.idSelectGroup);
+                    cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT,id_);
+                    ContentProviderDB.insert(MainBaseContract.ElemGroup.TABLE_NAME,null,cv);
+
                     ElemPlaceholderContent.loadElements();
                 }
 
