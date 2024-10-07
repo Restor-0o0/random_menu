@@ -15,17 +15,53 @@
         app:layout_constraintTop_toTopOf="parent">
 
 
+        <!--bottom bar submit( используется для подтверждения действия когда список представлен элементами с чекбоксами(экспорт,удалени,перенос)) -->
+        <LinearLayout
+            android:id="@+id/linearLayoutsubmut"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="bottom"
+            android:visibility="invisible"
+            android:background="@drawable/back_bottom_bar"
+
+
+            android:orientation="horizontal"
+            android:padding="5dp">
+            <!--кнопка отмены -->
+            <ImageButton
+                android:id="@+id/cancel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:contentDescription="TODO"
+                app:srcCompat="@drawable/baseline_clear_24" />
+
+
+            <!--кнопка подтверждения  -->
+            <ImageButton
+                android:id="@+id/submit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:contentDescription="TODO"
+                app:srcCompat="@drawable/baseline_check_24" />
+
+        </LinearLayout>
+
+        <!--bottom bar -->
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:layout_gravity="bottom"
             android:background="@drawable/back_bottom_bar"
 
 
             android:orientation="horizontal"
             android:padding="5dp">
-
+            <!--кнопка вызова view обавления -->
             <ImageButton
                 android:id="@+id/add_button"
                 android:layout_width="match_parent"
@@ -35,6 +71,7 @@
                 android:contentDescription="TODO"
                 app:srcCompat="@drawable/baseline_add_24" />
 
+            <!--кнопка запуска рандома и открытия view выпавшеего элемента -->
             <RelativeLayout
                 android:id="@+id/rand_button"
                 android:layout_width="100dp"
@@ -57,7 +94,7 @@
                     android:layout_height="100dp"
                     android:src="@drawable/baseline_wifi_1_bar_24" />
             </RelativeLayout>
-
+            <!--кнопка вызова view ля действий со с списком -->
             <ImageButton
                 android:id="@+id/more_button"
                 android:layout_width="match_parent"
@@ -68,7 +105,7 @@
                 app:srcCompat="@drawable/baseline_more_vert_24" />
 
         </LinearLayout>
-
+        <!--view для закрытия других view при тапе вне них -->
         <View
             android:id="@+id/close_view"
             android:layout_width="match_parent"
@@ -77,6 +114,7 @@
             android:background="@null"
             android:visibility="invisible" />
 
+        <!--view действия со списком -->
         <LinearLayout
             android:id="@+id/more_view"
             android:layout_width="wrap_content"
@@ -121,6 +159,7 @@
                 android:textSize="20dp">
             </Button>
         </LinearLayout>
+        <!--view выпавшего элемента -->
         <LinearLayout
             android:id="@+id/win_view"
             android:layout_width="100dp"
@@ -133,6 +172,11 @@
             android:padding="10dp"
             android:layout_marginBottom="300dp">
 
+            <TextView
+                android:id="@+id/group_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="20dp" />
             <TextView
                 android:id="@+id/elem_name"
                 android:layout_width="match_parent"
@@ -147,7 +191,7 @@
 
         </LinearLayout>
 
-
+        <!--view обавления элемента -->
         <LinearLayout
             android:id="@+id/add_view"
             android:layout_width="match_parent"
