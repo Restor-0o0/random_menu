@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         //Log.e("Name",dbControl.getDatabaseName());
         Log.e("itp", "1");
         ContentValues cv = new ContentValues();
-        for(int i = 1; i < 4 ; i++){
+        for(int i = 1; i < 3 ; i++){
             cv.put(MainBaseContract.Groups.COLUMN_NAME_NAME,"Главная " + String.valueOf(i));
             cv.put(MainBaseContract.Groups.COLUMN_NAME_COMMENT,"Главная группа(тестовая)");
             cv.put(MainBaseContract.Groups.COLUMN_NAME_PRIORITY,String.valueOf(i));
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         GroupPlaceholderContent.loadGroups();
 
         Log.e("itp", "2");
-        for(int i = 1; i < 20 ; i++){
+        for(int i = 1; i < 10 ; i++){
             cv.put(MainBaseContract.Elements.COLUMN_NAME_NAME,"Elem "+ String.valueOf(i));
             cv.put(MainBaseContract.Elements.COLUMN_NAME_COMMENT,"Elem "+ String.valueOf(i));
             ContentProviderDB.insert(MainBaseContract.Elements.TABLE_NAME,null,cv);
@@ -68,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("itp", "32");
                 cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT,String.valueOf(curs.getString(curs.getColumnIndexOrThrow(MainBaseContract.Elements._ID))));
                 Log.e("itp", "33");
+                cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_GROUP, GroupPlaceholderContent.getRandom().id);
+                ContentProviderDB.insert(MainBaseContract.ElemGroup.TABLE_NAME,null,cv);
                 cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_GROUP, GroupPlaceholderContent.getRandom().id);
                 ContentProviderDB.insert(MainBaseContract.ElemGroup.TABLE_NAME,null,cv);
                 Log.e("itp", "34");
