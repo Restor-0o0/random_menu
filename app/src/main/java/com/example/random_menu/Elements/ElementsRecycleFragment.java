@@ -16,6 +16,9 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
@@ -24,6 +27,7 @@ import com.example.random_menu.Groups.GroupsRecyclerViewAdapter;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.ListElemFragmentBinding;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
+import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,11 +104,45 @@ public class ElementsRecycleFragment extends Fragment {
         binding.list1.setAdapter(adapter);
         //return view;
 
+        DividerItemDecoration decorator = new DividerItemDecoration(binding.getRoot().getContext(), DividerItemDecoration.VERTICAL);
+        binding.list1.addItemDecoration(decorator);
 
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(TouchCallback);
+        itemTouchHelper.attachToRecyclerView(binding.list1);
         //binding = ListElemFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }
+
+    ItemTouchHelper.SimpleCallback TouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0) {
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+
+
+            int fromPosition = (int) viewHolder.getAbsoluteAdapterPosition();
+            int toPosition = (int) target.getAbsoluteAdapterPosition();
+            ElemPlaceholderContent.swap(fromPosition,toPosition);
+
+            //Collections.swap((List<?>) GroupPlaceholderContent.GROUPS, fromPosition, toPosition);
+            try{
+                binding.list1.getAdapter().notifyItemMoved(fromPosition, toPosition);
+                binding.list1.getAdapter().notifyItemChanged(fromPosition);
+                binding.list1.getAdapter().notifyItemChanged(toPosition);
+                //binding.list1.getAdapter().notifyDataSetChanged();
+                ElemPlaceholderContent.loadElements();
+            }
+            catch(Exception e){
+                Log.e("onMoveListenerError",e.toString());
+            }
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+        }
+    };
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

@@ -29,17 +29,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Objects.requireNonNull(getSupportActionBar()).hide();
-        this.deleteDatabase("RandDB.db");
+        //this.deleteDatabase("RandDB.db");
         Log.e("itp", "0");
 
         ContentProviderDB.init(getBaseContext());
-
+        /*
         //DBController dbControl = new DBController(getBaseContext());
         //SQLiteDatabase DB = dbControl.getWritableDatabase();
         //Log.e("Name",dbControl.getDatabaseName());
         Log.e("itp", "1");
         ContentValues cv = new ContentValues();
-        for(int i = 1; i < 3 ; i++){
+        /*for(int i = 1; i < 3 ; i++){
             cv.put(MainBaseContract.Groups.COLUMN_NAME_NAME,"Главная " + String.valueOf(i));
             cv.put(MainBaseContract.Groups.COLUMN_NAME_COMMENT,"Главная группа(тестовая)");
             cv.put(MainBaseContract.Groups.COLUMN_NAME_PRIORITY,String.valueOf(i));
@@ -84,11 +84,11 @@ public class MainActivity extends AppCompatActivity {
 
         //PlaceholderContent.ITEMS.add(new PlaceholderContent.PlaceholderItem("1","pidr",true));
         //PlaceholderContent.ITEMS.add(new PlaceholderContent.PlaceholderItem("2","pidr",false));
-
+        */
         if(savedInstanceState == null){
             //ItemFragment itemFrag = new ItemFragment();
             //Bundle bundle = new Bundle();
-
+            GroupPlaceholderContent.loadGroups();
             //bundle.putSerializable("itemsList",ITEMS);
             getSupportFragmentManager()
                     .beginTransaction()

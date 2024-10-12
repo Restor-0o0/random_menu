@@ -162,7 +162,7 @@
         <!--view выпавшего элемента -->
         <LinearLayout
             android:id="@+id/win_view"
-            android:layout_width="100dp"
+            android:layout_width="300dp"
             android:layout_height="200dp"
             android:orientation="vertical"
             android:layout_gravity="center|bottom"
@@ -176,18 +176,24 @@
                 android:id="@+id/group_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:textSize="20dp" />
+                android:textSize="20dp"
+                android:layout_weight="1.3"
+                android:gravity="center"/>
             <TextView
                 android:id="@+id/elem_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:textSize="20dp" />
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:gravity="center"/>
 
             <Button
                 android:id="@+id/go_to"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:textSize="20dp"/>
+                android:text="@string/more_det"
+                android:textSize="20dp"
+                android:layout_weight="1"/>
 
         </LinearLayout>
 

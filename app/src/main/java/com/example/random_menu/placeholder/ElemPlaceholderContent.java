@@ -1,5 +1,6 @@
 package com.example.random_menu.placeholder;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
@@ -25,6 +26,7 @@ public class ElemPlaceholderContent {
      */
     public static String idSelectGroup;
     private static Random randomizer = new Random();
+    static public int maxPriority = 0;
     private static final List<PlaceholderItem> ELEMENTS = new ArrayList<PlaceholderItem>();
 
     /**
@@ -40,9 +42,26 @@ public class ElemPlaceholderContent {
     }
 
     public static void addItem(PlaceholderItem item) {
+        if(Integer.valueOf(item.priority) > maxPriority){
+            maxPriority = Integer.valueOf(item.priority);
+        }
         ELEMENTS.add(item);
         ITEM_MAP.put(item.id, item);
     }
+    public static void swap(int fromPosition, int toPosition){
+        int temp = ELEMENTS.get((int) fromPosition).priority;
+        ELEMENTS.get( fromPosition).priority = ELEMENTS.get((int) toPosition).priority;;
+        ELEMENTS.get( toPosition).priority = temp;
+        ElemPlaceholderContent.PlaceholderItem fromItem = ELEMENTS.get( fromPosition);
+        ElemPlaceholderContent.PlaceholderItem toItem = ELEMENTS.get( toPosition);
+        ContentValues cv = new ContentValues();
+        cv.put(MainBaseContract.Elements.COLUMN_NAME_PRIORITY,fromItem.priority);
+        ContentProviderDB.update(MainBaseContract.Elements.TABLE_NAME,cv,"_ID="+fromItem.id,null);
+        cv.put(MainBaseContract.Elements.COLUMN_NAME_PRIORITY,toItem.priority);
+        ContentProviderDB.update(MainBaseContract.Elements.TABLE_NAME,cv,"_ID="+toItem.id,null);
+
+    }
+
     public static void clearElements(){
         ELEMENTS.clear();
     }
@@ -57,7 +76,9 @@ public class ElemPlaceholderContent {
                 addItem(new ElemPlaceholderContent.PlaceholderItem(
                         cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements._ID)),
                         cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_COMMENT))));
+                        cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_COMMENT)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_PRIORITY))
+                        ));
             }while(cursor.moveToNext());
 
         }
@@ -71,11 +92,13 @@ public class ElemPlaceholderContent {
         public final String id;
         public final String name;
         public final String comment;
+        public Integer priority;
 
-        public PlaceholderItem(String id, String content, String comment) {
+        public PlaceholderItem(String id, String content, String comment,Integer priority) {
             this.id = id;
             this.name = content;
             this.comment = comment;
+            this.priority = priority;
         }
 
         @Override

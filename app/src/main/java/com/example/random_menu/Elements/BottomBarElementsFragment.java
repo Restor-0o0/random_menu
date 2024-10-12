@@ -17,12 +17,15 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
+import com.example.random_menu.Groups.GroupsRecycleFragment;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.FragmentBottomBarBinding;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
+import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 public class BottomBarElementsFragment extends Fragment {
     boolean imp = true;
@@ -176,6 +179,8 @@ public class BottomBarElementsFragment extends Fragment {
                     ContentValues cv = new ContentValues();
                     cv.put(MainBaseContract.Elements.COLUMN_NAME_NAME,name);
                     cv.put(MainBaseContract.Elements.COLUMN_NAME_COMMENT,comment);
+                    cv.put(MainBaseContract.Elements.COLUMN_NAME_PRIORITY,String.valueOf(ElemPlaceholderContent.maxPriority + 1));
+
 
                     long id_ = ContentProviderDB.insert(MainBaseContract.Elements.TABLE_NAME,null,cv);
                     cv.clear();
@@ -186,6 +191,9 @@ public class BottomBarElementsFragment extends Fragment {
                     ElemPlaceholderContent.loadElements();
                 }
 
+                FragmentManager fm = getParentFragmentManager();
+                ElementsRecycleFragment frag = (ElementsRecycleFragment) fm.findFragmentById(R.id.frameMain);
+                frag.binding.list1.getAdapter().notifyDataSetChanged();
 
                 InputMethodManager imm = (InputMethodManager)binding.getRoot().getContext().getSystemService(binding.getRoot().getContext().INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(binding.getRoot().getWindowToken(), 0);

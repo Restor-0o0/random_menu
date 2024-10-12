@@ -74,9 +74,9 @@ public class GroupPlaceholderContent {
             Log.e("Fuck", String.valueOf(cursor.getCount()));
             cursor.moveToFirst();
             do{
-                cursor.getColumnIndex(MainBaseContract.Groups.COLUMN_NAME_NAME);
-                cursor.getColumnIndex(MainBaseContract.Groups.COLUMN_NAME_COMMENT);
-                cursor.getColumnIndex(MainBaseContract.Groups.COLUMN_NAME_PRIORITY);
+                //cursor.getColumnIndex(MainBaseContract.Groups.COLUMN_NAME_NAME);
+                //cursor.getColumnIndex(MainBaseContract.Groups.COLUMN_NAME_COMMENT);
+                //cursor.getColumnIndex(MainBaseContract.Groups.COLUMN_NAME_PRIORITY);
                 addItem(new GroupPlaceholderContent.PlaceholderItem(
                         cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups._ID)),
                         cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_NAME)),

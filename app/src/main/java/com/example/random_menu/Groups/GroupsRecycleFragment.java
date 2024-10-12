@@ -116,8 +116,7 @@ public class GroupsRecycleFragment extends Fragment {
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(TouchCallback);
         itemTouchHelper.attachToRecyclerView(binding.list1);
-        //return view;
-
+        //return view;ишт
 
         //binding = ListElemFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();

@@ -117,25 +117,35 @@ public class BottomBarGroupsFragment extends Fragment {
                         @Override
                         public void onAnimationEnd(Animation animation) {
                             //выхватываем группу
-                            GroupPlaceholderContent.PlaceholderItem win = GroupPlaceholderContent.getRandom();
-                            //DBContentProvider provider = new DBContentProvider();
-                            //выхватываем запросом случайный элемент из БД
-                            Cursor cursor = ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME,null,"_ID IN (SELECT Element from ElemGroup where Group_ = " + win.id + ")",null,null,null,"RANDOM()");
-                            //Цикл если попали на пустую группу
-                            while(cursor.getCount() == 0){
-                                Log.e("Resel","res");
-                                //выхватываем группу
-                                win = GroupPlaceholderContent.getRandom();
+                            try {
+
+
+                                GroupPlaceholderContent.PlaceholderItem win = GroupPlaceholderContent.getRandom();
+                                //DBContentProvider provider = new DBContentProvider();
                                 //выхватываем запросом случайный элемент из БД
-                                cursor = ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME,null,"_ID IN (SELECT Element from ElemGroup where Group_ = " + win.id + ")",null,null,null,"RANDOM()");
+                                Cursor cursor = ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME, null, "_ID IN (SELECT Element from ElemGroup where Group_ = " + win.id + ")", null, null, null, "RANDOM()");
+                                //Цикл если попали на пустую группу
+                                while (cursor.getCount() == 0) {
+                                    Log.e("Resel", "res");
+                                    //выхватываем группу
+                                    win = GroupPlaceholderContent.getRandom();
+                                    //выхватываем запросом случайный элемент из БД
+                                    cursor = ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME, null, "_ID IN (SELECT Element from ElemGroup where Group_ = " + win.id + ")", null, null, null, "RANDOM()");
+
+                                }
+                                cursor.moveToFirst();
+                                binding.winView.setVisibility(View.VISIBLE);
+                                binding.closeView.setVisibility(View.VISIBLE);
+                                //binding.elemName.setText(win.content);
+                                binding.groupName.setText(win.name);
+                                binding.elemName.setText(cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME)));
+                                Log.e("winElem",cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME)));
 
                             }
-                            cursor.moveToFirst();
-                            binding.winView.setVisibility(View.VISIBLE);
-                            binding.closeView.setVisibility(View.VISIBLE);
-                            //binding.elemName.setText(win.content);
-                            binding.groupName.setText(win.name);
-                            binding.elemName.setText(cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME))+"  " + win.id);
+                            catch(Exception e){
+                                Log.e("randGroupbutton",e.toString());
+
+                            }
                         }
 
                         @Override
