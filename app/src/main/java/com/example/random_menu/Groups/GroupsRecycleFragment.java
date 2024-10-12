@@ -8,6 +8,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +29,7 @@ import com.example.random_menu.placeholder.ElemPlaceholderContent;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,7 +45,7 @@ public class GroupsRecycleFragment extends Fragment {
     private int mColumnCount = 1;
     private int moreViewItemId;
 
-    private GroupsRecyclerViewAdapter adapter;
+    private static GroupsRecyclerViewAdapter adapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -51,8 +55,9 @@ public class GroupsRecycleFragment extends Fragment {
         //View view = inflater.inflate(R.layout.list_elem_fragment, container, false);
 
 
-        adapter = new GroupsRecyclerViewAdapter(GroupPlaceholderContent.getGroups(),(position,id, name) ->{
+        adapter = new GroupsRecyclerViewAdapter(GroupPlaceholderContent.GROUPS,(position,id, name) ->{
 
+            //открытия окна more(что бы открывалось рядом с элментоом и не вызалило за пределы экрана)
             moreViewItemId = Integer.valueOf(id);
             ViewGroup.MarginLayoutParams lay = (ViewGroup.MarginLayoutParams) binding.moreItemView.getLayoutParams();
             lay.topMargin = position;
@@ -92,15 +97,25 @@ public class GroupsRecycleFragment extends Fragment {
             binding.moreItemView.startAnimation(anim);
 
 
+
         },
+                //переход к элементам группы
                 (id,name) ->{
                     ElemPlaceholderContent.idSelectGroup = id;
                     Intent intent = new Intent(getActivity(), ElementsActivity.class);
                     startActivity(intent);
+        },()->{
+
         });
 
         // Set the adapter
         binding.list1.setAdapter(adapter);
+
+        DividerItemDecoration decorator = new DividerItemDecoration(binding.getRoot().getContext(), DividerItemDecoration.VERTICAL);
+        binding.list1.addItemDecoration(decorator);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(TouchCallback);
+        itemTouchHelper.attachToRecyclerView(binding.list1);
         //return view;
 
 
@@ -108,6 +123,37 @@ public class GroupsRecycleFragment extends Fragment {
         return binding.getRoot();
 
     }
+
+    ItemTouchHelper.SimpleCallback TouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0) {
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+
+
+            int fromPosition = (int) viewHolder.getAbsoluteAdapterPosition();
+            int toPosition = (int) target.getAbsoluteAdapterPosition();
+            GroupPlaceholderContent.swap(fromPosition,toPosition);
+
+            //Collections.swap((List<?>) GroupPlaceholderContent.GROUPS, fromPosition, toPosition);
+            try{
+                binding.list1.getAdapter().notifyItemMoved(fromPosition, toPosition);
+                binding.list1.getAdapter().notifyItemChanged(fromPosition);
+                binding.list1.getAdapter().notifyItemChanged(toPosition);
+                //binding.list1.getAdapter().notifyDataSetChanged();
+                GroupPlaceholderContent.loadGroups();
+            }
+            catch(Exception e){
+                Log.e("onMoveListenerError",e.toString());
+            }
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+        }
+    };
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

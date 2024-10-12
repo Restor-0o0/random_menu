@@ -28,7 +28,7 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
     private static List<GroupPlaceholderContent.PlaceholderItem> mValues;
     private static OnSettingItemClickListener settingClickListener;
     private static OnItemClickListener itemClickListener;
-
+    private static RefreshRec ref;
 
     public interface OnSettingItemClickListener {
         void onButtonClick(int position,String id, String number);
@@ -38,10 +38,16 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
         void onItemClick(String id, String name);
     }
 
-    public GroupsRecyclerViewAdapter(List<GroupPlaceholderContent.PlaceholderItem> items, OnSettingItemClickListener settingClickListener, OnItemClickListener itemClickListener) {
+    public interface RefreshRec {
+        void ref();
+    }
+
+
+    public GroupsRecyclerViewAdapter(List<GroupPlaceholderContent.PlaceholderItem> items, OnSettingItemClickListener settingClickListener, OnItemClickListener itemClickListener,RefreshRec ref) {
         mValues = items;
         this.settingClickListener = settingClickListener;
         this.itemClickListener = itemClickListener;
+        this.ref = ref;
     }
 
     @Override
@@ -56,7 +62,7 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
         try{
             Log.e("errrrrr",mValues.get(0).name);
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).priority);
+            holder.mIdView.setText(String.valueOf(position+1));
             holder.mNameView.setText(mValues.get(position).name);
             /*if(mValues.get(position).details == false){
                 holder.mImageBut.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
@@ -68,7 +74,7 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
 
 
         } catch (Exception e) {
-            Log.e("errrrrr","fack");
+            Log.e("GroupAdapterErr",e.toString());
         }
 
     }
@@ -86,7 +92,7 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
 
         public ViewHolder(@NonNull ItemElemSettFragmentBinding binding) {
             super(binding.getRoot());
-            ListElemFragmentBinding bind;
+            //ListElemFragmentBinding bind;
             mIdView = binding.itemNumberS;
             mNameView = binding.contentS;
            //mIdView.setText(mItem.name);

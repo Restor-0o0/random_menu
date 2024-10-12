@@ -97,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
                     .add(R.id.barFragment, BottomBarGroupsFragment.class,null)
                     .commit();
 
+
+            //binding.frameMain.getFragment().
         }
         //PlaceholderContent.ITEMS.add(new PlaceholderContent.PlaceholderItem("20","20","20"));
         Log.e("itp", "6");

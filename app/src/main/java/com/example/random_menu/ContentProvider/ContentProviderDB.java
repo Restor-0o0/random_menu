@@ -22,21 +22,44 @@ public class ContentProviderDB {
         DB = dbControl.getWritableDatabase();
     }
 
-    public static Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit){
+    public static Cursor query(String table,
+                               String[] columns,
+                               String selection,
+                               String[] selectionArgs,
+                               String groupBy,
+                               String having,
+                               String orderBy,
+                               String limit){
         Cursor curs;
         curs = DB.query(table, columns, selection, selectionArgs,groupBy,having,orderBy,limit);
         return curs;
     }
 
-    public static Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy){
+    public static Cursor query(String table,
+                               String[] columns,
+                               String selection,
+                               String[] selectionArgs,
+                               String groupBy,
+                               String having,
+                               String orderBy){
         return DB.query(table, columns, selection, selectionArgs,groupBy,having,orderBy);
 
     }
 
-    public static long insert(String table, String nullColumnHack, ContentValues values){
+    public static long insert(String table,
+                              String nullColumnHack,
+                              ContentValues values){
         return DB.insert(table, nullColumnHack, values);
     }
-    public static void delete(String table, String whereClause, String[] whereArgs){
-        DB.delete(table, whereClause, whereArgs);
+    public static int delete(String table,
+                             String whereClause,
+                             String[] whereArgs){
+        return DB.delete(table, whereClause, whereArgs);
+    }
+    public static int update(String table,
+                             ContentValues values,
+                             String whereClause,
+                             String[] whereArgs){
+        return DB.update(table,values,whereClause,whereArgs);
     }
 }

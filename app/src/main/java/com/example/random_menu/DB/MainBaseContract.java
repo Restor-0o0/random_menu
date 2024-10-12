@@ -8,9 +8,9 @@ public final class MainBaseContract {
     public static class Elements implements BaseColumns{
         public static final String TABLE_NAME = "Elements";
         public static final String COLUMN_NAME_NAME = "name";
-        public static final String COLUMN_NAME_ACTIVE = "Active";
+        //public static final String COLUMN_NAME_ACTIVE = "Active";
         public static final String COLUMN_NAME_COMMENT = "Comment";
-
+        public static final String COLUMN_NAME_PRIORITY = "Priority";
     }
 
     public static class Groups implements BaseColumns{
@@ -18,7 +18,7 @@ public final class MainBaseContract {
         public static final String COLUMN_NAME_NAME = "Name";
         public static final String COLUMN_NAME_COMMENT = "Comment";
         public static final String COLUMN_NAME_PRIORITY = "Priority";
-        public static final String TRIGGER_NAME_PRIORITY = "PriorityTrigger";
+        //public static final String TRIGGER_NAME_PRIORITY = "PriorityTrigger";
         //public static final String[] COLUMS_NAME = {"Name","Comment","Priority"};
     }
 

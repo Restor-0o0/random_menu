@@ -1,5 +1,6 @@
 package com.example.random_menu.placeholder;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
@@ -7,6 +8,8 @@ import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +27,7 @@ public class GroupPlaceholderContent {
      * An array of sample (placeholder) items.
      */
     private static Random randomizer = new Random();
-    private static final List<PlaceholderItem> GROUPS = new ArrayList<PlaceholderItem>();
+    public static List<PlaceholderItem> GROUPS = new ArrayList<PlaceholderItem>();
 
     /**
      * A map of sample (placeholder) items, by ID.
@@ -39,12 +42,27 @@ public class GroupPlaceholderContent {
         return GROUPS;
     }
 
+    public static void swap(int fromPosition, int toPosition){
+        int temp = GROUPS.get((int) fromPosition).priority;
+        GROUPS.get( fromPosition).priority = GROUPS.get((int) toPosition).priority;;
+        GROUPS.get( toPosition).priority = temp;
+        PlaceholderItem fromItem = GROUPS.get( fromPosition);
+        PlaceholderItem toItem = GROUPS.get( toPosition);
+        ContentValues cv = new ContentValues();
+        cv.put(MainBaseContract.Groups.COLUMN_NAME_PRIORITY,fromItem.priority);
+        ContentProviderDB.update(MainBaseContract.Groups.TABLE_NAME,cv,"_ID="+fromItem.id,null);
+        cv.put(MainBaseContract.Groups.COLUMN_NAME_PRIORITY,toItem.priority);
+        ContentProviderDB.update(MainBaseContract.Groups.TABLE_NAME,cv,"_ID="+toItem.id,null);
+
+    }
+
     public static void addItem(PlaceholderItem item) {
+        //проверка на обновление приоритета
         if(Integer.valueOf(item.priority) > maxPriority){
             maxPriority = Integer.valueOf(item.priority);
         }
         GROUPS.add(item);
-        ITEM_MAP.put(item.priority, item);
+        ITEM_MAP.put(String.valueOf(item.priority), item);
     }
     public static void clearGroups(){
         GROUPS.clear();
@@ -63,7 +81,7 @@ public class GroupPlaceholderContent {
                         cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups._ID)),
                         cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_NAME)),
                         cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_COMMENT)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_PRIORITY))));
+                        cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_PRIORITY))));
             }while(cursor.moveToNext());
 
         }
@@ -77,9 +95,9 @@ public class GroupPlaceholderContent {
         public final String id;
         public final String name;
         public final String comment;
-        public final String priority;
+        public Integer priority;
 
-        public PlaceholderItem(String id, String content, String comment, String priority) {
+        public PlaceholderItem(String id, String content, String comment, Integer priority) {
             this.id = id;
             this.name = content;
             this.comment = comment;

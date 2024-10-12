@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,11 +24,13 @@ import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.FragmentBottomBarBinding;
+import com.example.random_menu.databinding.ListElemFragmentBinding;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 public class BottomBarGroupsFragment extends Fragment {
     boolean imp = true;
     static FragmentBottomBarBinding binding;
+
     private ObjectAnimator mAnimator;
     boolean isKeyboardShowing = false;
     @Override
@@ -184,14 +187,18 @@ public class BottomBarGroupsFragment extends Fragment {
                     cv.put(MainBaseContract.Groups.COLUMN_NAME_COMMENT,comment);
                     cv.put(MainBaseContract.Groups.COLUMN_NAME_PRIORITY,String.valueOf(GroupPlaceholderContent.maxPriority + 1));
                     ContentProviderDB.insert(MainBaseContract.Groups.TABLE_NAME,null,cv);
-                    GroupPlaceholderContent.loadGroups();
                 }
 
+                FragmentManager fm = getParentFragmentManager();
+                GroupsRecycleFragment frag = (GroupsRecycleFragment) fm.findFragmentById(R.id.frameMain);
+                frag.binding.list1.getAdapter().notifyDataSetChanged();
 
                 InputMethodManager imm = (InputMethodManager)binding.getRoot().getContext().getSystemService(binding.getRoot().getContext().INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(binding.getRoot().getWindowToken(), 0);
                 binding.addView.setVisibility(View.INVISIBLE);
                 binding.closeView.setVisibility(View.INVISIBLE);
+
+                GroupPlaceholderContent.loadGroups();
             }
         });
         //кнопка перехода к выпавшему элементу
