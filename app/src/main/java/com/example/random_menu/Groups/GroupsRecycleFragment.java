@@ -40,9 +40,7 @@ public class GroupsRecycleFragment extends Fragment {
     // TODO: Customize parameter argument names
     ListElemFragmentBinding binding;
     //private static List<Item> ITEMS;
-    private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
-    private int mColumnCount = 1;
     private int moreViewItemId;
 
     private static GroupsRecyclerViewAdapter adapter;
@@ -69,7 +67,7 @@ public class GroupsRecycleFragment extends Fragment {
                 lay.topMargin = position - binding.moreItemView.getHeight();
                 binding.moreItemView.setLayoutParams(lay);
             }
-            Log.e("texst","in");
+            //Log.e("texst","in");
             binding.moreItemView.setVisibility(View.VISIBLE);
 
             binding.closeView.setVisibility(View.VISIBLE);
@@ -104,8 +102,6 @@ public class GroupsRecycleFragment extends Fragment {
                     ElemPlaceholderContent.idSelectGroup = id;
                     Intent intent = new Intent(getActivity(), ElementsActivity.class);
                     startActivity(intent);
-        },()->{
-
         });
 
         // Set the adapter

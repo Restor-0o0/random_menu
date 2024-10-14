@@ -27,19 +27,19 @@ public class ElementsRecyclerViewAdapter extends RecyclerView.Adapter<ElementsRe
     private static OnSettingItemClickListener settingClickListener;
     private static OnItemClickListener itemClickListener;
 
-
+    //слушатель нажатия на кнопку настроек
     public interface OnSettingItemClickListener {
         void onButtonClick(int position,String id, String number);
     }
-
+    //слушатель нажатия на элемент
     public interface OnItemClickListener {
         void onItemClick(String position, String number);
     }
 
     public ElementsRecyclerViewAdapter(List<ElemPlaceholderContent.PlaceholderItem> items, OnSettingItemClickListener settingClickListener, OnItemClickListener itemClickListener) {
         mValues = items;
-        this.settingClickListener = settingClickListener;
-        this.itemClickListener = itemClickListener;
+        ElementsRecyclerViewAdapter.settingClickListener = settingClickListener;
+        ElementsRecyclerViewAdapter.itemClickListener = itemClickListener;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ElementsRecyclerViewAdapter extends RecyclerView.Adapter<ElementsRe
     @Override
     public void onBindViewHolder( ViewHolder holder, int position) {
         try{
-            Log.e("errrrrr",mValues.get(0).name);
+            //Log.e("errrrrr",mValues.get(0).name);
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(String.valueOf(position+1));
             holder.mNameView.setText(mValues.get(position).name);
@@ -66,7 +66,7 @@ public class ElementsRecyclerViewAdapter extends RecyclerView.Adapter<ElementsRe
 
 
         } catch (Exception e) {
-            Log.e("errrrrr","fack");
+            Log.e("dataBindElementsAdapter",e.toString());
         }
 
     }
@@ -77,8 +77,8 @@ public class ElementsRecyclerViewAdapter extends RecyclerView.Adapter<ElementsRe
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView mIdView;
-        private TextView mNameView;
+        private final TextView mIdView;
+        private final TextView mNameView;
         private ImageButton mImageBut;
         private ElemPlaceholderContent.PlaceholderItem mItem;
 
@@ -88,7 +88,7 @@ public class ElementsRecyclerViewAdapter extends RecyclerView.Adapter<ElementsRe
             mIdView = binding.itemNumberS;
             mNameView = binding.contentS;
            //mIdView.setText(mItem.name);
-            this.mImageBut = binding.settButton;
+            mImageBut = binding.settButton;
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

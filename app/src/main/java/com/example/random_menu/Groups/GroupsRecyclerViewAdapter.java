@@ -28,26 +28,23 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
     private static List<GroupPlaceholderContent.PlaceholderItem> mValues;
     private static OnSettingItemClickListener settingClickListener;
     private static OnItemClickListener itemClickListener;
-    private static RefreshRec ref;
 
+    //слушатель нажатия на кнопку настроек
     public interface OnSettingItemClickListener {
         void onButtonClick(int position,String id, String number);
     }
 
+    //слушатель нажатия на элемент
     public interface OnItemClickListener {
         void onItemClick(String id, String name);
     }
 
-    public interface RefreshRec {
-        void ref();
-    }
 
 
-    public GroupsRecyclerViewAdapter(List<GroupPlaceholderContent.PlaceholderItem> items, OnSettingItemClickListener settingClickListener, OnItemClickListener itemClickListener,RefreshRec ref) {
+    public GroupsRecyclerViewAdapter(List<GroupPlaceholderContent.PlaceholderItem> items, OnSettingItemClickListener settingClickListener, OnItemClickListener itemClickListener) {
         mValues = items;
         this.settingClickListener = settingClickListener;
         this.itemClickListener = itemClickListener;
-        this.ref = ref;
     }
 
     @Override
@@ -60,17 +57,10 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
     @Override
     public void onBindViewHolder( ViewHolder holder, int position) {
         try{
-            Log.e("errrrrr",mValues.get(0).name);
+            //Log.e("errrrrr",mValues.get(0).name);
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(String.valueOf(position+1));
             holder.mNameView.setText(mValues.get(position).name);
-            /*if(mValues.get(position).details == false){
-                holder.mImageBut.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
-            }
-            else{
-                holder.mImageBut.setImageResource(R.drawable.baseline_check_box_24);
-            }*/
-            //holder.mIdView.setText("///////");//mValues.get(0).name
 
 
         } catch (Exception e) {
@@ -85,8 +75,8 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView mIdView;
-        private TextView mNameView;
+        private final TextView mIdView;
+        private final TextView mNameView;
         private ImageButton mImageBut;
         private GroupPlaceholderContent.PlaceholderItem mItem;
 
@@ -119,46 +109,6 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
 
                 }
             });
-
-
-
-            /*if(mValues.get(getAbsoluteAdapterPosition()).details == true){
-                this.mImageBut.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
-            }
-            else{
-                this.mImageBut.setImageResource(R.drawable.baseline_check_box_24);
-            }*/
-            //mContentView = binding.checkButton;
-            /*binding.checkButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(mValues.get(getAbsoluteAdapterPosition()).details == true){
-                        mValues.get(getAbsoluteAdapterPosition()).details = false;
-                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
-                    }
-                    else{
-                        mValues.get(getAbsoluteAdapterPosition()).details = true;
-                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_24);
-                    }
-
-
-                }
-            });
-            binding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(mValues.get(getAbsoluteAdapterPosition()).details == true){
-                        mValues.get(getAbsoluteAdapterPosition()).details = false;
-                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
-                    }
-                    else{
-                        mValues.get(getAbsoluteAdapterPosition()).details = true;
-                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_24);
-                    }
-
-
-                }
-            });*/
         }
 
         @Override

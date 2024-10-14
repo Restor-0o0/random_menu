@@ -71,13 +71,6 @@ public class DBController extends SQLiteOpenHelper {
                     ") VALUES (" +
                         "testGr," + "testComm," + "1"+
                     ");";
-    /*private static final String priority_groups_trigger = "CREATE TRIGGER " + MainBaseContract.Groups.TRIGGER_NAME_PRIORITY +
-            " BEFORE " +
-            "ON " + MainBaseContract.Groups.TABLE_NAME +
-            "BEGIN " +
-            "(SELECT MAX(" + MainBaseContract.Groups.COLUMN_NAME_PRIORITY + ") FROM " + MainBaseContract.Groups.TABLE_NAME + ")" +
-            "END";*/
-
     public DBController(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERRSION);
     }

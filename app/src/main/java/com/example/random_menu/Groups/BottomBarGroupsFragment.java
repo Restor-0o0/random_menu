@@ -47,8 +47,7 @@ public class BottomBarGroupsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //binding.randButton.clearAnimation();
-        //binding.randButton.animate().setDuration(0);
+
         //слушатель, который сначала скроет клавиатуру, а после второго тапа скроет view
         binding.getRoot().getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -199,10 +198,14 @@ public class BottomBarGroupsFragment extends Fragment {
                     ContentProviderDB.insert(MainBaseContract.Groups.TABLE_NAME,null,cv);
                 }
 
-                FragmentManager fm = getParentFragmentManager();
-                GroupsRecycleFragment frag = (GroupsRecycleFragment) fm.findFragmentById(R.id.frameMain);
-                frag.binding.list1.getAdapter().notifyDataSetChanged();
-
+                try {
+                    FragmentManager fm = getParentFragmentManager();
+                    GroupsRecycleFragment frag = (GroupsRecycleFragment) fm.findFragmentById(R.id.frameMain);
+                    frag.binding.list1.getAdapter().notifyDataSetChanged();
+                }
+                catch(Exception e){
+                    Log.e("findFragmentGroupRecycleViewError",e.toString());
+                }
                 InputMethodManager imm = (InputMethodManager)binding.getRoot().getContext().getSystemService(binding.getRoot().getContext().INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(binding.getRoot().getWindowToken(), 0);
                 binding.addView.setVisibility(View.INVISIBLE);
@@ -221,12 +224,3 @@ public class BottomBarGroupsFragment extends Fragment {
     }
     
 }
-/*
-* <ImageButton
-                android:id="@+id/rand_button"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@null"
-                android:contentDescription="TODO"
-                app:srcCompat="@layout/ramd_circ" />*/

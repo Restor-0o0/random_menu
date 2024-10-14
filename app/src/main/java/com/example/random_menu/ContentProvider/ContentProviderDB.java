@@ -31,7 +31,14 @@ public class ContentProviderDB {
                                String orderBy,
                                String limit){
         Cursor curs;
-        curs = DB.query(table, columns, selection, selectionArgs,groupBy,having,orderBy,limit);
+        curs = DB.query(table,
+                        columns,
+                        selection,
+                        selectionArgs,
+                        groupBy,
+                        having,
+                        orderBy,
+                        limit);
         return curs;
     }
 
@@ -42,7 +49,13 @@ public class ContentProviderDB {
                                String groupBy,
                                String having,
                                String orderBy){
-        return DB.query(table, columns, selection, selectionArgs,groupBy,having,orderBy);
+        return DB.query(table,
+                        columns,
+                        selection,
+                        selectionArgs,
+                        groupBy,
+                        having,
+                        orderBy);
 
     }
 

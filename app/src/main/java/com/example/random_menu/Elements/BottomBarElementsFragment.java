@@ -46,8 +46,6 @@ public class BottomBarElementsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //binding.randButton.clearAnimation();
-        //binding.randButton.animate().setDuration(0);
 
         binding.getRoot().getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -62,7 +60,6 @@ public class BottomBarElementsFragment extends Fragment {
                         // if keypad is shown, the r.bottom is smaller than that before.
                         int keypadHeight = screenHeight - r.bottom;
 
-                        //Log.d(TAG, "keypadHeight = " + keypadHeight);
 
                         if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
                             // keyboard is opened
@@ -190,10 +187,14 @@ public class BottomBarElementsFragment extends Fragment {
 
                     ElemPlaceholderContent.loadElements();
                 }
-
-                FragmentManager fm = getParentFragmentManager();
-                ElementsRecycleFragment frag = (ElementsRecycleFragment) fm.findFragmentById(R.id.frameMain);
-                frag.binding.list1.getAdapter().notifyDataSetChanged();
+                try {
+                    FragmentManager fm = getParentFragmentManager();
+                    ElementsRecycleFragment frag = (ElementsRecycleFragment) fm.findFragmentById(R.id.frameMain);
+                    frag.binding.list1.getAdapter().notifyDataSetChanged();
+                }
+                catch(Exception e){
+                    Log.e("findFragmentElementRecycleViewError",e.toString());
+                }
 
                 InputMethodManager imm = (InputMethodManager)binding.getRoot().getContext().getSystemService(binding.getRoot().getContext().INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(binding.getRoot().getWindowToken(), 0);

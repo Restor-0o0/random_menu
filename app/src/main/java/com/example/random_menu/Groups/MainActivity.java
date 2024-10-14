@@ -21,7 +21,6 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-    private ArrayList<Item> ITEMS = new ArrayList<Item>();
 
 
     @Override
@@ -30,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Objects.requireNonNull(getSupportActionBar()).hide();
         //this.deleteDatabase("RandDB.db");
-        Log.e("itp", "0");
 
         ContentProviderDB.init(getBaseContext());
         /*
@@ -86,50 +84,17 @@ public class MainActivity extends AppCompatActivity {
         //PlaceholderContent.ITEMS.add(new PlaceholderContent.PlaceholderItem("2","pidr",false));
         */
         if(savedInstanceState == null){
-            //ItemFragment itemFrag = new ItemFragment();
-            //Bundle bundle = new Bundle();
             GroupPlaceholderContent.loadGroups();
-            //bundle.putSerializable("itemsList",ITEMS);
             getSupportFragmentManager()
                     .beginTransaction()
                     .setReorderingAllowed(true)
                     .add(R.id.frameMain, GroupsRecycleFragment.class,null)
                     .add(R.id.barFragment, BottomBarGroupsFragment.class,null)
                     .commit();
-
-
-            //binding.frameMain.getFragment().
         }
-        //PlaceholderContent.ITEMS.add(new PlaceholderContent.PlaceholderItem("20","20","20"));
-        Log.e("itp", "6");
     }
 
     public void rand(){
 
     }
 }
-/*
-<TextView
-android:id="@+id/item_name"
-android:layout_width="330dp"
-android:layout_height="50dp"
-android:layout_gravity="center"
-android:layout_marginStart="20dp"
-android:layout_weight="1"
-android:gravity="center"
-android:text=""
-android:textColor="?attr/colorFont"
-android:textSize="20sp" />
-*/
-
-
-/*
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="390dp"
-android:layout_height="70dp"
-android:background="@drawable/back"
-android:foregroundGravity="center"
-android:gravity="center"
-android:orientation="horizontal">
-
- */

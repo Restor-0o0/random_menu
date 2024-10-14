@@ -39,10 +39,8 @@ public class ElementsRecycleFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     ListElemFragmentBinding binding;
-    //private static List<Item> ITEMS;
-    private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
-    private int mColumnCount = 1;
+    //id элемента для которого вызвано moreView
     private int moreViewItemId;
 
     private ElementsRecyclerViewAdapter adapter;
@@ -55,24 +53,26 @@ public class ElementsRecycleFragment extends Fragment {
         //View view = inflater.inflate(R.layout.list_elem_fragment, container, false);
 
 
-        adapter = new ElementsRecyclerViewAdapter(ElemPlaceholderContent.getElements(),(position,id, number) ->{
-
+        adapter = new ElementsRecyclerViewAdapter(ElemPlaceholderContent.getElements(),
+                (position,id, number) ->{//функция для отрисовки moreView
+            //выхватываем id элемента списка
             moreViewItemId = Integer.valueOf(id);
+            //формируем параметры для отступов окна от границ экрана
             MarginLayoutParams lay = (MarginLayoutParams) binding.moreItemView.getLayoutParams();
             lay.topMargin = position;
             if((binding.moreItemView.getHeight() + position) * 1.1 < binding.getRoot().getHeight()){
-                Log.e("cord",String.valueOf(binding.moreItemView.getHeight() + position)+ " " + String.valueOf(binding.getRoot().getHeight()));
+                //Log.e("cord",String.valueOf(binding.moreItemView.getHeight() + position)+ " " + String.valueOf(binding.getRoot().getHeight()));
                binding.moreItemView.setLayoutParams(lay);
             }
             else{
                 lay.topMargin = position - binding.moreItemView.getHeight();
                 binding.moreItemView.setLayoutParams(lay);
             }
-            Log.e("texst","in");
+            //Log.e("texst","in");
             binding.moreItemView.setVisibility(View.VISIBLE);
 
             binding.closeView.setVisibility(View.VISIBLE);
-
+            //анимация рскрытия окна
             Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.anim_show);
             anim.setDuration(200);
             anim.setAnimationListener(new Animation.AnimationListener() {
@@ -96,7 +96,7 @@ public class ElementsRecycleFragment extends Fragment {
             binding.moreItemView.startAnimation(anim);
 
         },
-                (position,number) ->{
+                (position,number) ->{//обработчик нажатия на элемент
 
         });
 
@@ -104,6 +104,7 @@ public class ElementsRecycleFragment extends Fragment {
         binding.list1.setAdapter(adapter);
         //return view;
 
+        //декоратор и помошник нажатий для перетаскивания элементов по списку и тем самым изменения их приоритетов
         DividerItemDecoration decorator = new DividerItemDecoration(binding.getRoot().getContext(), DividerItemDecoration.VERTICAL);
         binding.list1.addItemDecoration(decorator);
 
@@ -113,7 +114,7 @@ public class ElementsRecycleFragment extends Fragment {
         return binding.getRoot();
 
     }
-
+    //обработчик перетаскиваний
     ItemTouchHelper.SimpleCallback TouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0) {
 
         @Override
