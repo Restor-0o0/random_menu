@@ -1,6 +1,5 @@
-package com.example.random_menu.Groups;
+package com.example.random_menu.GroupsList;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -22,14 +21,13 @@ import android.view.animation.AnimationUtils;
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.Data.Item;
-import com.example.random_menu.Elements.ElementsActivity;
+import com.example.random_menu.ElementsList.ElementsActivity;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.ListElemFragmentBinding;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**

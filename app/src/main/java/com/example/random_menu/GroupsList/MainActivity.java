@@ -1,21 +1,15 @@
-package com.example.random_menu.Groups;
+package com.example.random_menu.GroupsList;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 
-import android.content.ContentValues;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
-import com.example.random_menu.DB.MainBaseContract;
-import com.example.random_menu.Data.Item;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.ActivityMainBinding;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {

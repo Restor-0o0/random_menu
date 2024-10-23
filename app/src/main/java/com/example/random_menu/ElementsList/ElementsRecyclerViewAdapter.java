@@ -1,4 +1,4 @@
-package com.example.random_menu.Elements;
+package com.example.random_menu.ElementsList;
 
 import android.util.Log;
 import android.view.LayoutInflater;

@@ -1,4 +1,4 @@
-package com.example.random_menu.Groups;
+package com.example.random_menu.GroupsList;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,7 +14,6 @@ import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.Data.Item;
 import com.example.random_menu.databinding.ItemElemSettFragmentBinding;
-import com.example.random_menu.databinding.ListElemFragmentBinding;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 import java.util.List;

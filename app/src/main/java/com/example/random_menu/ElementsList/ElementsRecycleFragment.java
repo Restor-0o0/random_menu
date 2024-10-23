@@ -1,4 +1,4 @@
-package com.example.random_menu.Elements;
+package com.example.random_menu.ElementsList;
 
 import static android.widget.RelativeLayout.*;
 
@@ -10,9 +10,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -23,11 +20,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.Data.Item;
-import com.example.random_menu.Groups.GroupsRecyclerViewAdapter;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.ListElemFragmentBinding;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
-import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 import java.util.ArrayList;
 import java.util.List;

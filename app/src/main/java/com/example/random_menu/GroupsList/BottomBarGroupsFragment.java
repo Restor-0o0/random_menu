@@ -1,4 +1,4 @@
-package com.example.random_menu.Groups;
+package com.example.random_menu.GroupsList;
 
 import android.animation.ObjectAnimator;
 import android.content.ContentValues;
@@ -24,7 +24,6 @@ import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.FragmentBottomBarBinding;
-import com.example.random_menu.databinding.ListElemFragmentBinding;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 public class BottomBarGroupsFragment extends Fragment {
