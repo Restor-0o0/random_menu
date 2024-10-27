@@ -2,6 +2,7 @@ package com.example.random_menu.ElementsList;
 
 import static android.widget.RelativeLayout.*;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,8 +21,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.Data.Item;
+import com.example.random_menu.Element.ElementActivity;
 import com.example.random_menu.R;
-import com.example.random_menu.databinding.ListElemFragmentBinding;
+import com.example.random_menu.databinding.ListFragmentBinding;
+import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
 
 import java.util.ArrayList;
@@ -30,25 +33,25 @@ import java.util.List;
 /**
  * A fragment representing a list of Items.
  */
-public class ElementsRecycleFragment extends Fragment {
+public class ElementsListRecycleFragment extends Fragment {
 
     // TODO: Customize parameter argument names
-    ListElemFragmentBinding binding;
+    ListFragmentBinding binding;
     // TODO: Customize parameters
     //id элемента для которого вызвано moreView
     private int moreViewItemId;
 
-    private ElementsRecyclerViewAdapter adapter;
+    private ElementsListRecyclerViewAdapter adapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding = ListElemFragmentBinding.inflate(inflater, container, false);
+        binding = ListFragmentBinding.inflate(inflater, container, false);
         //View view = inflater.inflate(R.layout.list_elem_fragment, container, false);
 
 
-        adapter = new ElementsRecyclerViewAdapter(ElemPlaceholderContent.getElements(),
+        adapter = new ElementsListRecyclerViewAdapter(ElemPlaceholderContent.getElements(),
                 (position,id, number) ->{//функция для отрисовки moreView
             //выхватываем id элемента списка
             moreViewItemId = Integer.valueOf(id);
@@ -91,8 +94,10 @@ public class ElementsRecycleFragment extends Fragment {
             binding.moreItemView.startAnimation(anim);
 
         },
-                (position,number) ->{//обработчик нажатия на элемент
-
+                (id,name) ->{
+                    ComponentPlaceholderContent.idSelectElem = id;
+                    Intent intent = new Intent(getActivity(), ElementActivity.class);
+                    startActivity(intent);
         });
 
         // Set the adapter
@@ -219,11 +224,11 @@ public class ElementsRecycleFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public ElementsRecycleFragment(){
+    public ElementsListRecycleFragment(){
         //super(R.layout.list_elem_fragment);
         //mColumnCount = items.size();
     }
-    public ElementsRecycleFragment(List<Item> items){
+    public ElementsListRecycleFragment(List<Item> items){
         //super(R.layout.list_elem_fragment);
         //ITEMS= items;
         //mColumnCount = items.size();
@@ -238,8 +243,8 @@ public class ElementsRecycleFragment extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static ElementsRecycleFragment newInstance(ArrayList<Item> items) {
-        ElementsRecycleFragment fragment = new ElementsRecycleFragment(items);
+    public static ElementsListRecycleFragment newInstance(ArrayList<Item> items) {
+        ElementsListRecycleFragment fragment = new ElementsListRecycleFragment(items);
         return fragment;
     }
 

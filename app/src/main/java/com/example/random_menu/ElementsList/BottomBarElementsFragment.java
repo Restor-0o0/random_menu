@@ -21,12 +21,12 @@ import androidx.fragment.app.FragmentManager;
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.R;
-import com.example.random_menu.databinding.FragmentBottomBarBinding;
+import com.example.random_menu.databinding.BottomBarFragmentBinding;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
 
 public class BottomBarElementsFragment extends Fragment {
     boolean imp = true;
-    static FragmentBottomBarBinding binding;
+    static BottomBarFragmentBinding binding;
     private ObjectAnimator mAnimator;
     boolean isKeyboardShowing = false;
     @Override
@@ -34,7 +34,7 @@ public class BottomBarElementsFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        binding = FragmentBottomBarBinding.inflate(inflater, container, false);
+        binding = BottomBarFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }
@@ -186,7 +186,7 @@ public class BottomBarElementsFragment extends Fragment {
                 }
                 try {
                     FragmentManager fm = getParentFragmentManager();
-                    ElementsRecycleFragment frag = (ElementsRecycleFragment) fm.findFragmentById(R.id.frameMain);
+                    ElementsListRecycleFragment frag = (ElementsListRecycleFragment) fm.findFragmentById(R.id.frameMain);
                     frag.binding.list1.getAdapter().notifyDataSetChanged();
                 }
                 catch(Exception e){

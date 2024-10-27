@@ -1,4 +1,4 @@
-package com.example.random_menu.ElementsList;
+package com.example.random_menu.Element;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,16 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.random_menu.Data.Item;
 import com.example.random_menu.databinding.ItemElemSettFragmentBinding;
-import com.example.random_menu.databinding.ListElemFragmentBinding;
+import com.example.random_menu.databinding.ListFragmentBinding;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link Item}.
- * TODO: Replace the implementation with code for your data type.
- */
-public class ElementsRecyclerViewAdapter extends RecyclerView.Adapter<ElementsRecyclerViewAdapter.ViewHolder> {
+
+public class ComponentRecyclerViewAdapter extends RecyclerView.Adapter<ComponentRecyclerViewAdapter.ViewHolder> {
 
     private static List<ElemPlaceholderContent.PlaceholderItem> mValues;
     private static OnSettingItemClickListener settingClickListener;
@@ -36,10 +33,10 @@ public class ElementsRecyclerViewAdapter extends RecyclerView.Adapter<ElementsRe
         void onItemClick(String position, String number);
     }
 
-    public ElementsRecyclerViewAdapter(List<ElemPlaceholderContent.PlaceholderItem> items, OnSettingItemClickListener settingClickListener, OnItemClickListener itemClickListener) {
+    public ComponentRecyclerViewAdapter(List<ElemPlaceholderContent.PlaceholderItem> items, OnSettingItemClickListener settingClickListener, OnItemClickListener itemClickListener) {
         mValues = items;
-        ElementsRecyclerViewAdapter.settingClickListener = settingClickListener;
-        ElementsRecyclerViewAdapter.itemClickListener = itemClickListener;
+        ComponentRecyclerViewAdapter.settingClickListener = settingClickListener;
+        ComponentRecyclerViewAdapter.itemClickListener = itemClickListener;
     }
 
     @Override
@@ -84,7 +81,7 @@ public class ElementsRecyclerViewAdapter extends RecyclerView.Adapter<ElementsRe
 
         public ViewHolder(@NonNull ItemElemSettFragmentBinding binding) {
             super(binding.getRoot());
-            ListElemFragmentBinding bind;
+            ListFragmentBinding bind;
             mIdView = binding.itemNumberS;
             mNameView = binding.contentS;
            //mIdView.setText(mItem.name);
@@ -105,46 +102,6 @@ public class ElementsRecyclerViewAdapter extends RecyclerView.Adapter<ElementsRe
 
                 }
             });
-
-
-
-            /*if(mValues.get(getAbsoluteAdapterPosition()).details == true){
-                this.mImageBut.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
-            }
-            else{
-                this.mImageBut.setImageResource(R.drawable.baseline_check_box_24);
-            }*/
-            //mContentView = binding.checkButton;
-            /*binding.checkButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(mValues.get(getAbsoluteAdapterPosition()).details == true){
-                        mValues.get(getAbsoluteAdapterPosition()).details = false;
-                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
-                    }
-                    else{
-                        mValues.get(getAbsoluteAdapterPosition()).details = true;
-                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_24);
-                    }
-
-
-                }
-            });
-            binding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(mValues.get(getAbsoluteAdapterPosition()).details == true){
-                        mValues.get(getAbsoluteAdapterPosition()).details = false;
-                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
-                    }
-                    else{
-                        mValues.get(getAbsoluteAdapterPosition()).details = true;
-                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_24);
-                    }
-
-
-                }
-            });*/
         }
 
         @Override

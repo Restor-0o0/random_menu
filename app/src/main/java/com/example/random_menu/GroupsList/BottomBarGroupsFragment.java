@@ -23,12 +23,12 @@ import android.view.inputmethod.InputMethodManager;
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.R;
-import com.example.random_menu.databinding.FragmentBottomBarBinding;
+import com.example.random_menu.databinding.BottomBarFragmentBinding;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 public class BottomBarGroupsFragment extends Fragment {
     boolean imp = true;
-    static FragmentBottomBarBinding binding;
+    static BottomBarFragmentBinding binding;
 
     private ObjectAnimator mAnimator;
     boolean isKeyboardShowing = false;
@@ -37,7 +37,7 @@ public class BottomBarGroupsFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        binding = FragmentBottomBarBinding.inflate(inflater, container, false);
+        binding = BottomBarFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }

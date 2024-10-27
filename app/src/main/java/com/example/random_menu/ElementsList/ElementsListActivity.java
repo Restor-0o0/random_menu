@@ -12,7 +12,7 @@ import com.example.random_menu.placeholder.ElemPlaceholderContent;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class ElementsActivity extends AppCompatActivity {
+public class ElementsListActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private ArrayList<Item> ITEMS = new ArrayList<Item>();
@@ -29,15 +29,11 @@ public class ElementsActivity extends AppCompatActivity {
             getSupportFragmentManager()
                     .beginTransaction()
                     .setReorderingAllowed(true)
-                    .add(R.id.frameMain, ElementsRecycleFragment.class,null)
+                    .add(R.id.frameMain, ElementsListRecycleFragment.class,null)
                     .add(R.id.barFragment, BottomBarElementsFragment.class,null)
                     .commit();
 
         }
-
-    }
-
-    public void rand(){
 
     }
 }
