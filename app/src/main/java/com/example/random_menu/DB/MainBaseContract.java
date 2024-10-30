@@ -24,6 +24,7 @@ public final class MainBaseContract {
         public static final String COLUMN_NAME_NAME = "Name";
         public static final String COLUMN_NAME_ELEMENT = "Element";
         public static final String COLUMN_NAME_COMMENT = "Comment";
+        public static final String COLUMN_NAME_QUANTITY = "Quantity";
     }
 
     public static class ElemGroup implements BaseColumns{

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
+import com.example.random_menu.DB.DBController;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.ActivityMainBinding;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         //this.deleteDatabase("RandDB.db");
 
         ContentProviderDB.init(getBaseContext());
+
         /*
         //DBController dbControl = new DBController(getBaseContext());
         //SQLiteDatabase DB = dbControl.getWritableDatabase();

@@ -32,6 +32,7 @@ public class DBController extends SQLiteOpenHelper {
                     MainBaseContract.Components.COLUMN_NAME_ELEMENT + " INTEGER," +
                     MainBaseContract.Components.COLUMN_NAME_NAME + " TEXT," +
                     MainBaseContract.Components.COLUMN_NAME_COMMENT + " TEXT," +
+                    MainBaseContract.Components.COLUMN_NAME_QUANTITY + " REAL," +
                     "FOREIGN KEY(" + MainBaseContract.Components.COLUMN_NAME_ELEMENT +") " + "REFERENCES " + MainBaseContract.Elements.TABLE_NAME + "(" + MainBaseContract.Elements._ID + ")" +
                     ");";
     private static final String SQL_CREATE_TEST_ElemGroup =
@@ -87,6 +88,7 @@ public class DBController extends SQLiteOpenHelper {
             Log.e("Fuck", e.toString());
         }
     }
+
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {

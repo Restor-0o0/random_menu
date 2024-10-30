@@ -19,6 +19,5 @@ public class ElementActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_element);
         Objects.requireNonNull(getSupportActionBar()).hide();
-
     }
 }

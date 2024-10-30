@@ -95,7 +95,10 @@ public class ElementsListRecycleFragment extends Fragment {
 
         },
                 (id,name) ->{
+                    Log.e("list111",name);
+
                     ComponentPlaceholderContent.idSelectElem = id;
+                    //ComponentPlaceholderContent.loadComponents();
                     Intent intent = new Intent(getActivity(), ElementActivity.class);
                     startActivity(intent);
         });
@@ -144,6 +147,66 @@ public class ElementsListRecycleFragment extends Fragment {
 
         }
     };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        adapter = new ElementsListRecyclerViewAdapter(ElemPlaceholderContent.getElements(),
+                (position,id, number) ->{//функция для отрисовки moreView
+                    //выхватываем id элемента списка
+                    moreViewItemId = Integer.valueOf(id);
+                    //формируем параметры для отступов окна от границ экрана
+                    MarginLayoutParams lay = (MarginLayoutParams) binding.moreItemView.getLayoutParams();
+                    lay.topMargin = position;
+                    if((binding.moreItemView.getHeight() + position) * 1.1 < binding.getRoot().getHeight()){
+                        //Log.e("cord",String.valueOf(binding.moreItemView.getHeight() + position)+ " " + String.valueOf(binding.getRoot().getHeight()));
+                        binding.moreItemView.setLayoutParams(lay);
+                    }
+                    else{
+                        lay.topMargin = position - binding.moreItemView.getHeight();
+                        binding.moreItemView.setLayoutParams(lay);
+                    }
+                    //Log.e("texst","in");
+                    binding.moreItemView.setVisibility(View.VISIBLE);
+
+                    binding.closeView.setVisibility(View.VISIBLE);
+                    //анимация рскрытия окна
+                    Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.anim_show);
+                    anim.setDuration(200);
+                    anim.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+                    binding.closeView.setScaleY(1.0f);
+                    binding.moreItemView.setScaleY(1.0f);
+                    binding.moreItemView.startAnimation(anim);
+
+                },
+                (id,name) ->{
+                    Log.e("list111",name);
+
+                    ComponentPlaceholderContent.idSelectElem = id;
+                    //ComponentPlaceholderContent.loadComponents();
+                    Intent intent = new Intent(getActivity(), ElementActivity.class);
+                    startActivity(intent);
+                });
+
+        // Set the adapter
+        binding.list1.setAdapter(adapter);
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

@@ -25,6 +25,7 @@ public class ElemPlaceholderContent {
      * An array of sample (placeholder) items.
      */
     public static String idSelectGroup;
+    public static String nameSelectGroup;
     private static Random randomizer = new Random();
     static public int maxPriority = 0;
     private static final List<PlaceholderItem> ELEMENTS = new ArrayList<PlaceholderItem>();
@@ -76,7 +77,6 @@ public class ElemPlaceholderContent {
                 addItem(new ElemPlaceholderContent.PlaceholderItem(
                         cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements._ID)),
                         cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_COMMENT)),
                         cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_PRIORITY))
                         ));
             }while(cursor.moveToNext());
@@ -91,13 +91,11 @@ public class ElemPlaceholderContent {
     public static class PlaceholderItem {
         public final String id;
         public final String name;
-        public final String comment;
         public Integer priority;
 
-        public PlaceholderItem(String id, String content, String comment,Integer priority) {
+        public PlaceholderItem(String id, String content,Integer priority) {
             this.id = id;
             this.name = content;
-            this.comment = comment;
             this.priority = priority;
         }
 

@@ -99,6 +99,7 @@ public class GroupsRecycleFragment extends Fragment {
                 //переход к элементам группы
                 (id,name) ->{
                     ElemPlaceholderContent.idSelectGroup = id;
+                    ElemPlaceholderContent.nameSelectGroup = name;
                     Intent intent = new Intent(getActivity(), ElementsListActivity.class);
                     startActivity(intent);
         });

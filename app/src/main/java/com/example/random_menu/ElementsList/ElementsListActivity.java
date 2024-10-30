@@ -23,17 +23,6 @@ public class ElementsListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_elements);
         Objects.requireNonNull(getSupportActionBar()).hide();
-
-        if(savedInstanceState == null){
-            ElemPlaceholderContent.loadElements();
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setReorderingAllowed(true)
-                    .add(R.id.frameMain, ElementsListRecycleFragment.class,null)
-                    .add(R.id.barFragment, BottomBarElementsFragment.class,null)
-                    .commit();
-
-        }
-
+        ElemPlaceholderContent.loadElements();
     }
 }

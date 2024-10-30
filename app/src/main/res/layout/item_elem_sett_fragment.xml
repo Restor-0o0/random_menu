@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/text_margin"
             android:gravity="center_vertical"
-            android:textSize="20dp"
+            android:textSize="@dimen/main_text_size"
             android:textAppearance="?attr/textAppearanceListItem" />
 
         <TextView
@@ -28,7 +28,7 @@
             android:gravity="center_vertical|center_horizontal"
             android:textAppearance="?attr/textAppearanceListItem"
             android:text="test"
-            android:textSize="20dp"/>
+            android:textSize="@dimen/main_text_size"/>
 
 
         <ImageButton
