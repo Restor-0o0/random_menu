@@ -7,14 +7,11 @@ android:layout_height="wrap_content">
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/list1"
-        android:name="com.example.random_menu.ItemFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginBottom="110dp"
         app:layoutManager="LinearLayoutManager"
-        tools:context=".GroupsList.GroupsRecycleFragment"
         tools:listitem="@layout/item_elem_checkbox_fragment" />
 
 <View
@@ -29,7 +26,7 @@ android:layout_height="wrap_content">
 <LinearLayout
     android:id="@+id/more_item_view"
     android:layout_width="match_parent"
-    android:layout_height="400dp"
+    android:layout_height="wrap_content"
     android:layout_gravity="top"
     android:background="@drawable/back_item"
     android:clickable="true"
@@ -44,7 +41,7 @@ android:layout_height="wrap_content">
     <LinearLayout
         android:id="@+id/delete_item_but"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:text="Добавить"
         android:orientation="horizontal"
         android:background="@drawable/back_more_view_item"

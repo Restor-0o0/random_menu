@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.random_menu.Data.Item;
 import com.example.random_menu.databinding.ItemElemSettFragmentBinding;
 import com.example.random_menu.databinding.ListFragmentBinding;
+import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
 
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.List;
 
 public class ComponentRecyclerViewAdapter extends RecyclerView.Adapter<ComponentRecyclerViewAdapter.ViewHolder> {
 
-    private static List<ElemPlaceholderContent.PlaceholderItem> mValues;
+    private static List<ComponentPlaceholderContent.ComponentsPlaceholderItem> mValues;
     private static OnSettingItemClickListener settingClickListener;
     private static OnItemClickListener itemClickListener;
 
@@ -33,7 +34,7 @@ public class ComponentRecyclerViewAdapter extends RecyclerView.Adapter<Component
         void onItemClick(String position, String number);
     }
 
-    public ComponentRecyclerViewAdapter(List<ElemPlaceholderContent.PlaceholderItem> items, OnSettingItemClickListener settingClickListener, OnItemClickListener itemClickListener) {
+    public ComponentRecyclerViewAdapter(List<ComponentPlaceholderContent.ComponentsPlaceholderItem> items, OnSettingItemClickListener settingClickListener, OnItemClickListener itemClickListener) {
         mValues = items;
         ComponentRecyclerViewAdapter.settingClickListener = settingClickListener;
         ComponentRecyclerViewAdapter.itemClickListener = itemClickListener;
@@ -49,19 +50,10 @@ public class ComponentRecyclerViewAdapter extends RecyclerView.Adapter<Component
     @Override
     public void onBindViewHolder( ViewHolder holder, int position) {
         try{
-            //Log.e("errrrrr",mValues.get(0).name);
+
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(String.valueOf(position+1));
             holder.mNameView.setText(mValues.get(position).name);
-            /*if(mValues.get(position).details == false){
-                holder.mImageBut.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
-            }
-            else{
-                holder.mImageBut.setImageResource(R.drawable.baseline_check_box_24);
-            }*/
-            //holder.mIdView.setText("///////");//mValues.get(0).name
-
-
         } catch (Exception e) {
             Log.e("dataBindElementsAdapter",e.toString());
         }
@@ -77,11 +69,10 @@ public class ComponentRecyclerViewAdapter extends RecyclerView.Adapter<Component
         private final TextView mIdView;
         private final TextView mNameView;
         private ImageButton mImageBut;
-        private ElemPlaceholderContent.PlaceholderItem mItem;
+        private ComponentPlaceholderContent.ComponentsPlaceholderItem mItem;
 
         public ViewHolder(@NonNull ItemElemSettFragmentBinding binding) {
             super(binding.getRoot());
-            ListFragmentBinding bind;
             mIdView = binding.itemNumberS;
             mNameView = binding.contentS;
            //mIdView.setText(mItem.name);

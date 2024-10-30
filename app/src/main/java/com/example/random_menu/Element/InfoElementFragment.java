@@ -37,13 +37,12 @@ public class InfoElementFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //ComponentPlaceholderContent.loadComponents();
         //кнопка редактирования
         binding.name.text.setVisibility(View.GONE);
-        binding.name.value.setGravity(Gravity.CENTER);
         binding.comment.text.setText(R.string.comment_element);
 
-
+        //пуляем в отдельный поток запрос данных и потом отправляем
+        //в мейн поток задачи на присвоение, все по hb
         Handler handler = new Handler(Looper.getMainLooper());
         //Object object = new Object();
         Runnable runnable = new Runnable(){
@@ -64,13 +63,7 @@ public class InfoElementFragment extends Fragment {
         };
         Thread thread = new Thread(runnable);
         thread.start();
-
-
-
-        //binding.name.value.setText(ComponentPlaceholderContent.nameSelectElem);
-       /// binding.groupValue.setText(ElemPlaceholderContent.nameSelectGroup);
-
-
+        //активация режима редактирования
         binding.edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,6 +87,7 @@ public class InfoElementFragment extends Fragment {
 
             }
         });
+        //сохранение отредактированного элемента
         binding.submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,6 +105,7 @@ public class InfoElementFragment extends Fragment {
 
             }
         });
+        //отмена редактирования
         binding.back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,10 +122,13 @@ public class InfoElementFragment extends Fragment {
 
             }
         });
+        //подтверждения редактирования списка групп, к которым пренадлежит элемент
         binding.groupsCheckList.submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 binding.groupsCheckList.getRoot().setVisibility(View.INVISIBLE);
+                //запускаем поток на обновление и потомв мейн поток возвращаем задачи на присваивание
                 Runnable runnable = new Runnable(){
                     @Override
                     public void run() {
@@ -148,6 +146,7 @@ public class InfoElementFragment extends Fragment {
 
             }
         });
+        //отмена редактирования
         binding.groupsCheckList.cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -155,6 +154,7 @@ public class InfoElementFragment extends Fragment {
                 ComponentPlaceholderContent.clearUpdateGroups();
             }
         });
+        //запуск редактированиясписка групп к кторым пренадлежит элемент
         binding.groupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

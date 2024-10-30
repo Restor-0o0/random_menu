@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:background="@drawable/back_bottom_bar">
+            <ImageButton
+                android:id="@+id/add_component_button"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/back_button"
+                android:src="@drawable/baseline_add_24"
+                android:layout_gravity="end"/>
+            <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/list1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                app:layoutManager="LinearLayoutManager"
+                tools:listitem="@layout/item_elem_checkbox_fragment" />
+    </LinearLayout>
+
+
+<View
+    android:id="@+id/close_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@null"
+    android:scaleY="0.0"
+    android:visibility="invisible" />
+
+<LinearLayout
+    android:id="@+id/more_item_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="top"
+    android:background="@drawable/back_item"
+    android:clickable="true"
+    android:orientation="vertical"
+    android:visibility="invisible"
+    android:padding="10dp"
+    android:scaleY="0.0"
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="60dp">
+
+
+    <LinearLayout
+        android:id="@+id/delete_item_but"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Добавить"
+        android:orientation="horizontal"
+        android:background="@drawable/back_more_view_item"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/baseline_delete_24"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Удалить"
+            android:layout_weight="1"
+            android:gravity="center"
+            />
+
+    </LinearLayout>
+
+
+</LinearLayout>
+
+    <!--view добавления элемента -->
+    <LinearLayout
+        android:id="@+id/add_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:background="@drawable/back_item"
+        android:clickable="true"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        android:padding="10dp"
+        android:layout_marginBottom="400dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp">
+
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/add_component_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20dp"
+            android:hint="Имя"/>
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/add_component_quantity"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20dp"
+            android:hint="Комментарий"/>
+
+
+        <Button
+            android:id="@+id/submit_button"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Добавить"
+            android:background="@drawable/back_item"/>
+
+
+
+    </LinearLayout>
+</FrameLayout>

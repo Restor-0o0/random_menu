@@ -20,33 +20,35 @@ import java.util.Map;
  */
 public class
 ComponentPlaceholderContent {
-
-    /**
-     * An array of sample (placeholder) items.
-     */
+    //Данные элемента
     public static String idSelectElem;
     public static String nameSelectElem;
     public static String commentSelectElem;
+    //Список компонентов
     private static final List<ComponentsPlaceholderItem> Components = new ArrayList<ComponentsPlaceholderItem>();
+    //Список групп
     private static final List<GroupsPlaceholderItem> Groups = new ArrayList<GroupsPlaceholderItem>();
+    //Список групп на обновление в бд
     private static final List<GroupsPlaceholderItem> UpdateGroups = new ArrayList<GroupsPlaceholderItem>();
-
+    //мапа хрен знаетзачем, уже не помню
     public static final Map<String, ComponentsPlaceholderItem> ITEM_MAP = new HashMap<String, ComponentsPlaceholderItem>();
-
+    //геттеры
     public static List<ComponentsPlaceholderItem> getComponents(){
         return Components;
     }
     public static List<GroupsPlaceholderItem> getGroups(){
         return Groups;
     }
-
-    public static void addElementsItem(ComponentsPlaceholderItem item) {
+    //добавление компонента в список
+    public static void addComponentsItem(ComponentsPlaceholderItem item) {
         Components.add(item);
         ITEM_MAP.put(item.id, item);
     }
+    //добавление Группы в список
     public static void addGroupsItem(GroupsPlaceholderItem item) {
         Groups.add(item);
     }
+    //отчистки
     public static void clearComponents(){
         Components.clear();
     }
@@ -56,6 +58,7 @@ ComponentPlaceholderContent {
     public static void clearUpdateGroups(){
         UpdateGroups.clear();
     }
+    //Проверка группны на наличие и добавление или удаление
     public static void checkUpdateGroups(GroupsPlaceholderItem item){
         for(int i = 0;i < UpdateGroups.size();i++){
             if(UpdateGroups.get(i).id == item.id){
@@ -66,6 +69,7 @@ ComponentPlaceholderContent {
         UpdateGroups.add(item);
 
     }
+    //обновление групп из списка в бд
     public static void UpdatedGroupsDB(){
         ContentValues cv = new ContentValues();
         for(GroupsPlaceholderItem item: UpdateGroups){
@@ -82,6 +86,7 @@ ComponentPlaceholderContent {
             }
         }
     }
+    //загрузка групп с бд
     public static void loadGroupsData() {
         clearGroups();
 
@@ -114,6 +119,7 @@ ComponentPlaceholderContent {
             Log.e("LoadGroupsInfoError", e.toString());
         }
     }
+    //загрузка информации элемента из бд
     public static void loadElementData() {
         try{
 
@@ -130,6 +136,7 @@ ComponentPlaceholderContent {
             Log.e("LoadElemInfoError", e.toString());
         }
     }
+    //загрузка списка компонентов с бд
     public static void loadComponentsData() {
         clearComponents();
         Components.clear();
@@ -141,7 +148,7 @@ ComponentPlaceholderContent {
                 cursor.moveToFirst();
                 do {
 
-                    addElementsItem(new ComponentsPlaceholderItem(
+                    addComponentsItem(new ComponentsPlaceholderItem(
                             cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Components._ID)),
                             cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_NAME)),
                             cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_COMMENT)),
@@ -154,24 +161,24 @@ ComponentPlaceholderContent {
             Log.e("LoadComponentslistError", e.toString());
         }
     }
-
+    //возвращает группы в которых состоит элемент в строчку через ","
     public static String getActiveGroupsStr(){
         String str = "";
         for (GroupsPlaceholderItem item: Groups) {
             if(item.active){
-                str+= item.name+",";
+                str+= item.name+", ";
             }
         }
-        return str.substring(0,str.length()-1);
+        return str.substring(0,str.length()-2);
     }
-
+    //загрузка всех данных для экрана
     public static void loadData() {
         loadElementData();
         loadGroupsData();
         loadComponentsData();
     }
 
-
+    //Компонент списка элементов
     public static class ComponentsPlaceholderItem {
         public final String id;
         public final String name;
@@ -190,7 +197,7 @@ ComponentPlaceholderContent {
             return name;
         }
     }
-
+    //компонент списка групп
     public static class GroupsPlaceholderItem {
         public final String id;
         public final String name;
@@ -211,7 +218,7 @@ ComponentPlaceholderContent {
 
         @Override
         public String toString() {
-            return name + " " + active;
+            return name;
         }
 
     }

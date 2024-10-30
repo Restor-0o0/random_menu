@@ -2,7 +2,7 @@
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         android:background="@drawable/back_item"
         android:foregroundGravity="center"
         android:gravity="center"
@@ -16,7 +16,7 @@
             android:layout_width="24dp"
             android:layout_height="match_parent"
             android:layout_margin="@dimen/text_margin"
-            android:gravity="center_vertical"
+            android:gravity="center_vertical|center_horizontal"
             android:textSize="@dimen/main_text_size"
             android:textAppearance="?attr/textAppearanceListItem" />
 

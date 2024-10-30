@@ -197,7 +197,7 @@
 
         </LinearLayout>
 
-        <!--view обавления элемента -->
+        <!--view добавления элемента -->
         <LinearLayout
             android:id="@+id/add_view"
             android:layout_width="match_parent"
@@ -235,8 +235,7 @@
                 android:background="@drawable/back_item"/>
 
 
-
-        </LinearLayout>
+    </LinearLayout>
 
 
     </FrameLayout>

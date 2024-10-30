@@ -3,13 +3,17 @@ package com.example.random_menu.Element;
 import static android.view.ViewGroup.MarginLayoutParams;
 import static android.view.View.OnClickListener;
 
+import android.content.ContentValues;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,46 +27,46 @@ import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.Data.Item;
 import com.example.random_menu.ElementsList.ElementsListRecyclerViewAdapter;
 import com.example.random_menu.R;
+import com.example.random_menu.databinding.ListComponentsFragmentBinding;
 import com.example.random_menu.databinding.ListFragmentBinding;
+import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A fragment representing a list of Items.
- */
+
 public class ComponentsRecycleFragment extends Fragment {
 
     // TODO: Customize parameter argument names
-    ListFragmentBinding binding;
+    ListComponentsFragmentBinding binding;
     // TODO: Customize parameters
     //id элемента для которого вызвано moreView
     private int moreViewItemId;
+    boolean isKeyboardShowing = false;
 
-    private ElementsListRecyclerViewAdapter adapter;
+    private ComponentRecyclerViewAdapter adapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding = ListFragmentBinding.inflate(inflater, container, false);
-        adapter = new ElementsListRecyclerViewAdapter(ElemPlaceholderContent.getElements(),
+        binding = ListComponentsFragmentBinding.inflate(inflater, container, false);
+
+        adapter = new ComponentRecyclerViewAdapter(ComponentPlaceholderContent.getComponents(),
                 (position,id, number) ->{//функция для отрисовки moreView
             //выхватываем id элемента списка
             moreViewItemId = Integer.valueOf(id);
             //формируем параметры для отступов окна от границ экрана
             MarginLayoutParams lay = (MarginLayoutParams) binding.moreItemView.getLayoutParams();
             lay.topMargin = position;
-            if((binding.moreItemView.getHeight() + position) * 1.1 < binding.getRoot().getHeight()){
-                //Log.e("cord",String.valueOf(binding.moreItemView.getHeight() + position)+ " " + String.valueOf(binding.getRoot().getHeight()));
+            if((binding.moreItemView.getHeight() + position) < binding.getRoot().getHeight()){
                binding.moreItemView.setLayoutParams(lay);
             }
             else{
                 lay.topMargin = position - binding.moreItemView.getHeight();
                 binding.moreItemView.setLayoutParams(lay);
             }
-            //Log.e("texst","in");
             binding.moreItemView.setVisibility(View.VISIBLE);
 
             binding.closeView.setVisibility(View.VISIBLE);
@@ -94,50 +98,12 @@ public class ComponentsRecycleFragment extends Fragment {
 
         });
 
-        // Set the adapter
         binding.list1.setAdapter(adapter);
-        //return view;
 
-        //декоратор и помошник нажатий для перетаскивания элементов по списку и тем самым изменения их приоритетов
-        DividerItemDecoration decorator = new DividerItemDecoration(binding.getRoot().getContext(), DividerItemDecoration.VERTICAL);
-        binding.list1.addItemDecoration(decorator);
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(TouchCallback);
-        itemTouchHelper.attachToRecyclerView(binding.list1);
-        //binding = ListElemFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }
     //обработчик перетаскиваний
-    ItemTouchHelper.SimpleCallback TouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0) {
-
-        @Override
-        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-
-
-            int fromPosition = (int) viewHolder.getAbsoluteAdapterPosition();
-            int toPosition = (int) target.getAbsoluteAdapterPosition();
-            ElemPlaceholderContent.swap(fromPosition,toPosition);
-
-            //Collections.swap((List<?>) GroupPlaceholderContent.GROUPS, fromPosition, toPosition);
-            try{
-                binding.list1.getAdapter().notifyItemMoved(fromPosition, toPosition);
-                binding.list1.getAdapter().notifyItemChanged(fromPosition);
-                binding.list1.getAdapter().notifyItemChanged(toPosition);
-                //binding.list1.getAdapter().notifyDataSetChanged();
-                ElemPlaceholderContent.loadElements();
-            }
-            catch(Exception e){
-                Log.e("onMoveListenerError",e.toString());
-            }
-            return false;
-        }
-
-        @Override
-        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-
-        }
-    };
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -210,14 +176,62 @@ public class ComponentsRecycleFragment extends Fragment {
              }
         }
         );
+        binding.addComponentButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.addView.setVisibility(View.VISIBLE);
+                binding.closeView.setVisibility(View.VISIBLE);
+
+            }
+        });
+        binding.closeView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isKeyboardShowing){
+                    InputMethodManager imm = (InputMethodManager)binding.getRoot().getContext().getSystemService(binding.getRoot().getContext().INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(binding.getRoot().getWindowToken(), 0);
+
+                }
+                else{
+                    //binding.moreView.setVisibility(View.INVISIBLE);
+                    binding.closeView.setVisibility(View.INVISIBLE);
+                    ///binding.winView.setVisibility(View.INVISIBLE);
+                    binding.addView.setVisibility(View.INVISIBLE);
+
+                }
+
+
+            }
+        });
+        binding.submitButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Handler handler = new Handler(Looper.getMainLooper());
+                Runnable task = new Runnable() {
+                    @Override
+                    public void run() {
+                        ContentValues cv = new ContentValues();
+                        cv.put(MainBaseContract.Components.COLUMN_NAME_NAME,binding.addComponentName.getText().toString());
+                        cv.put(MainBaseContract.Components.COLUMN_NAME_QUANTITY,binding.addComponentQuantity.getText().toString());
+                        cv.put(MainBaseContract.Components.COLUMN_NAME_ELEMENT,ComponentPlaceholderContent.idSelectElem);
+                        ContentProviderDB.insert(MainBaseContract.Components.TABLE_NAME,null,cv);
+
+                        handler.post(()->{
+                            ComponentPlaceholderContent.loadComponentsData();
+                            binding.list1.getAdapter().notifyDataSetChanged();
+                        });
+
+
+                    }
+                };
+                Thread thread = new Thread(task);
+                thread.start();
+                binding.addView.setVisibility(View.INVISIBLE);
+            }
+
+        });
     }
 
-
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public ComponentsRecycleFragment(){
 
     }
