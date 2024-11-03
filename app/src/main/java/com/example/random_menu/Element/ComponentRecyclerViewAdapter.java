@@ -8,6 +8,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.random_menu.Data.Item;
@@ -24,14 +25,15 @@ public class ComponentRecyclerViewAdapter extends RecyclerView.Adapter<Component
     private static List<ComponentPlaceholderContent.ComponentsPlaceholderItem> mValues;
     private static OnSettingItemClickListener settingClickListener;
     private static OnItemClickListener itemClickListener;
+    //private static MoreItemDialogFragment moreItemDialogFragment;
 
     //слушатель нажатия на кнопку настроек
     public interface OnSettingItemClickListener {
-        void onButtonClick(int position,String id, String number);
+        void onButtonClick(int screenposition,String id, String number,String listPosition);
     }
     //слушатель нажатия на элемент
     public interface OnItemClickListener {
-        void onItemClick(String position, String number);
+        void onItemClick(int listPosition, int id);
     }
 
     public ComponentRecyclerViewAdapter(List<ComponentPlaceholderContent.ComponentsPlaceholderItem> items, OnSettingItemClickListener settingClickListener, OnItemClickListener itemClickListener) {
@@ -75,21 +77,30 @@ public class ComponentRecyclerViewAdapter extends RecyclerView.Adapter<Component
             super(binding.getRoot());
             mIdView = binding.itemNumberS;
             mNameView = binding.contentS;
-           //mIdView.setText(mItem.name);
             mImageBut = binding.settButton;
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Log.e("list111",mIdView.getText().toString());
+                    itemClickListener.onItemClick(
+                            Integer.valueOf(mIdView.getText().toString())-1,
+                            Integer.valueOf(mItem.id)
+                    );
                 }
             });
             binding.settButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     int[] cord = {0,0};
+                    Integer position = new Integer(mIdView.getText().toString()) - 1;
                     binding.settButton.getLocationOnScreen(cord);
-                    Log.e("cord",String.valueOf(cord[0]) + " " + String.valueOf(cord[1]));
-                    settingClickListener.onButtonClick(cord[1],(String) mItem.id,(String) mNameView.getText());
+
+                    //Log.e("cord",String.valueOf(cord[0]) + " " + String.valueOf(cord[1]));
+                    settingClickListener.onButtonClick(
+                            cord[1],
+                            (String) mItem.id,
+                            (String) mNameView.getText(),
+                            position.toString());
 
                 }
             });

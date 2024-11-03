@@ -41,7 +41,9 @@ public class GroupPlaceholderContent {
     public static List<PlaceholderItem> getGroups(){
         return GROUPS;
     }
-
+    public static void deleteGroup(int position){
+        GROUPS.remove(position);
+    }
     public static void swap(int fromPosition, int toPosition){
         int temp = GROUPS.get((int) fromPosition).priority;
         GROUPS.get( fromPosition).priority = GROUPS.get((int) toPosition).priority;;

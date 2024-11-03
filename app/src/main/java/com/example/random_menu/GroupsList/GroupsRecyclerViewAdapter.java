@@ -30,7 +30,7 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
 
     //слушатель нажатия на кнопку настроек
     public interface OnSettingItemClickListener {
-        void onButtonClick(int position,String id, String number);
+        void onButtonClick(int screenPosition,String id, String number,String listPosition);
     }
 
     //слушатель нажатия на элемент
@@ -96,15 +96,15 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
             binding.settButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
                     int[] cord = {0,0};
+                    Integer position = new Integer(mIdView.getText().toString()) - 1;
                     binding.settButton.getLocationOnScreen(cord);
-
-                    Log.e("cord",String.valueOf(cord[0]) + " " + String.valueOf(cord[1]));
-                    settingClickListener.onButtonClick(cord[1],(String) mItem.id,(String) mNameView.getText());
-                    Log.e("coooon",String.valueOf(ContentProviderDB.query(MainBaseContract.ElemGroup.TABLE_NAME,null,MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + " = " + String.valueOf(mItem.id) + " and "+ MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " NOT IN (SELECT " +MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " FROM "+MainBaseContract.ElemGroup.TABLE_NAME+" WHERE " +MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + " != " + mItem.id + " and "+MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT+ " IN (SELECT "+MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT+" FROM "+MainBaseContract.ElemGroup.TABLE_NAME+" WHERE "+MainBaseContract.ElemGroup.COLUMN_NAME_GROUP+" = "+mItem.id+"))",null,null,null,null).getCount()));
-                    Log.e("coooon",String.valueOf(ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME,null,null,null,null,null,null).getCount()));
-                    Log.e("coooon",String.valueOf(ContentProviderDB.query(MainBaseContract.ElemGroup.TABLE_NAME,null,null,null,null,null,null).getCount()));
+                    settingClickListener.onButtonClick(
+                            cord[1],
+                            (String) mItem.id,
+                            (String) mNameView.getText(),
+                            position.toString()
+                    );
 
                 }
             });

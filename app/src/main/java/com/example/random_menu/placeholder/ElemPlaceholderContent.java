@@ -41,7 +41,9 @@ public class ElemPlaceholderContent {
     public static List<PlaceholderItem> getElements(){
         return ELEMENTS;
     }
-
+    public static void deleteElem(int position){
+        ELEMENTS.remove(position);
+    }
     public static void addItem(PlaceholderItem item) {
         if(Integer.valueOf(item.priority) > maxPriority){
             maxPriority = Integer.valueOf(item.priority);

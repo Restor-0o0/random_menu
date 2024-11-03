@@ -14,7 +14,6 @@ import com.example.random_menu.R;
 import com.example.random_menu.databinding.ItemElemCheckboxFragmentBinding;
 import com.example.random_menu.databinding.ItemElemSettFragmentBinding;
 import com.example.random_menu.databinding.ListFragmentBinding;
-import com.example.random_menu.databinding.ListRedactorCheckboxBinding;
 import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
 

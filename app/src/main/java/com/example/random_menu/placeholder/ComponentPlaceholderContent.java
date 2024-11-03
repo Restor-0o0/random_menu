@@ -56,7 +56,13 @@ ComponentPlaceholderContent {
         Groups.clear();
     }
     public static void clearUpdateGroups(){
+        for(GroupsPlaceholderItem item: UpdateGroups){
+            item.active = !item.active;
+        }
         UpdateGroups.clear();
+    }
+    public static void deleteComponent(int position){
+        Components.remove(position);
     }
     //Проверка группны на наличие и добавление или удаление
     public static void checkUpdateGroups(GroupsPlaceholderItem item){
@@ -181,8 +187,8 @@ ComponentPlaceholderContent {
     //Компонент списка элементов
     public static class ComponentsPlaceholderItem {
         public final String id;
-        public final String name;
-        public final String comment;
+        public String name;
+        public String comment;
         public Float quantity;
 
         public ComponentsPlaceholderItem(String id, String name, String comment, Float quantity) {

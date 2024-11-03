@@ -30,7 +30,7 @@ public class ElementsListRecyclerViewAdapter extends RecyclerView.Adapter<Elemen
 
     //слушатель нажатия на кнопку настроек
     public interface OnSettingItemClickListener {
-        void onButtonClick(int position,String id, String number);
+        void onButtonClick(int screenPosition,String id, String number,String listPosition);
     }
     //слушатель нажатия на элемент
     public interface OnItemClickListener {
@@ -101,10 +101,14 @@ public class ElementsListRecyclerViewAdapter extends RecyclerView.Adapter<Elemen
                 @Override
                 public void onClick(View view) {
                     int[] cord = {0,0};
+                    Integer position = new Integer(mIdView.getText().toString()) - 1;
                     binding.settButton.getLocationOnScreen(cord);
-                    Log.e("cord",String.valueOf(cord[0]) + " " + String.valueOf(cord[1]));
-                    settingClickListener.onButtonClick(cord[1],(String) mItem.id,(String) mNameView.getText());
-
+                    settingClickListener.onButtonClick(
+                            cord[1],
+                            (String) mItem.id,
+                            (String) mNameView.getText(),
+                            position.toString()
+                    );
                 }
             });
 

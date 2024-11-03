@@ -15,4 +15,8 @@
     <string name="name_element">название:</string>
     <string name="comment_element">коммент:</string>
     <string name="elem_text_group">группа:</string>
+    <string name="name_input_field">Имя</string>
+    <string name="comment_input_field">Комментарий</string>
+    <string name="quantity_input_field">Количество</string>
+    <string name="quantity_element">количество</string>
 </resources>

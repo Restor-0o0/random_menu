@@ -22,6 +22,7 @@ import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.Data.Item;
 import com.example.random_menu.Element.ElementActivity;
+import com.example.random_menu.ElementsList.DialogFragments.MoreElemDialogFragment;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.ListFragmentBinding;
 import com.example.random_menu.placeholder.ComponentPlaceholderContent;
@@ -37,6 +38,7 @@ public class ElementsListRecycleFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     ListFragmentBinding binding;
+    MoreElemDialogFragment moreElemDialogFragment = new MoreElemDialogFragment();
     // TODO: Customize parameters
     //id элемента для которого вызвано moreView
     private int moreViewItemId;
@@ -52,48 +54,21 @@ public class ElementsListRecycleFragment extends Fragment {
 
 
         adapter = new ElementsListRecyclerViewAdapter(ElemPlaceholderContent.getElements(),
-                (position,id, number) ->{//функция для отрисовки moreView
-            //выхватываем id элемента списка
-            moreViewItemId = Integer.valueOf(id);
-            //формируем параметры для отступов окна от границ экрана
-            MarginLayoutParams lay = (MarginLayoutParams) binding.moreItemView.getLayoutParams();
-            lay.topMargin = position;
-            if((binding.moreItemView.getHeight() + position) * 1.1 < binding.getRoot().getHeight()){
-                //Log.e("cord",String.valueOf(binding.moreItemView.getHeight() + position)+ " " + String.valueOf(binding.getRoot().getHeight()));
-               binding.moreItemView.setLayoutParams(lay);
-            }
-            else{
-                lay.topMargin = position - binding.moreItemView.getHeight();
-                binding.moreItemView.setLayoutParams(lay);
-            }
-            //Log.e("texst","in");
-            binding.moreItemView.setVisibility(View.VISIBLE);
+                (screenPosition,id, number,listPosition) ->{//функция для отрисовки moreView
+                    //выхватываем id элемента списка
+                    moreElemDialogFragment.setVars(
+                            Integer.valueOf(listPosition),
+                            screenPosition,
+                            Integer.valueOf(id),
+                            ()->{
+                                binding.list1.getAdapter().notifyDataSetChanged();
+                            }
+                    );
+                    moreElemDialogFragment.show(getParentFragmentManager(),"MoreItemDialog");
+                    //формируем параметры для отступов окна от границ экрана
 
-            binding.closeView.setVisibility(View.VISIBLE);
-            //анимация рскрытия окна
-            Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.anim_show);
-            anim.setDuration(200);
-            anim.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
 
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-            binding.closeView.setScaleY(1.0f);
-            binding.moreItemView.setScaleY(1.0f);
-            binding.moreItemView.startAnimation(anim);
-
-        },
+                },
                 (id,name) ->{
                     Log.e("list111",name);
 
@@ -153,46 +128,19 @@ public class ElementsListRecycleFragment extends Fragment {
         super.onResume();
 
         adapter = new ElementsListRecyclerViewAdapter(ElemPlaceholderContent.getElements(),
-                (position,id, number) ->{//функция для отрисовки moreView
+                (screenPosition,id, number,listPosition) ->{//функция для отрисовки moreView
                     //выхватываем id элемента списка
-                    moreViewItemId = Integer.valueOf(id);
+                    moreElemDialogFragment.setVars(
+                            Integer.valueOf(listPosition),
+                            screenPosition,
+                            Integer.valueOf(id),
+                            ()->{
+                                binding.list1.getAdapter().notifyDataSetChanged();
+                            }
+                    );
+                    moreElemDialogFragment.show(getParentFragmentManager(),"MoreItemDialog");
                     //формируем параметры для отступов окна от границ экрана
-                    MarginLayoutParams lay = (MarginLayoutParams) binding.moreItemView.getLayoutParams();
-                    lay.topMargin = position;
-                    if((binding.moreItemView.getHeight() + position) * 1.1 < binding.getRoot().getHeight()){
-                        //Log.e("cord",String.valueOf(binding.moreItemView.getHeight() + position)+ " " + String.valueOf(binding.getRoot().getHeight()));
-                        binding.moreItemView.setLayoutParams(lay);
-                    }
-                    else{
-                        lay.topMargin = position - binding.moreItemView.getHeight();
-                        binding.moreItemView.setLayoutParams(lay);
-                    }
-                    //Log.e("texst","in");
-                    binding.moreItemView.setVisibility(View.VISIBLE);
 
-                    binding.closeView.setVisibility(View.VISIBLE);
-                    //анимация рскрытия окна
-                    Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.anim_show);
-                    anim.setDuration(200);
-                    anim.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-
-                        }
-                    });
-                    binding.closeView.setScaleY(1.0f);
-                    binding.moreItemView.setScaleY(1.0f);
-                    binding.moreItemView.startAnimation(anim);
 
                 },
                 (id,name) ->{
@@ -211,74 +159,6 @@ public class ElementsListRecycleFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        binding.deleteItemBut.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ContentProviderDB.delete(MainBaseContract.ElemGroup.TABLE_NAME,MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " = " + String.valueOf(moreViewItemId),null);
-                ContentProviderDB.delete(MainBaseContract.Components.TABLE_NAME,MainBaseContract.Components.COLUMN_NAME_ELEMENT + " = " + String.valueOf(moreViewItemId),null);
-                ContentProviderDB.delete(MainBaseContract.Elements.TABLE_NAME,MainBaseContract.Elements._ID + " = " + String.valueOf(moreViewItemId),null);
-                Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(),R.anim.anim_hide);
-                anim.setDuration(100);
-                anim.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        binding.closeView.setScaleY(0.0f);
-                        binding.moreItemView.setScaleY(0.0f);
-                        binding.closeView.setVisibility(View.INVISIBLE);
-                        binding.moreItemView.setVisibility(View.INVISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-
-
-
-                binding.moreItemView.startAnimation(anim);
-                ElemPlaceholderContent.loadElements();
-                binding.list1.setAdapter(adapter);
-            }
-        });
-        binding.closeView.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View view) {
-                 Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(),R.anim.anim_hide);
-                 anim.setDuration(100);
-                 anim.setAnimationListener(new Animation.AnimationListener() {
-                     @Override
-                     public void onAnimationStart(Animation animation) {
-
-                     }
-
-                     @Override
-                     public void onAnimationEnd(Animation animation) {
-                         binding.closeView.setScaleY(0.0f);
-                         binding.moreItemView.setScaleY(0.0f);
-                         binding.closeView.setVisibility(View.INVISIBLE);
-                         binding.moreItemView.setVisibility(View.INVISIBLE);
-                     }
-
-                     @Override
-                     public void onAnimationRepeat(Animation animation) {
-
-                     }
-                 });
-
-
-                 binding.moreItemView.startAnimation(anim);
-
-
-             }
-        }
-        );
     }
 
 

@@ -2,7 +2,10 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:scrollbarAlwaysDrawVerticalTrack="true">
+    android:scrollbarAlwaysDrawVerticalTrack="true"
+    android:clipChildren="false"
+    android:clipToOutline="false"
+    android:clipToPadding="false">
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -87,11 +90,5 @@
 
     </LinearLayout>
 </ScrollView>
-    <include
-        android:id="@+id/groups_check_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="30dp"
-        android:visibility="invisible"
-        layout="@layout/list_redactor_checkbox"/>
+
 </FrameLayout>

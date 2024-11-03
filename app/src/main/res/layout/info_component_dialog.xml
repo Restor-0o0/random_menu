@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/back_frame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@null"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingTop="100dp"
+    android:paddingBottom="100dp"
+    android:clipChildren="false"
+    android:clipToOutline="false"
+    android:clipToPadding="false">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/back_button">
+
+    <LinearLayout
+        android:id="@+id/layout"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        >
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/text_padding"
+                        android:text="@string/name_element"
+                        android:textSize="@dimen/main_text_size"
+                        android:layout_margin="@dimen/views_margin"
+                        />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/input_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/back_button"
+                        android:minHeight="80dp"
+                        android:padding="@dimen/main_padding"
+                        android:textSize="@dimen/main_text_size"
+                        android:layout_margin="@dimen/views_margin"
+                        />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/text_padding"
+                        android:text="@string/comment_element"
+                        android:textSize="@dimen/main_text_size"
+                        android:layout_margin="@dimen/views_margin"
+                        />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/input_comment"
+                        android:layout_width="match_parent"
+                        android:minHeight="80dp"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/main_padding"
+                        android:background="@drawable/back_button"
+
+                        android:layout_weight="1"
+                        android:textSize="@dimen/main_text_size"
+                        android:layout_margin="@dimen/views_margin"
+                        />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/text_padding"
+                        android:text="@string/quantity_element"
+                        android:textSize="@dimen/main_text_size"
+                        android:layout_margin="@dimen/views_margin"
+                        />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/input_quantity"
+                        android:layout_width="match_parent"
+                        android:minHeight="80dp"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/main_padding"
+                        android:background="@drawable/back_button"
+
+                        android:layout_weight="1"
+                        android:textSize="@dimen/main_text_size"
+                        android:layout_margin="@dimen/views_margin"
+                        />
+                </LinearLayout>
+
+
+    </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="horizontal"
+            android:background="@null"
+
+            >
+            <ImageButton
+                android:id="@+id/submit_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:layout_weight="1"
+                android:src="@drawable/baseline_check_24"/>
+
+            <ImageButton
+                android:id="@+id/cancel_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:layout_weight="1"
+                android:src="@drawable/baseline_clear_24" />
+
+        </LinearLayout>
+    </LinearLayout>
+    </ScrollView>
+</FrameLayout>

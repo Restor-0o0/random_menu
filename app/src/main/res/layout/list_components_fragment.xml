@@ -83,44 +83,5 @@ android:layout_height="wrap_content">
 </LinearLayout>
 
     <!--view добавления элемента -->
-    <LinearLayout
-        android:id="@+id/add_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|bottom"
-        android:background="@drawable/back_item"
-        android:clickable="true"
-        android:orientation="vertical"
-        android:visibility="invisible"
-        android:padding="10dp"
-        android:layout_marginBottom="400dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp">
 
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/add_component_name"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="20dp"
-            android:hint="Имя"/>
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/add_component_quantity"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="20dp"
-            android:hint="Комментарий"/>
-
-
-        <Button
-            android:id="@+id/submit_button"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="Добавить"
-            android:background="@drawable/back_item"/>
-
-
-
-    </LinearLayout>
 </FrameLayout>

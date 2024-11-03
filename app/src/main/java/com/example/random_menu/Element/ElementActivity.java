@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.random_menu.R;
+import com.example.random_menu.databinding.ActivityElementBinding;
 
 import java.util.Objects;
 
@@ -20,4 +21,5 @@ public class ElementActivity extends AppCompatActivity {
         setContentView(R.layout.activity_element);
         Objects.requireNonNull(getSupportActionBar()).hide();
     }
+
 }
