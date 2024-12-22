@@ -83,8 +83,8 @@ public class ElementsListRecycleFragment extends Fragment {
         //return view;
 
         //декоратор и помошник нажатий для перетаскивания элементов по списку и тем самым изменения их приоритетов
-        DividerItemDecoration decorator = new DividerItemDecoration(binding.getRoot().getContext(), DividerItemDecoration.VERTICAL);
-        binding.list1.addItemDecoration(decorator);
+        //DividerItemDecoration decorator = new DividerItemDecoration(binding.getRoot().getContext(), DividerItemDecoration.VERTICAL);
+        //binding.list1.addItemDecoration(decorator);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(TouchCallback);
         itemTouchHelper.attachToRecyclerView(binding.list1);
@@ -168,21 +168,12 @@ public class ElementsListRecycleFragment extends Fragment {
      * fragment (e.g. upon screen orientation changes).
      */
     public ElementsListRecycleFragment(){
-        //super(R.layout.list_elem_fragment);
-        //mColumnCount = items.size();
+
     }
     public ElementsListRecycleFragment(List<Item> items){
-        //super(R.layout.list_elem_fragment);
-        //ITEMS= items;
-        //mColumnCount = items.size();
-        //Log.e("eee", String.valueOf(ITEMS.size()));
+
     }
-   // public static boolean add(List<Item> items){
-    //    return ITEMS.addAll(items);
-   // }
-    //public static void clear(){
-   //    ITEMS.clear();
-   // }
+
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")

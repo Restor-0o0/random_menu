@@ -15,7 +15,8 @@ public class DBController extends SQLiteOpenHelper {
                     MainBaseContract.Groups._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     MainBaseContract.Groups.COLUMN_NAME_NAME + " TEXT," +
                     MainBaseContract.Groups.COLUMN_NAME_COMMENT + " TEXT," +
-                    MainBaseContract.Groups.COLUMN_NAME_PRIORITY + " INTEGER" +
+                    MainBaseContract.Groups.COLUMN_NAME_PRIORITY + " INTEGER," +
+                    MainBaseContract.Groups.COLUMN_NAME_COUNT_ELEMS + " INTEGER DEFAULT(0)" +
                     "); ";
     private static final String SQL_CREATE_TEST_Elements =
             "CREATE TABLE IF NOT EXISTS "  +  MainBaseContract.Elements.TABLE_NAME +

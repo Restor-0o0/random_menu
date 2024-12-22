@@ -52,27 +52,30 @@ public class WinGroupElemDialogFragment extends DialogFragment {
             dialog.getWindow().setAttributes(params);
             dialog.getWindow().setBackgroundDrawable(null);
 
-
-
             win = GroupPlaceholderContent.getRandom();
             //выхватываем запросом случайный элемент из БД
-           cursor = ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME, null, "_ID IN (SELECT Element from ElemGroup where Group_ = " + win.id + ")", null, null, null, "RANDOM()");
-            //Цикл если попали на пустую группу
-            while (cursor.getCount() == 0) {
-                Log.e("Resel", "res");
-                //выхватываем группу
-                win = GroupPlaceholderContent.getRandom();
-                //выхватываем запросом случайный элемент из БД
+            if(win != null){
                 cursor = ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME, null, "_ID IN (SELECT Element from ElemGroup where Group_ = " + win.id + ")", null, null, null, "RANDOM()");
+                //Цикл если попали на пустую группу
+                while (cursor.getCount() == 0) {
+                    Log.e("Resel", "res");
+                    //выхватываем группу
+                    win = GroupPlaceholderContent.getRandom();
+                    //выхватываем запросом случайный элемент из БД
+                    cursor = ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME, null, "_ID IN (SELECT Element from ElemGroup where Group_ = " + win.id + ")", null, null, null, "RANDOM()");
+
+                }
+                cursor.moveToFirst();
+                this.nameElem = cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME));
+                this.nameGroup = win.name;
+                binding.elemName.setText(nameElem);
+                binding.groupName.setText(nameGroup);
+                ComponentPlaceholderContent.idSelectElem = cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements._ID));
+                Log.e("winElem",cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME)));
+            }else{
+                getDialog().dismiss();
 
             }
-            cursor.moveToFirst();
-            this.nameElem = cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME));
-            this.nameGroup = win.name;
-            binding.elemName.setText(nameElem);
-            binding.groupName.setText(nameGroup);
-            ComponentPlaceholderContent.idSelectElem = cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements._ID));
-            Log.e("winElem",cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME)));
         }
     }
     public WinGroupElemDialogFragment() {

@@ -106,28 +106,15 @@ public class AddElemDialogFragment extends DialogFragment {
                 String comment ="";
                 if(binding.addElemName.getTextSize() > 0) {name = String.valueOf(binding.addElemName.getText());}
                 if(binding.addElemComment.getTextSize() > 0) {comment = String.valueOf(binding.addElemComment.getText());}
-
                 if(name.length() != 0){
                     String finalName = name;
                     String finalComment = comment;
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ContentValues cv = new ContentValues();
-                            cv.put(MainBaseContract.Elements.COLUMN_NAME_NAME, finalName);
-                            cv.put(MainBaseContract.Elements.COLUMN_NAME_COMMENT, finalComment);
-                            int id = (int) ContentProviderDB.insert(MainBaseContract.Elements.TABLE_NAME,null,cv);
-                            cv.clear();
-                            cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT,id);
-                            cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_GROUP, ElemPlaceholderContent.idSelectGroup);
-                            ContentProviderDB.insert(MainBaseContract.ElemGroup.TABLE_NAME,null,cv);
+                    ElemPlaceholderContent.add(finalName,finalComment,() ->{
                             handler.post(()->{
                                 ElemPlaceholderContent.loadElements();
                                 notify.notifyList();
                             });
-                        }
-                    }).start();
-
+                    });
                 }
                 InputMethodManager imm = (InputMethodManager)binding.getRoot().getContext().getSystemService(binding.getRoot().getContext().INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(binding.getRoot().getWindowToken(), 0);

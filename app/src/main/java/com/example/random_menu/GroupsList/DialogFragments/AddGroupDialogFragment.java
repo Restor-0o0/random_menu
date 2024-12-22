@@ -113,21 +113,12 @@ public class AddGroupDialogFragment extends DialogFragment {
                 if(name.length() != 0){
                     String finalName = name;
                     String finalComment = comment;
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ContentValues cv = new ContentValues();
-                            cv.put(MainBaseContract.Groups.COLUMN_NAME_NAME, finalName);
-                            cv.put(MainBaseContract.Groups.COLUMN_NAME_COMMENT, finalComment);
-                            cv.put(MainBaseContract.Groups.COLUMN_NAME_PRIORITY,String.valueOf(GroupPlaceholderContent.maxPriority + 1));
-                            ContentProviderDB.insert(MainBaseContract.Groups.TABLE_NAME,null,cv);
+                        GroupPlaceholderContent.add(finalName,finalComment,()->{
                             handler.post(()->{
                                 GroupPlaceholderContent.loadGroups();
                                 notify.notifyList();
                             });
-                        }
-                    }).start();
-
+                        });
                 }
                 InputMethodManager imm = (InputMethodManager)binding.getRoot().getContext().getSystemService(binding.getRoot().getContext().INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(binding.getRoot().getWindowToken(), 0);

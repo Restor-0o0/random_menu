@@ -17,6 +17,7 @@ public final class MainBaseContract {
         public static final String COLUMN_NAME_NAME = "Name";
         public static final String COLUMN_NAME_COMMENT = "Comment";
         public static final String COLUMN_NAME_PRIORITY = "Priority";
+        public static final String COLUMN_NAME_COUNT_ELEMS = "CountElems";
    }
 
     public static class Components implements BaseColumns{

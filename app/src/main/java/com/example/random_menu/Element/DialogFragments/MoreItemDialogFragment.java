@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,18 +69,17 @@ public class MoreItemDialogFragment extends DialogFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Handler handler = new Handler(Looper.getMainLooper());
-        ViewGroup.MarginLayoutParams lay = (ViewGroup.MarginLayoutParams) binding.moreItemView.getLayoutParams();
-        lay.topMargin = screenPositionCalledItem;
-        if((binding.moreItemView.getHeight() + screenPositionCalledItem) < binding.getRoot().getHeight()){
-            binding.moreItemView.setLayoutParams(lay);
-        }
-        else{
-            lay.topMargin = screenPositionCalledItem - binding.moreItemView.getHeight();
-            binding.moreItemView.setLayoutParams(lay);
-        }
+
 
         //анимация рскрытия окна
         Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.anim_show);
@@ -87,7 +87,15 @@ public class MoreItemDialogFragment extends DialogFragment {
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-
+                ViewGroup.MarginLayoutParams lay = (ViewGroup.MarginLayoutParams) binding.moreItemView.getLayoutParams();
+                lay.topMargin = screenPositionCalledItem;
+                if((binding.moreItemView.getHeight() + screenPositionCalledItem) < binding.getRoot().getHeight()){
+                    binding.moreItemView.setLayoutParams(lay);
+                }
+                else{
+                    lay.topMargin = screenPositionCalledItem - binding.moreItemView.getHeight();
+                    binding.moreItemView.setLayoutParams(lay);
+                }
             }
 
             @Override
@@ -106,6 +114,7 @@ public class MoreItemDialogFragment extends DialogFragment {
         binding.deleteItemBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

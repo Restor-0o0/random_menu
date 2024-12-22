@@ -7,7 +7,9 @@ import android.util.Log;
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,21 +25,24 @@ import java.util.Random;
  */
 public class GroupPlaceholderContent {
 
-    /**
-     * An array of sample (placeholder) items.
-     */
+
     private static Random randomizer = new Random();
     public static List<PlaceholderItem> GROUPS = new ArrayList<PlaceholderItem>();
+    public static List<PlaceholderItem> noEmptyGROUPS = new ArrayList<PlaceholderItem>();
 
-    /**
-     * A map of sample (placeholder) items, by ID.
-     */
     public static final Map<String, PlaceholderItem> ITEM_MAP = new HashMap<String, PlaceholderItem>();
     static public int maxPriority = 0;
     public static PlaceholderItem getRandom(){
-        return GROUPS.get(randomizer.nextInt(GROUPS.size()));
+        if(noEmptyGROUPS.size() > 0){
+            return noEmptyGROUPS.get(randomizer.nextInt(noEmptyGROUPS.size()));
+        }
+        else{
+            return null;
+        }
     }
-
+    public static Integer getCount(){
+        return GROUPS.size();
+    }
     public static List<PlaceholderItem> getGroups(){
         return GROUPS;
     }
@@ -58,6 +63,20 @@ public class GroupPlaceholderContent {
 
     }
 
+    public static void makeNoEmpty(Integer idGroup){
+        for(int i = 0;i < noEmptyGROUPS.size();i++){
+            if(Integer.valueOf(noEmptyGROUPS.get(i).id) == idGroup){
+                return;
+            }
+        }
+        for(int i = 0;i < GROUPS.size();i++){
+            if(Integer.valueOf(GROUPS.get(i).id) == idGroup){
+                noEmptyGROUPS.add(GROUPS.get(i));
+            }
+        }
+    }
+
+
     public static void addItem(PlaceholderItem item) {
         //проверка на обновление приоритета
         if(Integer.valueOf(item.priority) > maxPriority){
@@ -70,40 +89,68 @@ public class GroupPlaceholderContent {
         GROUPS.clear();
     }
     public static void loadGroups(){
+
         GROUPS.clear();
         try{
-            Cursor cursor = ContentProviderDB.query(MainBaseContract.Groups.TABLE_NAME,null,null,null,null,null,MainBaseContract.Groups.COLUMN_NAME_PRIORITY);
+            Cursor cursor = ContentProviderDB.query(MainBaseContract.Groups.TABLE_NAME,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    MainBaseContract.Groups.COLUMN_NAME_PRIORITY);
             Log.e("Fuck", String.valueOf(cursor.getCount()));
             cursor.moveToFirst();
             do{
-                //cursor.getColumnIndex(MainBaseContract.Groups.COLUMN_NAME_NAME);
-                //cursor.getColumnIndex(MainBaseContract.Groups.COLUMN_NAME_COMMENT);
-                //cursor.getColumnIndex(MainBaseContract.Groups.COLUMN_NAME_PRIORITY);
+
                 addItem(new GroupPlaceholderContent.PlaceholderItem(
                         cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups._ID)),
                         cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_NAME)),
                         cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_COMMENT)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_PRIORITY))));
+                        cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_PRIORITY)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_COUNT_ELEMS))
+                ));
             }while(cursor.moveToNext());
-
+            GROUPS.forEach(
+                it ->{
+                    if(it.countElems > 0){
+                        noEmptyGROUPS.add(it);
+                    }
+                }
+            );
         }
         catch (Exception e){
             Log.e("Fuck",e.toString());
         }
     }
+    public static void add(String name, String commet,Runnable notify ){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ContentValues cv = new ContentValues();
+                cv.put(MainBaseContract.Groups.COLUMN_NAME_NAME, name);
+                cv.put(MainBaseContract.Groups.COLUMN_NAME_COMMENT, commet);
+                cv.put(MainBaseContract.Groups.COLUMN_NAME_PRIORITY,String.valueOf(GroupPlaceholderContent.maxPriority + 1));
+                ContentProviderDB.insert(MainBaseContract.Groups.TABLE_NAME,null,cv);
+                notify.run();
+            }
+        }).start();
 
+    }
 
     public static class PlaceholderItem {
         public final String id;
         public final String name;
         public final String comment;
         public Integer priority;
+        public Integer countElems;
 
-        public PlaceholderItem(String id, String content, String comment, Integer priority) {
+        public PlaceholderItem(String id, String content, String comment, Integer priority,Integer countElems) {
             this.id = id;
             this.name = content;
             this.comment = comment;
             this.priority = priority;
+            this.countElems = countElems;
         }
 
         @Override
@@ -111,4 +158,5 @@ public class GroupPlaceholderContent {
             return name;
         }
     }
+
 }

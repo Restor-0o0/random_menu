@@ -77,15 +77,7 @@ public class MoreGroupDialogFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Handler handler = new Handler(Looper.getMainLooper());
-        ViewGroup.MarginLayoutParams lay = (ViewGroup.MarginLayoutParams) binding.moreItemView.getLayoutParams();
-        lay.topMargin = screenPositionCalledItem;
-        if((binding.moreItemView.getHeight() + screenPositionCalledItem) < binding.getRoot().getHeight()){
-            binding.moreItemView.setLayoutParams(lay);
-        }
-        else{
-            lay.topMargin = screenPositionCalledItem - binding.moreItemView.getHeight();
-            binding.moreItemView.setLayoutParams(lay);
-        }
+
 
         //анимация рскрытия окна
         Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.anim_show);
@@ -93,7 +85,15 @@ public class MoreGroupDialogFragment extends DialogFragment {
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-
+                ViewGroup.MarginLayoutParams lay = (ViewGroup.MarginLayoutParams) binding.moreItemView.getLayoutParams();
+                lay.topMargin = screenPositionCalledItem;
+                if((binding.moreItemView.getHeight() + screenPositionCalledItem) < binding.getRoot().getHeight()){
+                    binding.moreItemView.setLayoutParams(lay);
+                }
+                else{
+                    lay.topMargin = screenPositionCalledItem - binding.moreItemView.getHeight();
+                    binding.moreItemView.setLayoutParams(lay);
+                }
             }
 
             @Override

@@ -53,12 +53,16 @@ public class WinElemDialogFragment extends DialogFragment {
             dialog.getWindow().setAttributes(params);
             dialog.getWindow().setBackgroundDrawable(null);
 
+            if(ElemPlaceholderContent.getCount() == 0){
+                getDialog().dismiss();
+            }else{
+                win = ElemPlaceholderContent.getRandom();
+                binding.elemName.setText(win.name);
+
+                ComponentPlaceholderContent.idSelectElem = win.id;
+            }
 
 
-            win = ElemPlaceholderContent.getRandom();
-            binding.elemName.setText(win.name);
-
-            ComponentPlaceholderContent.idSelectElem = win.id;
         }
     }
     public WinElemDialogFragment() {
