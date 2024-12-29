@@ -17,24 +17,22 @@
         android:layout_marginStart="0dp"
         android:layout_marginEnd="0dp"
         android:layout_marginBottom="0dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        >
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/frameMain"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="110dp"
-            android:layout_weight="1"
-            >
+            android:layout_marginBottom="100dp"
+            android:background="?attr/colorBackground">
 
         </androidx.fragment.app.FragmentContainerView>
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/barFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_weight="1">
+            android:layout_height="wrap_content">
 
         </androidx.fragment.app.FragmentContainerView>
     </FrameLayout>

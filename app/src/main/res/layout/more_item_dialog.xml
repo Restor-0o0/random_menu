@@ -16,7 +16,7 @@
     android:layout_marginStart="20dp"
     android:layout_marginEnd="60dp">
 
-
+        <!--кнопка удаления-->
         <LinearLayout
             android:id="@+id/delete_item_but"
             android:layout_width="match_parent"
@@ -42,6 +42,31 @@
 
         </LinearLayout>
 
+        <!--кнопка экспорта-->
+        <LinearLayout
+            android:id="@+id/export_item_but"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Добавить"
+            android:orientation="horizontal"
+            android:background="@drawable/back_more_view_item"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/file_import_icon"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Удалить"
+                android:layout_weight="1"
+                android:gravity="center"
+                />
+
+        </LinearLayout>
 
     </LinearLayout>
 </FrameLayout>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="DarkTheme">
+    <declare-styleable name="CustomThemeAttributes">
         <attr name="colorBackground" format="color"/>
         <attr name="colorPrimary" format="color"/>
         <attr name="colorSecondary" format="color"/>

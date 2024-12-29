@@ -28,36 +28,44 @@
             android:padding="10dp"
             >
             <Button
+                android:id="@+id/theme_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fuck214124"
+                android:text="@string/theme"
                 android:background="@null"
                 android:layout_margin="1dp"
-                android:textSize="20dp">
+                android:textSize="@dimen/main_text_size"
+                android:textAlignment="textStart">
             </Button>
             <Button
+                android:id="@+id/export_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fuck512512515125"
+                android:text="@string/export"
                 android:background="@null"
                 android:layout_margin="1dp"
-                android:textSize="20dp">
+                android:textSize="@dimen/main_text_size"
+                android:textAlignment="textStart">
             </Button>
             <Button
+                android:id="@+id/import_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fuck25252"
+                android:text="@string/impotr_"
                 android:background="@null"
                 android:layout_margin="1dp"
-                android:textSize="20dp">
+                android:textSize="@dimen/main_text_size"
+                android:textAlignment="textStart">
             </Button>
             <Button
+                android:id="@+id/delete_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fuck25"
+                android:text="@string/delete_"
                 android:background="@null"
                 android:layout_margin="1dp"
-                android:textSize="20dp">
+                android:textSize="@dimen/main_text_size"
+                android:textAlignment="textStart">
             </Button>
         </LinearLayout>
     </LinearLayout>

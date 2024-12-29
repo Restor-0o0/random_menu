@@ -19,4 +19,8 @@
     <string name="comment_input_field">Комментарий</string>
     <string name="quantity_input_field">Количество</string>
     <string name="quantity_element">количество</string>
+    <string name="theme">Тема</string>
+    <string name="export">экспорт</string>
+    <string name="impotr_">импорт</string>
+    <string name="delete_">удалить</string>
 </resources>
