@@ -22,6 +22,7 @@ import com.example.random_menu.GroupsList.DialogFragments.MoreGroupListDialogFra
 import com.example.random_menu.GroupsList.DialogFragments.WinGroupElemDialogFragment;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.BottomBarFragmentBinding;
+import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 public class BottomBarGroupsFragment extends Fragment {
     boolean imp = true;
@@ -86,7 +87,7 @@ public class BottomBarGroupsFragment extends Fragment {
             public void onClick(View view) {
                 addGroupDialogFragment.setVars(()->{
                     GroupsRecycleFragment fm =(GroupsRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
-                    fm.binding.list1.getAdapter().notifyDataSetChanged();
+                    fm.binding.list1.getAdapter().notifyItemChanged(GroupPlaceholderContent.getCount() - 1);
                 });
                 addGroupDialogFragment.show(getParentFragmentManager(),"AddGroupDialog");
             }

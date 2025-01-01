@@ -1,8 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Random_menu" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.Random_menu" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="android:candidatesTextStyleSpans">candidates</item>
+        <item name="colorPrimaryDark">@color/darkColorBackground</item>
+        <item name="android:statusBarColor">@color/darkColorBackground</item>
         <item name="colorBackground">@color/darkColorBackground</item>
         <item name="colorPrimary">@color/darkColorPrimary</item>
         <item name="colorSecondary">@color/darkColorSecondary</item>

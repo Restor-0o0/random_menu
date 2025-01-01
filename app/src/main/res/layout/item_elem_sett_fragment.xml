@@ -17,11 +17,11 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_margin="@dimen/text_margin"
-            android:gravity="center_vertical|center_horizontal"
             android:textSize="@dimen/main_text_size"
             android:textAppearance="?attr/textAppearanceListItem"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <TextView
             android:id="@+id/content_s"
@@ -30,8 +30,8 @@
             android:layout_margin="@dimen/text_margin"
             android:gravity="center_vertical|center_horizontal"
             android:textAppearance="?attr/textAppearanceListItem"
-            android:text="test"
             android:textSize="@dimen/main_text_size"
+            android:maxLines="2"
             app:layout_constraintStart_toEndOf="@+id/item_number_s"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

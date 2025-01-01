@@ -112,37 +112,9 @@ public class MoreElemDialogFragment extends DialogFragment {
         binding.deleteItemBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-
-                            ContentProviderDB.delete(
-                                    MainBaseContract.Components.TABLE_NAME,
-                                    MainBaseContract.Components.COLUMN_NAME_ELEMENT + " = " + String.valueOf(dbId),
-                                    null
-                            );
-                            ContentProviderDB.delete(
-                                    MainBaseContract.ElemGroup.TABLE_NAME,
-                                    MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " = " + String.valueOf(dbId),
-                                    null
-                            );
-                            ContentProviderDB.delete(
-                                    MainBaseContract.Elements.TABLE_NAME,
-                                    MainBaseContract.Elements._ID + " = " + String.valueOf(dbId),
-                                    null
-                            );
-
-                            handler.post(()->{
-                                ElemPlaceholderContent.deleteElem(listPositionCalledItem);
-                                //Log.e("DeleteGrouperror", String.valueOf(GroupPlaceholderContent.getGroups().size()));
-                                callNotify.CallNotify();
-                            });
-                        }catch (Exception e){
-                            Log.e("DeleteGrouperror",e.toString());
-                        }
-                    }
-                }).start();
+                ElemPlaceholderContent.deleteElem(listPositionCalledItem,dbId,()->{
+                    callNotify.CallNotify();
+                });
 
                     Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(),R.anim.anim_hide);
                     anim.setDuration(100);

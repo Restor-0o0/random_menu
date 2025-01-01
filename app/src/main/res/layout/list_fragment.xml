@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="wrap_content"
+android:layout_width="match_parent"
 android:layout_height="wrap_content"
 >
 
@@ -10,61 +10,11 @@ android:layout_height="wrap_content"
         android:id="@+id/list1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:elevation="0dp"
+        android:background="@android:color/transparent"
         app:layoutManager="LinearLayoutManager"
-        tools:listitem="@layout/item_elem_checkbox_fragment" />
+        tools:listitem="@layout/item_elem_sett_fragment" />
 
-<View
-    android:id="@+id/close_view"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="center"
-    android:background="@null"
-    android:scaleY="0.0"
-    android:visibility="invisible" />
-<!--
-<LinearLayout
-    android:id="@+id/more_item_view"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="top"
-    android:background="@drawable/back_item"
-    android:clickable="true"
-    android:orientation="vertical"
-    android:visibility="invisible"
-    android:padding="10dp"
-    android:scaleY="0.0"
-    android:layout_marginStart="20dp"
-    android:layout_marginEnd="60dp">
-
-
-    <LinearLayout
-        android:id="@+id/delete_item_but"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Добавить"
-        android:orientation="horizontal"
-        android:background="@drawable/back_more_view_item"
-        >
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:src="@drawable/baseline_delete_24"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Удалить"
-            android:layout_weight="1"
-            android:gravity="center"
-            />
-
-    </LinearLayout>
-
-
-</LinearLayout>
--->
 </FrameLayout>

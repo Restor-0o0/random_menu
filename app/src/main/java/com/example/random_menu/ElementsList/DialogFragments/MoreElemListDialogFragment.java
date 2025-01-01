@@ -1,6 +1,7 @@
 package com.example.random_menu.ElementsList.DialogFragments;
 
 import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,15 +14,24 @@ import android.view.animation.AnimationUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.random_menu.R;
+import com.example.random_menu.Utils.ThemeManager;
 import com.example.random_menu.databinding.MoreListDialogBinding;
 
+import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MoreElemListDialogFragment extends DialogFragment {
     MoreListDialogBinding binding;
-
+    @Inject
+    SharedPreferences saveManager;
+    @Inject
+    ThemeManager themeManager;
     public interface NotifyList{
         void CallNotify();
     }
@@ -62,7 +72,12 @@ public class MoreElemListDialogFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Handler handler = new Handler(Looper.getMainLooper());
-
+        if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_NO){
+            binding.themeButtonImg.setImageResource(R.drawable.baseline_sunny_24);
+        }
+        else{
+            binding.themeButtonImg.setImageResource(R.drawable.baseline_bedtime_24);
+        }
         //анимация рскрытия окна
         Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.anim_show);
         anim.setDuration(200);
@@ -90,6 +105,24 @@ public class MoreElemListDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 getDialog().dismiss();
+            }
+        });
+        binding.themeButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                themeManager.toggleTheme();
+                /*SharedPreferences.Editor editor = saveManager.edit();
+                if(saveManager.getString("theme","light") == "dark"){
+                    Log.e("ToggleTheme",saveManager.getString("theme","light"));
+                    binding.getRoot().getContext().setTheme(R.style.LightTheme);
+                    editor.putString("theme","light");
+                }else{
+                    Log.e("ToggleTheme",saveManager.getString("theme","light"));
+                    binding.getRoot().getContext().setTheme(R.style.DarkTheme);
+                    editor.putString("theme","dark");
+                }
+                editor.apply();*/
             }
         });
 

@@ -65,7 +65,7 @@ public class GroupPlaceholderContent {
 
     public static void makeNoEmpty(Integer idGroup){
         for(int i = 0;i < noEmptyGROUPS.size();i++){
-            if(Integer.valueOf(noEmptyGROUPS.get(i).id) == idGroup){
+            if(Integer.valueOf(noEmptyGROUPS.get(i).id).equals(idGroup)){
                 return;
             }
         }
@@ -83,7 +83,7 @@ public class GroupPlaceholderContent {
             maxPriority = Integer.valueOf(item.priority);
         }
         GROUPS.add(item);
-        ITEM_MAP.put(String.valueOf(item.priority), item);
+        ITEM_MAP.put(String.valueOf(item.id), item);
     }
     public static void clearGroups(){
         GROUPS.clear();
@@ -113,6 +113,7 @@ public class GroupPlaceholderContent {
             }while(cursor.moveToNext());
             GROUPS.forEach(
                 it ->{
+                    //Log.e("COUNTTTTTTT",String.valueOf(it.countElems));
                     if(it.countElems > 0){
                         noEmptyGROUPS.add(it);
                     }
@@ -122,6 +123,42 @@ public class GroupPlaceholderContent {
         catch (Exception e){
             Log.e("Fuck",e.toString());
         }
+    }
+    public static void deleteElement(int idGroup){
+        if(ITEM_MAP.containsKey(String.valueOf(idGroup))){
+            if(ITEM_MAP.get(String.valueOf(idGroup)).countElems > 0){
+                ITEM_MAP.get(String.valueOf(idGroup)).countElems -= 1;
+                new Thread(new Runnable(){
+                    @Override
+                    public void run() {
+                        ContentValues cv = new ContentValues();
+                        cv.put(MainBaseContract.Groups.COLUMN_NAME_COUNT_ELEMS,(ITEM_MAP.get(String.valueOf(idGroup)).countElems));
+                        ContentProviderDB.update(MainBaseContract.Groups.TABLE_NAME,cv,MainBaseContract.Groups._ID + " = " + String.valueOf(idGroup),null );
+                    }
+                }).start();
+                if(ITEM_MAP.get(String.valueOf(idGroup)).countElems.equals(0)){
+                    noEmptyGROUPS.remove(ITEM_MAP.get(String.valueOf(idGroup)));
+                }
+            }
+        }
+    }
+    public static void addElement(int idGroup){
+
+        if(ITEM_MAP.containsKey(String.valueOf(idGroup))){
+            ITEM_MAP.get(String.valueOf(idGroup)).countElems += 1;
+            new Thread(new Runnable(){
+                @Override
+                public void run() {
+                    ContentValues cv = new ContentValues();
+                    cv.put(MainBaseContract.Groups.COLUMN_NAME_COUNT_ELEMS,(ITEM_MAP.get(String.valueOf(idGroup)).countElems));
+                    ContentProviderDB.update(MainBaseContract.Groups.TABLE_NAME,cv,MainBaseContract.Groups._ID + " = " + String.valueOf(idGroup),null );
+
+                }
+            }).start();
+            GroupPlaceholderContent.makeNoEmpty(idGroup);
+
+        }
+
     }
     public static void add(String name, String commet,Runnable notify ){
         new Thread(new Runnable() {

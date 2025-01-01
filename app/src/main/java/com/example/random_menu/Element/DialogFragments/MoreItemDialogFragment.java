@@ -115,13 +115,10 @@ public class MoreItemDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ContentProviderDB.delete(MainBaseContract.Components.TABLE_NAME,MainBaseContract.Components._ID + " = " + String.valueOf(dbId),null);
-                    }
-                }).start();
-                ComponentPlaceholderContent.deleteComponent(listPositionCalledItem);
+
+                ComponentPlaceholderContent.deleteComponent(listPositionCalledItem,()->{
+                        callNotify.CallNotify();
+                });
                 //нимация скрытия
                 Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(),R.anim.anim_hide);
                 anim.setDuration(100);
@@ -135,7 +132,7 @@ public class MoreItemDialogFragment extends DialogFragment {
                     public void onAnimationEnd(Animation animation) {
                         //скрытие диалога и обновление списка компонентов
                         getDialog().dismiss();
-                        callNotify.CallNotify();
+
 
                     }
 

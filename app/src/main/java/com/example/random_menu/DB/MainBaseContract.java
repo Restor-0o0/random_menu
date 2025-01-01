@@ -7,7 +7,7 @@ public final class MainBaseContract {
 
     public static class Elements implements BaseColumns{
         public static final String TABLE_NAME = "Elements";
-        public static final String COLUMN_NAME_NAME = "name";
+        public static final String COLUMN_NAME_NAME = "Name";
         public static final String COLUMN_NAME_COMMENT = "Comment";
         public static final String COLUMN_NAME_PRIORITY = "Priority";
     }

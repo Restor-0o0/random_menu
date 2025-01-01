@@ -22,6 +22,7 @@ import com.example.random_menu.Element.DialogFragments.GroupCheckListDialogFragm
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.InfoElementFragmentBinding;
 import com.example.random_menu.placeholder.ComponentPlaceholderContent;
+import com.example.random_menu.placeholder.ElemPlaceholderContent;
 
 
 public class InfoElementFragment extends Fragment {
@@ -113,6 +114,7 @@ public class InfoElementFragment extends Fragment {
                 if(binding.name.input.getText().toString().length() != 0) {
                     binding.name.value.setText(binding.name.input.getText());
                     binding.comment.value.setText(binding.comment.input.getText());
+                    ElemPlaceholderContent.updateElem(Integer.valueOf(ComponentPlaceholderContent.idSelectElem),binding.name.input.getText().toString());
                     //в отдейльный поток запрос на изменение бд
                     new Thread(new Runnable() {
                         @Override

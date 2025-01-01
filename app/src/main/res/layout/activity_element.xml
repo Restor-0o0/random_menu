@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Element.ElementActivity"
+
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
@@ -13,7 +14,7 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,8 +22,9 @@
         app:layout_constraintTop_toTopOf="parent">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
+            android:background="?attr/colorBackground"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -35,19 +37,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scrollbarAlwaysDrawVerticalTrack="true"
+                android:background="?attr/colorBackground"
+                android:nestedScrollingEnabled="true"
+                tools:layout="@layout/info_element_fragment"
+                app:layout_constraintBottom_toTopOf="@+id/componentsListFragment"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/componentsListFragment"
                 />
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/componentsListFragment"
                 android:name="com.example.random_menu.Element.ComponentsRecycleFragment"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:nestedScrollingEnabled="true"
+                android:background="?attr/colorBackground"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                tools:layout="@layout/list_components_fragment"
                 app:layout_constraintBottom_toBottomOf="parent"
 
                />

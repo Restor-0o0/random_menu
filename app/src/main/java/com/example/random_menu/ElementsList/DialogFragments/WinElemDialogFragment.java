@@ -80,6 +80,7 @@ public class WinElemDialogFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Handler handler = new Handler(Looper.getMainLooper());
+        //binding.goTo.setBackgroundResource(R.drawable.back_button);
         binding.groupName.setVisibility(View.GONE);
         //анимация рскрытия окна
         Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.anim_show);
@@ -100,7 +101,7 @@ public class WinElemDialogFragment extends DialogFragment {
 
             }
         });
-        binding.layout.startAnimation(anim);
+        binding.winView.startAnimation(anim);
 
         //кнопка подтверждения добавления группы
 

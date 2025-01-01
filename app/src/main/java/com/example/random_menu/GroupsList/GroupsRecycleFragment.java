@@ -76,12 +76,12 @@ public class GroupsRecycleFragment extends Fragment {
         // Set the adapter
         binding.list1.setAdapter(adapter);
 
-        DividerItemDecoration decorator = new DividerItemDecoration(binding.getRoot().getContext(), DividerItemDecoration.VERTICAL);
-        binding.list1.addItemDecoration(decorator);
+        //DividerItemDecoration decorator = new DividerItemDecoration(binding.getRoot().getContext(), DividerItemDecoration.VERTICAL);
+        //binding.list1.addItemDecoration(decorator);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(TouchCallback);
         itemTouchHelper.attachToRecyclerView(binding.list1);
-        //return view;ишт
+        //return view;
 
         //binding = ListElemFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();

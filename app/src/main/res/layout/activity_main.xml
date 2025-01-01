@@ -18,21 +18,34 @@
         android:layout_marginEnd="0dp"
         android:layout_marginBottom="0dp"
         android:orientation="vertical"
+        android:background="?attr/colorBackground"
         >
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/frameMain"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="100dp"
-            android:background="?attr/colorBackground">
+            android:paddingBottom="100dp"
+            android:layout_marginTop="50dp"
+            android:background="?attr/colorBackground"
+            tools:layout="@layout/list_fragment"
+            >
 
         </androidx.fragment.app.FragmentContainerView>
-
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="@string/groups_title"
+            android:textAlignment="center"
+            android:maxLines="1"
+            android:textSize="@dimen/main_text_size"
+            android:textColor="?attr/colorFont"
+            android:breakStrategy="simple"/>
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/barFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            tools:layout="@layout/bottom_bar_fragment">
 
         </androidx.fragment.app.FragmentContainerView>
     </FrameLayout>

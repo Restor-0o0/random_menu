@@ -3,6 +3,7 @@ package com.example.random_menu.ElementsList;
 import static android.widget.RelativeLayout.*;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -69,9 +70,9 @@ public class ElementsListRecycleFragment extends Fragment {
 
 
                 },
-                (id,name) ->{
-                    Log.e("list111",name);
-
+                (id,name,position) ->{
+                    //Log.e("list111",name);
+                    ComponentPlaceholderContent.positionSelectElem = position;
                     ComponentPlaceholderContent.idSelectElem = id;
                     //ComponentPlaceholderContent.loadComponents();
                     Intent intent = new Intent(getActivity(), ElementActivity.class);
@@ -143,9 +144,9 @@ public class ElementsListRecycleFragment extends Fragment {
 
 
                 },
-                (id,name) ->{
-                    Log.e("list111",name);
-
+                (id,name,position) ->{
+                    //Log.e("list111",name);
+                    ComponentPlaceholderContent.positionSelectElem = position;
                     ComponentPlaceholderContent.idSelectElem = id;
                     //ComponentPlaceholderContent.loadComponents();
                     Intent intent = new Intent(getActivity(), ElementActivity.class);
@@ -154,12 +155,32 @@ public class ElementsListRecycleFragment extends Fragment {
 
         // Set the adapter
         binding.list1.setAdapter(adapter);
+
+        //binding.list1.getAdapter().notifyDataSetChanged();
+        if(ComponentPlaceholderContent.positionSelectElem != null){
+            ComponentPlaceholderContent.deleteIfNoGroups();
+            Log.e("RESUM","ressss" + String.valueOf(ComponentPlaceholderContent.positionSelectElem));
+            binding.list1.getAdapter().notifyItemChanged(ComponentPlaceholderContent.positionSelectElem);
+        }
+
+
+        //Cursor cursor = ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME,null,null,null,null,null,null);
+        //Log.e("ELEMCOUNT",String.valueOf(cursor.getCount()));
+
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ComponentPlaceholderContent.positionSelectElem = null;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
+
 
 
 

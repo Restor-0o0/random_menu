@@ -34,7 +34,7 @@ public class ElementsListRecyclerViewAdapter extends RecyclerView.Adapter<Elemen
     }
     //слушатель нажатия на элемент
     public interface OnItemClickListener {
-        void onItemClick(String position, String number);
+        void onItemClick(String id, String number, int position);
     }
 
     public ElementsListRecyclerViewAdapter(List<ElemPlaceholderContent.PlaceholderItem> items, OnSettingItemClickListener settingClickListener, OnItemClickListener itemClickListener) {
@@ -77,11 +77,20 @@ public class ElementsListRecyclerViewAdapter extends RecyclerView.Adapter<Elemen
         return mValues.size();
     }
 
+    public void UpdateItem(String name, Integer position){
+        mValues.set(position,new ElemPlaceholderContent.PlaceholderItem(
+                mValues.get(position).id,
+                name,
+                mValues.get(position).priority
+        ));
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView mIdView;
         private final TextView mNameView;
         private ImageButton mImageBut;
         private ElemPlaceholderContent.PlaceholderItem mItem;
+
 
         public ViewHolder(@NonNull ItemElemSettFragmentBinding binding) {
             super(binding.getRoot());
@@ -93,7 +102,12 @@ public class ElementsListRecyclerViewAdapter extends RecyclerView.Adapter<Elemen
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    itemClickListener.onItemClick((String) mItem.id,(String) mNameView.getText());
+                    itemClickListener.onItemClick(
+                            (String) mItem.id,
+                            (String) mNameView.getText(),
+                            getBindingAdapterPosition()
+
+                    );
                     Log.e("list111",mIdView.getText().toString());
                 }
             });
@@ -112,46 +126,6 @@ public class ElementsListRecyclerViewAdapter extends RecyclerView.Adapter<Elemen
                 }
             });
 
-
-
-
-            /*if(mValues.get(getAbsoluteAdapterPosition()).details == true){
-                this.mImageBut.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
-            }
-            else{
-                this.mImageBut.setImageResource(R.drawable.baseline_check_box_24);
-            }*/
-            //mContentView = binding.checkButton;
-            /*binding.checkButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(mValues.get(getAbsoluteAdapterPosition()).details == true){
-                        mValues.get(getAbsoluteAdapterPosition()).details = false;
-                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
-                    }
-                    else{
-                        mValues.get(getAbsoluteAdapterPosition()).details = true;
-                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_24);
-                    }
-
-
-                }
-            });
-            binding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(mValues.get(getAbsoluteAdapterPosition()).details == true){
-                        mValues.get(getAbsoluteAdapterPosition()).details = false;
-                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
-                    }
-                    else{
-                        mValues.get(getAbsoluteAdapterPosition()).details = true;
-                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_24);
-                    }
-
-
-                }
-            });*/
         }
 
         @Override

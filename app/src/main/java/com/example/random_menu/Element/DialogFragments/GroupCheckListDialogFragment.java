@@ -69,19 +69,15 @@ public class GroupCheckListDialogFragment extends DialogFragment {
             public void onClick(View view) {
 
                 //запускаем поток на обновление и потомв мейн поток возвращаем задачи на присваивание
-                Runnable runnable = new Runnable(){
-                    @Override
-                    public void run() {
-                        ComponentPlaceholderContent.UpdatedGroupsDB();
-                        ComponentPlaceholderContent.loadGroupsData();
-                        handler.post(() ->{
-                            Log.e("ErrorBinding","Fuck");
-                            setValueParentFragmentField.setValues(ComponentPlaceholderContent.getActiveGroupsStr(),ComponentPlaceholderContent.getActiveGroupsStr());
-                        });
-                    }
-                };
-                Thread thread = new Thread(runnable);
-                thread.start();
+                ComponentPlaceholderContent.UpdatedGroupsDB(()->{
+
+                    ComponentPlaceholderContent.loadGroupsData();
+                    handler.post(() ->{
+                        Log.e("ErrorBinding","Fuck");
+                        setValueParentFragmentField.setValues(ComponentPlaceholderContent.getActiveGroupsStr(),ComponentPlaceholderContent.getActiveGroupsStr());
+                    });
+
+                });
                 getDialog().dismiss();
             }
         });

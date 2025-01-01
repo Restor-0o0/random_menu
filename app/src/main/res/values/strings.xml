@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">random_menu</string>
+    <string name="app_name">Рандомайзер</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- Strings related to login -->
@@ -23,4 +23,8 @@
     <string name="export">экспорт</string>
     <string name="impotr_">импорт</string>
     <string name="delete_">удалить</string>
+    <string name="export_text">Экспорт</string>
+    <string name="delete_text">Удалить</string>
+    <string name="properties_text">Свойства</string>
+    <string name="groups_title">Группы</string>
 </resources>

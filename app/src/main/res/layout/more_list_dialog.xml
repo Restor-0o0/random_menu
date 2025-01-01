@@ -27,46 +27,117 @@
             android:orientation="vertical"
             android:padding="10dp"
             >
-            <Button
+
+            <!--кнопка смены темы-->
+            <LinearLayout
                 android:id="@+id/theme_button"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/theme"
-                android:background="@null"
-                android:layout_margin="1dp"
-                android:textSize="@dimen/main_text_size"
-                android:textAlignment="textStart">
-            </Button>
-            <Button
+                android:orientation="horizontal"
+                android:background="@drawable/back_more_view_item"
+                >
+
+                <ImageView
+                    android:id="@+id/theme_button_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/theme"
+                    android:background="@null"
+                    android:textSize="@dimen/main_text_size"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    />
+
+            </LinearLayout>
+            <!--кнопка экспорта-->
+            <LinearLayout
                 android:id="@+id/export_button"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/export"
-                android:background="@null"
-                android:layout_margin="1dp"
-                android:textSize="@dimen/main_text_size"
-                android:textAlignment="textStart">
-            </Button>
-            <Button
+                android:orientation="horizontal"
+                android:background="@drawable/back_more_view_item"
+                >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:src="@drawable/file_export_icon"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/export"
+                    android:background="@null"
+                    android:textSize="@dimen/main_text_size"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    />
+
+            </LinearLayout>
+            <!--кнопка импорта-->
+            <LinearLayout
                 android:id="@+id/import_button"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/impotr_"
-                android:background="@null"
-                android:layout_margin="1dp"
-                android:textSize="@dimen/main_text_size"
-                android:textAlignment="textStart">
-            </Button>
-            <Button
+                android:orientation="horizontal"
+                android:background="@drawable/back_more_view_item"
+                >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:src="@drawable/file_import_icon"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/impotr_"
+                    android:background="@null"
+                    android:textSize="@dimen/main_text_size"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    />
+
+            </LinearLayout>
+            <!--кнопка удаления-->
+            <LinearLayout
                 android:id="@+id/delete_button"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/delete_"
-                android:background="@null"
-                android:layout_margin="1dp"
-                android:textSize="@dimen/main_text_size"
-                android:textAlignment="textStart">
-            </Button>
+                android:orientation="horizontal"
+                android:background="@drawable/back_more_view_item"
+                >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:src="@drawable/baseline_delete_24"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/delete_"
+                    android:background="@null"
+                    android:textSize="@dimen/main_text_size"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    />
+
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
     </ScrollView>

@@ -24,6 +24,7 @@ ComponentPlaceholderContent {
     public static String idSelectElem;
     public static String nameSelectElem;
     public static String commentSelectElem;
+    public static Integer positionSelectElem;
     //Список компонентов
     private static final List<ComponentsPlaceholderItem> Components = new ArrayList<ComponentsPlaceholderItem>();
     //Список групп
@@ -39,6 +40,12 @@ ComponentPlaceholderContent {
     public static List<GroupsPlaceholderItem> getGroups(){
         return Groups;
     }
+
+    public interface NotifyList{
+        void CallNotify();
+    }
+
+
     //добавление компонента в список
     public static void addComponentsItem(ComponentsPlaceholderItem item) {
         Components.add(item);
@@ -61,8 +68,15 @@ ComponentPlaceholderContent {
         }
         UpdateGroups.clear();
     }
-    public static void deleteComponent(int position){
+    public static void deleteComponent(int position,NotifyList callNotify){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ContentProviderDB.delete(MainBaseContract.Components.TABLE_NAME,MainBaseContract.Components._ID + " = " + Components.get(position).id,null);
+            }
+        }).start();
         Components.remove(position);
+        callNotify.CallNotify();
     }
     //Проверка группны на наличие и добавление или удаление
     public static void checkUpdateGroups(GroupsPlaceholderItem item){
@@ -73,24 +87,35 @@ ComponentPlaceholderContent {
             }
         }
         UpdateGroups.add(item);
-
     }
     //обновление групп из списка в бд
-    public static void UpdatedGroupsDB(){
-        ContentValues cv = new ContentValues();
-        for(GroupsPlaceholderItem item: UpdateGroups){
-            Log.e("GroupsUpdates",item.id);
-            if(item.active){
-                Log.e("GroupsUpdates",item.id);
-             cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_GROUP,item.id);
-             cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT,idSelectElem);
-             ContentProviderDB.insert(MainBaseContract.ElemGroup.TABLE_NAME,null,cv);
-             cv.clear();
+    public static void UpdatedGroupsDB(NotifyList callNotify){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ContentValues cv = new ContentValues();
+                //int counterActiveGroups = 0;
+                for(GroupsPlaceholderItem item: UpdateGroups){
+                    Log.e("GroupsUpdates",item.id);
+                    if(item.active){
+                        //counterActiveGroups += 1;
+                        Log.e("GroupsUpdates",item.id);
+                        GroupPlaceholderContent.addElement(Integer.valueOf(item.id));
+                        cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_GROUP,item.id);
+                        cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT,idSelectElem);
+                        ContentProviderDB.insert(MainBaseContract.ElemGroup.TABLE_NAME,null,cv);
+                        cv.clear();
+                    }
+                    else{
+                        GroupPlaceholderContent.deleteElement(Integer.valueOf(item.id));
+                        ContentProviderDB.delete(MainBaseContract.ElemGroup.TABLE_NAME,MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + " = "+item.id + " and "+ MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " = "+ idSelectElem,null);
+                    }
+                }
+                callNotify.CallNotify();
             }
-            else{
-                ContentProviderDB.delete(MainBaseContract.ElemGroup.TABLE_NAME,MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + " = "+item.id + " and "+ MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " = "+ idSelectElem,null);
-            }
-        }
+        }).start();
+
+
     }
     //загрузка групп с бд
     public static void loadGroupsData() {
@@ -123,6 +148,23 @@ ComponentPlaceholderContent {
         }
         catch (Exception e){
             Log.e("LoadGroupsInfoError", e.toString());
+        }
+    }
+
+    //Удалит элемент если он не закреплен ни за какой группой
+    public static void deleteIfNoGroups(){
+        Log.e("ELEMDELETE","TYT");
+        int countActive = 0;
+        for (GroupsPlaceholderItem item: Groups) {
+            if(item.active){
+                countActive+=1;
+            }
+        }
+        if(countActive == 0){
+            Log.e("ELEMDELETE","SNESLO");
+            ElemPlaceholderContent.deleteElem(positionSelectElem,Integer.valueOf(idSelectElem),()->{
+
+            });
         }
     }
     //загрузка информации элемента из бд
@@ -175,7 +217,12 @@ ComponentPlaceholderContent {
                 str+= item.name+", ";
             }
         }
-        return str.substring(0,str.length()-2);
+        if(!str.isEmpty()){
+            return str.substring(0,str.length()-2);
+        }
+        else{
+            return str;
+        }
     }
     //загрузка всех данных для экрана
     public static void loadData() {
