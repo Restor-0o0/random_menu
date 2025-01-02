@@ -9,6 +9,8 @@ import android.util.Log;
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.ElementsList.DialogFragments.MoreElemDialogFragment;
+import com.example.random_menu.Reposetory.ReposetoryElements;
+import com.example.random_menu.Reposetory.ReposetoryGroups;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,42 +49,14 @@ public class ElemPlaceholderContent {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    Cursor cursor = ContentProviderDB.query(MainBaseContract.ElemGroup.TABLE_NAME,null,MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + "=" + String.valueOf(dbId),null,null,null,null);
-                    if(cursor.getCount() > 0){
-                        cursor.moveToFirst();
-                        synchronized (GroupPlaceholderContent.GROUPS){
-                            do{
-                                GroupPlaceholderContent.deleteElement(cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.ElemGroup.COLUMN_NAME_GROUP)));
-                            }while(cursor.moveToNext());
-                        }
-                    }
-                    ContentProviderDB.delete(
-                            MainBaseContract.Components.TABLE_NAME,
-                            MainBaseContract.Components.COLUMN_NAME_ELEMENT + " = " + String.valueOf(dbId),
-                            null
-                    );
-                    ContentProviderDB.delete(
-                            MainBaseContract.ElemGroup.TABLE_NAME,
-                            MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " = " + String.valueOf(dbId),
-                            null
-                    );
-                    ContentProviderDB.delete(
-                            MainBaseContract.Elements.TABLE_NAME,
-                            MainBaseContract.Elements._ID + " = " + String.valueOf(dbId),
-                            null
-                    );
-
-                    handler.post(()->{
-                        //Log.e("DeleteGrouperror", String.valueOf(GroupPlaceholderContent.getGroups().size()));
-                        callNotify.CallNotify();
-                    });
-                }catch (Exception e){
-                    Log.e("DeleteGrouperror",e.toString());
-                }
+                ReposetoryElements.deleteElem(dbId);
+                handler.post(()->{
+                    //Log.e("DeleteGrouperror", String.valueOf(GroupPlaceholderContent.getGroups().size()));
+                    callNotify.CallNotify();
+                });
             }
         }).start();
-        ELEMENTS.remove(position);
+        ELEMENTS.remove(ITEM_MAP.get(String.valueOf(dbId)));
     }
     public static Integer getCount(){
         return ELEMENTS.size();
@@ -102,14 +76,22 @@ public class ElemPlaceholderContent {
         int temp = ELEMENTS.get((int) fromPosition).priority;
         ELEMENTS.get( fromPosition).priority = ELEMENTS.get((int) toPosition).priority;;
         ELEMENTS.get( toPosition).priority = temp;
-        ElemPlaceholderContent.PlaceholderItem fromItem = ELEMENTS.get( fromPosition);
-        ElemPlaceholderContent.PlaceholderItem toItem = ELEMENTS.get( toPosition);
-        ContentValues cv = new ContentValues();
-        cv.put(MainBaseContract.Elements.COLUMN_NAME_PRIORITY,fromItem.priority);
-        ContentProviderDB.update(MainBaseContract.Elements.TABLE_NAME,cv,"_ID="+fromItem.id,null);
-        cv.put(MainBaseContract.Elements.COLUMN_NAME_PRIORITY,toItem.priority);
-        ContentProviderDB.update(MainBaseContract.Elements.TABLE_NAME,cv,"_ID="+toItem.id,null);
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ReposetoryElements.update(
+                        Integer.valueOf(ELEMENTS.get( toPosition).id),
+                        null,
+                        null,
+                        ELEMENTS.get( toPosition).priority);
+                ReposetoryElements.update(
+                        Integer.valueOf(ELEMENTS.get( fromPosition).id),
+                        null,
+                        null,
+                        ELEMENTS.get( fromPosition).priority);
+            }
+        }).start();
     }
     public static void clearElements(){
         ELEMENTS.clear();
@@ -117,7 +99,7 @@ public class ElemPlaceholderContent {
     public static void loadElements(){
         ELEMENTS.clear();
         try{
-            Cursor cursor = ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME,null,MainBaseContract.Elements._ID + " IN (SELECT "+ MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " FROM "+ MainBaseContract.ElemGroup.TABLE_NAME+" WHERE "+MainBaseContract.ElemGroup.COLUMN_NAME_GROUP+"="+idSelectGroup+ ")",null,null,null,MainBaseContract.Elements._ID);
+            Cursor cursor = ReposetoryElements.getAllElements(Integer.valueOf(idSelectGroup));
             Log.e("Start select ElementsPlaceholder", String.valueOf(cursor.getCount()));
             cursor.moveToFirst();
             do{
@@ -127,7 +109,6 @@ public class ElemPlaceholderContent {
                         cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_PRIORITY))
                         ));
             }while(cursor.moveToNext());
-
         }
         catch (Exception e){
             Log.e("Error select ElementsPlaceholder",e.toString());
@@ -138,17 +119,8 @@ public class ElemPlaceholderContent {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ContentValues cv = new ContentValues();
-                cv.put(MainBaseContract.Elements.COLUMN_NAME_NAME, name);
-                cv.put(MainBaseContract.Elements.COLUMN_NAME_COMMENT, commet);
-                cv.put(MainBaseContract.Elements.COLUMN_NAME_PRIORITY,maxPriority+1);
-                int id = (int) ContentProviderDB.insert(MainBaseContract.Elements.TABLE_NAME,null,cv);
-                cv.clear();
-                cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT,id);
-                cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_GROUP, ElemPlaceholderContent.idSelectGroup);
-                Integer idElem = (int) ContentProviderDB.insert(MainBaseContract.ElemGroup.TABLE_NAME,null,cv);
-
-
+                int id = (int) ReposetoryElements.add(name,commet,maxPriority+1);
+                Integer idElem = (int) ReposetoryElements.addGroupLink(id,Integer.valueOf(idSelectGroup));
                 if(idElem > 0){
                     addItem(new PlaceholderItem(String.valueOf(idElem),
                             name,
@@ -159,9 +131,7 @@ public class ElemPlaceholderContent {
                 notify.run();
             }
         }).start();
-
     }
-
 
     public static class PlaceholderItem {
         public final String id;

@@ -27,4 +27,6 @@
     <string name="delete_text">Удалить</string>
     <string name="properties_text">Свойства</string>
     <string name="groups_title">Группы</string>
+    <string name="deleting_title">Удаление</string>
+    <string name="export_title">Экспорт</string>
 </resources>

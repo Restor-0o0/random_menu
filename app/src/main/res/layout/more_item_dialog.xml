@@ -72,7 +72,7 @@
 
         <!--кнопка свойств-->
         <LinearLayout
-            android:id="@+id/export_roperties_but"
+            android:id="@+id/properties_but"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"

@@ -1,4 +1,4 @@
-package com.example.random_menu.Element.DialogFragments;
+package com.example.random_menu.ElementsList.DialogFragments;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -14,13 +14,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.random_menu.Element.GroupsCheckListRecyclerViewAdapter;
-
-import com.example.random_menu.R;
 import com.example.random_menu.databinding.ListRedactorCheckboxDialogBinding;
 import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 
 
-public class GroupCheckListDialogFragment extends DialogFragment {
+public class ElementsCheckListDialogFragment extends DialogFragment {
     public ListRedactorCheckboxDialogBinding binding;
     SetValueParentFragmentField setValueParentFragmentField;
 
@@ -46,7 +44,7 @@ public class GroupCheckListDialogFragment extends DialogFragment {
         }
     }
 
-    public GroupCheckListDialogFragment(SetValueParentFragmentField setValueParentFragmentField) {
+    public ElementsCheckListDialogFragment(SetValueParentFragmentField setValueParentFragmentField) {
         this.setValueParentFragmentField = setValueParentFragmentField;
     }
     @Nullable
@@ -65,7 +63,6 @@ public class GroupCheckListDialogFragment extends DialogFragment {
         //ActivityElementBinding elementActivity = ((ElementActivity) requireActivity()).getBinding();
         //ActivityElementBinding activityElementBinding = new ActivityElementBinding(getActivity());
         //подтверждения редактирования списка групп, к которым пренадлежит элемент
-        binding.titleText.setText(R.string.groups_title);
         binding.submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

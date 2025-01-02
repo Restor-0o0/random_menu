@@ -18,6 +18,7 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 
 import com.example.random_menu.GroupsList.DialogFragments.AddGroupDialogFragment;
+import com.example.random_menu.GroupsList.DialogFragments.DeleteGroupsCheckListDialogFragment;
 import com.example.random_menu.GroupsList.DialogFragments.MoreGroupListDialogFragment;
 import com.example.random_menu.GroupsList.DialogFragments.WinGroupElemDialogFragment;
 import com.example.random_menu.R;
@@ -30,6 +31,7 @@ public class BottomBarGroupsFragment extends Fragment {
     AddGroupDialogFragment addGroupDialogFragment = new AddGroupDialogFragment();
     WinGroupElemDialogFragment winGroupElemDialogFragment = new WinGroupElemDialogFragment();
     MoreGroupListDialogFragment moreGroupListDialogFragment = new MoreGroupListDialogFragment();
+    DeleteGroupsCheckListDialogFragment deleteGroupsCheckListDialogFragment = new DeleteGroupsCheckListDialogFragment();
     private ObjectAnimator mAnimator;
     boolean isKeyboardShowing = false;
 
@@ -97,6 +99,13 @@ public class BottomBarGroupsFragment extends Fragment {
         binding.moreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                moreGroupListDialogFragment.setVars(()->{
+                    deleteGroupsCheckListDialogFragment.setVars(()->{
+                        GroupsRecycleFragment fm =(GroupsRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
+                        fm.binding.list1.getAdapter().notifyDataSetChanged();
+                    });
+                    deleteGroupsCheckListDialogFragment.show(getParentFragmentManager(),"CheckListDialog");
+                });
                 moreGroupListDialogFragment.show(getParentFragmentManager(),"MoreListDialog");
             }
         });

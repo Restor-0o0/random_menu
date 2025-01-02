@@ -1,4 +1,4 @@
-package com.example.random_menu.Element;
+package com.example.random_menu.GroupsList.DialogFragments;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,21 +12,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.ItemElemCheckboxFragmentBinding;
-import com.example.random_menu.databinding.ItemElemSettFragmentBinding;
-import com.example.random_menu.databinding.ListFragmentBinding;
 import com.example.random_menu.placeholder.ComponentPlaceholderContent;
-import com.example.random_menu.placeholder.ElemPlaceholderContent;
+import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 import java.util.List;
 
 
-public class GroupsCheckListRecyclerViewAdapter extends RecyclerView.Adapter<GroupsCheckListRecyclerViewAdapter.ViewHolder> {
+public class CheckListRecyclerViewAdapter extends RecyclerView.Adapter<CheckListRecyclerViewAdapter.ViewHolder> {
 
-    private static List<ComponentPlaceholderContent.GroupsPlaceholderItem> mValues;
+    private static List<GroupPlaceholderContent.PlaceholderItem> mValues;
 
 
 
-    public GroupsCheckListRecyclerViewAdapter(List<ComponentPlaceholderContent.GroupsPlaceholderItem> items) {
+    public CheckListRecyclerViewAdapter(List<GroupPlaceholderContent.PlaceholderItem> items) {
+        GroupPlaceholderContent.SelectesGroups.clear();
         mValues = items;
     }
 
@@ -43,7 +42,7 @@ public class GroupsCheckListRecyclerViewAdapter extends RecyclerView.Adapter<Gro
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(String.valueOf(position+1));
             holder.mNameView.setText(mValues.get(position).name);
-            if(holder.mItem.active){
+            if(holder.active){
                 holder.mImageBut.setImageResource(R.drawable.baseline_check_box_24);
             }
             else{
@@ -64,7 +63,8 @@ public class GroupsCheckListRecyclerViewAdapter extends RecyclerView.Adapter<Gro
         private final TextView mIdView;
         private final TextView mNameView;
         private ImageButton mImageBut;
-        private ComponentPlaceholderContent.GroupsPlaceholderItem mItem;
+        private boolean active = false;
+        private GroupPlaceholderContent.PlaceholderItem mItem;
 
         public ViewHolder(@NonNull ItemElemCheckboxFragmentBinding binding) {
             super(binding.getRoot());
@@ -76,31 +76,24 @@ public class GroupsCheckListRecyclerViewAdapter extends RecyclerView.Adapter<Gro
                 @Override
                 public void onClick(View view) {
                     Log.e("list111",mIdView.getText().toString());
-                    if(mItem.active){
-                        mItem.active = false;
-                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
-                    }
-                    else{
-                        mItem.active = true;
-                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_24);
-                    }
-                    ComponentPlaceholderContent.checkGroups(mItem);
+
+                    GroupPlaceholderContent.checkGroups(mItem);
                 }
             });
             binding.checkButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(mItem.active){
-                        mItem.active = false;
+                    if(active){
+                        active = false;
 
                         binding.checkButton.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
                     }
                     else{
-                        mItem.active = true;
+                        active = true;
 
                         binding.checkButton.setImageResource(R.drawable.baseline_check_box_24);
                     }
-                    ComponentPlaceholderContent.checkGroups(mItem);
+                    GroupPlaceholderContent.checkGroups(mItem);
                 }
             });
         }

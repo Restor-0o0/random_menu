@@ -150,6 +150,4 @@ public class ComponentInfoDialogFragment extends DialogFragment {
         });
 
     }
-
-
 }

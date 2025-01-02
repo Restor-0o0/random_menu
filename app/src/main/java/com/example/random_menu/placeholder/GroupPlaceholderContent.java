@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
+import com.example.random_menu.Reposetory.ReposetoryGroups;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -29,9 +31,17 @@ public class GroupPlaceholderContent {
     private static Random randomizer = new Random();
     public static List<PlaceholderItem> GROUPS = new ArrayList<PlaceholderItem>();
     public static List<PlaceholderItem> noEmptyGROUPS = new ArrayList<PlaceholderItem>();
+    public static  List<PlaceholderItem> SelectesGroups = new ArrayList<PlaceholderItem>();
 
     public static final Map<String, PlaceholderItem> ITEM_MAP = new HashMap<String, PlaceholderItem>();
     static public int maxPriority = 0;
+
+
+    public interface NotifyList{
+        void CallNotify();
+    }
+
+    //запрос случайной группы
     public static PlaceholderItem getRandom(){
         if(noEmptyGROUPS.size() > 0){
             return noEmptyGROUPS.get(randomizer.nextInt(noEmptyGROUPS.size()));
@@ -40,29 +50,111 @@ public class GroupPlaceholderContent {
             return null;
         }
     }
+    //запрос количества
     public static Integer getCount(){
         return GROUPS.size();
     }
+    //геттер
     public static List<PlaceholderItem> getGroups(){
         return GROUPS;
     }
-    public static void deleteGroup(int position){
-        GROUPS.remove(position);
+
+
+    //Проверка группны на наличие и добавление или удаление
+    public static void checkGroups(PlaceholderItem item){
+        for(int i = 0; i < SelectesGroups.size(); i++){
+            if(SelectesGroups.get(i).id.equals(item.id)){
+                SelectesGroups.remove(i);
+                return;
+            }
+        }
+        SelectesGroups.add(item);
     }
+    public static void deleteSelectedGroups(){
+        List<Integer> ids = new ArrayList<>();
+        for(PlaceholderItem item: SelectesGroups){
+            ids.add(Integer.valueOf(item.id));
+        }
+        try {
+            for(PlaceholderItem item: SelectesGroups) {
+                GROUPS.remove(item);
+            }
+        }
+        catch (Exception e){
+            Log.e("deleteGroup", e.toString());
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(Integer id: ids){
+                    ReposetoryGroups.deleteGroupAndNoHavingMoreLinksElements(id);
+                }
+            }
+        }).start();
+    }
+    public static void deleteGroup(int dbId){
+        try {
+            GROUPS.remove(ITEM_MAP.get(String.valueOf(dbId)));
+        }
+        catch (Exception e){
+            Log.e("deleteGroup", e.toString());
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ReposetoryGroups.deleteGroupAndNoHavingMoreLinksElements(dbId);
+            }
+        }).start();
+    }
+
     public static void swap(int fromPosition, int toPosition){
         int temp = GROUPS.get((int) fromPosition).priority;
         GROUPS.get( fromPosition).priority = GROUPS.get((int) toPosition).priority;;
         GROUPS.get( toPosition).priority = temp;
-        PlaceholderItem fromItem = GROUPS.get( fromPosition);
-        PlaceholderItem toItem = GROUPS.get( toPosition);
-        ContentValues cv = new ContentValues();
-        cv.put(MainBaseContract.Groups.COLUMN_NAME_PRIORITY,fromItem.priority);
-        ContentProviderDB.update(MainBaseContract.Groups.TABLE_NAME,cv,"_ID="+fromItem.id,null);
-        cv.put(MainBaseContract.Groups.COLUMN_NAME_PRIORITY,toItem.priority);
-        ContentProviderDB.update(MainBaseContract.Groups.TABLE_NAME,cv,"_ID="+toItem.id,null);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ReposetoryGroups.update(
+                        Integer.valueOf(GROUPS.get( toPosition).id),
+                        null,
+                        null,
+                        GROUPS.get( toPosition).priority,
+                        null);
+                ReposetoryGroups.update(
+                        Integer.valueOf(GROUPS.get( fromPosition).id),
+                        null,
+                        null,
+                        GROUPS.get( fromPosition).priority,
+                        null);
+
+            }
+        }).start();
 
     }
+    public static void updateGroup(Integer id, String name, String comment){
+        try{
+            Objects.requireNonNull(ITEM_MAP.get(String.valueOf(id))).name = name;
+            Objects.requireNonNull(ITEM_MAP.get(String.valueOf(id))).comment = comment;
+        }
+        catch (Exception e){
+            Log.e("UpdateGroup",e.toString());
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ContentValues cv = new ContentValues();
 
+                cv.put(MainBaseContract.Groups.COLUMN_NAME_NAME, name);
+                cv.put(MainBaseContract.Groups.COLUMN_NAME_COMMENT, comment);
+                ContentProviderDB.update(
+                        MainBaseContract.Groups.TABLE_NAME,
+                        cv,
+                        MainBaseContract.Groups._ID + " = " + id,
+                        null
+                );
+            }
+        }).start();
+    }
     public static void makeNoEmpty(Integer idGroup){
         for(int i = 0;i < noEmptyGROUPS.size();i++){
             if(Integer.valueOf(noEmptyGROUPS.get(i).id).equals(idGroup)){
@@ -76,7 +168,6 @@ public class GroupPlaceholderContent {
         }
     }
 
-
     public static void addItem(PlaceholderItem item) {
         //проверка на обновление приоритета
         if(Integer.valueOf(item.priority) > maxPriority){
@@ -89,17 +180,9 @@ public class GroupPlaceholderContent {
         GROUPS.clear();
     }
     public static void loadGroups(){
-
         GROUPS.clear();
         try{
-            Cursor cursor = ContentProviderDB.query(MainBaseContract.Groups.TABLE_NAME,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    MainBaseContract.Groups.COLUMN_NAME_PRIORITY);
-            Log.e("Fuck", String.valueOf(cursor.getCount()));
+            Cursor cursor = ReposetoryGroups.getAll();
             cursor.moveToFirst();
             do{
 
@@ -113,7 +196,6 @@ public class GroupPlaceholderContent {
             }while(cursor.moveToNext());
             GROUPS.forEach(
                 it ->{
-                    //Log.e("COUNTTTTTTT",String.valueOf(it.countElems));
                     if(it.countElems > 0){
                         noEmptyGROUPS.add(it);
                     }
@@ -121,41 +203,58 @@ public class GroupPlaceholderContent {
             );
         }
         catch (Exception e){
-            Log.e("Fuck",e.toString());
+            Log.e("ErrorLoadAllGroups",e.toString());
         }
     }
     public static void deleteElement(int idGroup){
         if(ITEM_MAP.containsKey(String.valueOf(idGroup))){
-            if(ITEM_MAP.get(String.valueOf(idGroup)).countElems > 0){
-                ITEM_MAP.get(String.valueOf(idGroup)).countElems -= 1;
-                new Thread(new Runnable(){
-                    @Override
-                    public void run() {
-                        ContentValues cv = new ContentValues();
-                        cv.put(MainBaseContract.Groups.COLUMN_NAME_COUNT_ELEMS,(ITEM_MAP.get(String.valueOf(idGroup)).countElems));
-                        ContentProviderDB.update(MainBaseContract.Groups.TABLE_NAME,cv,MainBaseContract.Groups._ID + " = " + String.valueOf(idGroup),null );
+            try{
+                if(Objects.requireNonNull(ITEM_MAP.get(String.valueOf(idGroup))).countElems > 0){
+                    Objects.requireNonNull(ITEM_MAP.get(String.valueOf(idGroup))).countElems -= 1;
+                    new Thread(new Runnable(){
+                        @Override
+                        public void run() {
+                            ReposetoryGroups.update(
+                                    idGroup,
+                                    null,
+                                    null,
+                                    null,
+                                    Objects.requireNonNull(ITEM_MAP.get(String.valueOf(idGroup))).countElems);
+                        }
+                    }).start();
+                    if(Objects.requireNonNull(ITEM_MAP.get(String.valueOf(idGroup))).countElems.equals(0)){
+                        noEmptyGROUPS.remove(ITEM_MAP.get(String.valueOf(idGroup)));
                     }
-                }).start();
-                if(ITEM_MAP.get(String.valueOf(idGroup)).countElems.equals(0)){
-                    noEmptyGROUPS.remove(ITEM_MAP.get(String.valueOf(idGroup)));
                 }
             }
+            catch (Exception e){
+                Log.e("deleteElement",e.toString());
+            }
+
         }
     }
     public static void addElement(int idGroup){
 
         if(ITEM_MAP.containsKey(String.valueOf(idGroup))){
-            ITEM_MAP.get(String.valueOf(idGroup)).countElems += 1;
-            new Thread(new Runnable(){
-                @Override
-                public void run() {
-                    ContentValues cv = new ContentValues();
-                    cv.put(MainBaseContract.Groups.COLUMN_NAME_COUNT_ELEMS,(ITEM_MAP.get(String.valueOf(idGroup)).countElems));
-                    ContentProviderDB.update(MainBaseContract.Groups.TABLE_NAME,cv,MainBaseContract.Groups._ID + " = " + String.valueOf(idGroup),null );
+            try{
+                Objects.requireNonNull(ITEM_MAP.get(String.valueOf(idGroup))).countElems += 1;
+                new Thread(new Runnable(){
+                    @Override
+                    public void run() {
+                        ReposetoryGroups.update(
+                                idGroup,
+                                null,
+                                null,
+                                null,
+                                Objects.requireNonNull(ITEM_MAP.get(String.valueOf(idGroup))).countElems);
+                    }
+                }).start();
+                GroupPlaceholderContent.makeNoEmpty(idGroup);
 
-                }
-            }).start();
-            GroupPlaceholderContent.makeNoEmpty(idGroup);
+            }
+            catch (Exception e){
+                Log.e("addElement",e.toString());
+            }
 
         }
 
@@ -164,11 +263,7 @@ public class GroupPlaceholderContent {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ContentValues cv = new ContentValues();
-                cv.put(MainBaseContract.Groups.COLUMN_NAME_NAME, name);
-                cv.put(MainBaseContract.Groups.COLUMN_NAME_COMMENT, commet);
-                cv.put(MainBaseContract.Groups.COLUMN_NAME_PRIORITY,String.valueOf(GroupPlaceholderContent.maxPriority + 1));
-                ContentProviderDB.insert(MainBaseContract.Groups.TABLE_NAME,null,cv);
+                ReposetoryGroups.add(name,commet);
                 notify.run();
             }
         }).start();
@@ -177,8 +272,8 @@ public class GroupPlaceholderContent {
 
     public static class PlaceholderItem {
         public final String id;
-        public final String name;
-        public final String comment;
+        public String name;
+        public String comment;
         public Integer priority;
         public Integer countElems;
 

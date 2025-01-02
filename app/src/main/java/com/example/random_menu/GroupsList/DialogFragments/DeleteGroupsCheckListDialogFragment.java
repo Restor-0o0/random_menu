@@ -1,4 +1,4 @@
-package com.example.random_menu.Element.DialogFragments;
+package com.example.random_menu.GroupsList.DialogFragments;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -14,20 +14,19 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.random_menu.Element.GroupsCheckListRecyclerViewAdapter;
-
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.ListRedactorCheckboxDialogBinding;
 import com.example.random_menu.placeholder.ComponentPlaceholderContent;
+import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 
-public class GroupCheckListDialogFragment extends DialogFragment {
+public class DeleteGroupsCheckListDialogFragment extends DialogFragment {
     public ListRedactorCheckboxDialogBinding binding;
-    SetValueParentFragmentField setValueParentFragmentField;
-
-
-    public interface SetValueParentFragmentField{
-        void setValues(String groupsVal, String groupsBut);
+    public static NotifyList notifyList;
+    public interface NotifyList{
+        void CallNotify();
     }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -42,12 +41,18 @@ public class GroupCheckListDialogFragment extends DialogFragment {
         if(dialog != null){
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
             dialog.getWindow().setBackgroundDrawable(null);
+            CheckListRecyclerViewAdapter adapter = new CheckListRecyclerViewAdapter(GroupPlaceholderContent.getGroups());
+            binding.checkList.setAdapter(adapter);
 
         }
     }
+    public void setVars(
+            NotifyList notifyList
+    ){
+        this.notifyList = notifyList;
+    }
+    public DeleteGroupsCheckListDialogFragment() {
 
-    public GroupCheckListDialogFragment(SetValueParentFragmentField setValueParentFragmentField) {
-        this.setValueParentFragmentField = setValueParentFragmentField;
     }
     @Nullable
     @Override
@@ -59,27 +64,19 @@ public class GroupCheckListDialogFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        GroupsCheckListRecyclerViewAdapter adapter = new GroupsCheckListRecyclerViewAdapter(ComponentPlaceholderContent.getGroups());
         Handler handler = new Handler(Looper.getMainLooper());
-        binding.checkList.setAdapter(adapter);
         //ActivityElementBinding elementActivity = ((ElementActivity) requireActivity()).getBinding();
         //ActivityElementBinding activityElementBinding = new ActivityElementBinding(getActivity());
         //подтверждения редактирования списка групп, к которым пренадлежит элемент
-        binding.titleText.setText(R.string.groups_title);
+        binding.titleText.setText(R.string.export_title);
         binding.submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                for(GroupPlaceholderContent.PlaceholderItem item : GroupPlaceholderContent.SelectesGroups){
+                    Log.e("DeletingSelect",item.name);
+                }
+                notifyList.CallNotify();
                 //запускаем поток на обновление и потомв мейн поток возвращаем задачи на присваивание
-                ComponentPlaceholderContent.UpdatedGroupsDB(()->{
-
-                    ComponentPlaceholderContent.loadGroupsData();
-                    handler.post(() ->{
-                        Log.e("ErrorBinding","Fuck");
-                        setValueParentFragmentField.setValues(ComponentPlaceholderContent.getActiveGroupsStr(),ComponentPlaceholderContent.getActiveGroupsStr());
-                    });
-
-                });
                 getDialog().dismiss();
             }
         });
@@ -87,8 +84,6 @@ public class GroupCheckListDialogFragment extends DialogFragment {
         binding.cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ComponentPlaceholderContent.clearUpdateGroups();
-                binding.checkList.getAdapter().notifyDataSetChanged();
                 getDialog().dismiss();
             }
         });

@@ -19,6 +19,7 @@ import com.example.random_menu.Data.Item;
 import com.example.random_menu.ElementsList.ElementsListActivity;
 import com.example.random_menu.GroupsList.DialogFragments.MoreGroupDialogFragment;
 
+import com.example.random_menu.GroupsList.DialogFragments.PropertiesDialogFragment;
 import com.example.random_menu.databinding.ListFragmentBinding;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
@@ -34,6 +35,7 @@ public class GroupsRecycleFragment extends Fragment {
     // TODO: Customize parameter argument names
     ListFragmentBinding binding;
     private final MoreGroupDialogFragment moreItemDialogFragment = new MoreGroupDialogFragment();
+    private final PropertiesDialogFragment propertiesDialogFragment = new PropertiesDialogFragment();
     //private static List<Item> ITEMS;
     // TODO: Customize parameters
     private int moreViewItemId;
@@ -56,8 +58,21 @@ public class GroupsRecycleFragment extends Fragment {
                     Integer.valueOf(listPosition),
                     screenPosition,
                     Integer.valueOf(id),
-                    ()->{
+                    ()->
+                    {
+
                         binding.list1.getAdapter().notifyDataSetChanged();
+
+                    },()->{
+                        propertiesDialogFragment.setVars(
+                                Integer.valueOf(id),
+                                Integer.valueOf(listPosition),
+                                ()->{
+                                    //обновляем только 1 элемент, потому что это таргетное редактирвоание свойств
+                                    binding.list1.getAdapter().notifyItemChanged(Integer.valueOf(listPosition));
+                                }
+                        );
+                        propertiesDialogFragment.show(getParentFragmentManager(),"PropertiesDialog");
                     }
             );
             moreItemDialogFragment.show(getParentFragmentManager(),"MoreItemDialog");

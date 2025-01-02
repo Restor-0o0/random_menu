@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
+import com.example.random_menu.Reposetory.ReposetoryComponents;
+import com.example.random_menu.Reposetory.ReposetoryElements;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +32,7 @@ ComponentPlaceholderContent {
     //Список групп
     private static final List<GroupsPlaceholderItem> Groups = new ArrayList<GroupsPlaceholderItem>();
     //Список групп на обновление в бд
-    private static final List<GroupsPlaceholderItem> UpdateGroups = new ArrayList<GroupsPlaceholderItem>();
+    private static final List<GroupsPlaceholderItem> SelectesGroups = new ArrayList<GroupsPlaceholderItem>();
     //мапа хрен знаетзачем, уже не помню
     public static final Map<String, ComponentsPlaceholderItem> ITEM_MAP = new HashMap<String, ComponentsPlaceholderItem>();
     //геттеры
@@ -63,52 +65,61 @@ ComponentPlaceholderContent {
         Groups.clear();
     }
     public static void clearUpdateGroups(){
-        for(GroupsPlaceholderItem item: UpdateGroups){
+        for(GroupsPlaceholderItem item: SelectesGroups){
             item.active = !item.active;
         }
-        UpdateGroups.clear();
+        SelectesGroups.clear();
     }
     public static void deleteComponent(int position,NotifyList callNotify){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ContentProviderDB.delete(MainBaseContract.Components.TABLE_NAME,MainBaseContract.Components._ID + " = " + Components.get(position).id,null);
+                ReposetoryComponents.deleteComponent(Integer.valueOf(Components.get(position).id));
             }
         }).start();
         Components.remove(position);
         callNotify.CallNotify();
     }
     //Проверка группны на наличие и добавление или удаление
-    public static void checkUpdateGroups(GroupsPlaceholderItem item){
-        for(int i = 0;i < UpdateGroups.size();i++){
-            if(UpdateGroups.get(i).id == item.id){
-                UpdateGroups.remove(i);
+    public static void checkGroups(GroupsPlaceholderItem item){
+        for(int i = 0; i < SelectesGroups.size(); i++){
+            if(SelectesGroups.get(i).id == item.id){
+                SelectesGroups.remove(i);
                 return;
             }
         }
-        UpdateGroups.add(item);
+        SelectesGroups.add(item);
     }
     //обновление групп из списка в бд
     public static void UpdatedGroupsDB(NotifyList callNotify){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ContentValues cv = new ContentValues();
+                //ContentValues cv = new ContentValues();
                 //int counterActiveGroups = 0;
-                for(GroupsPlaceholderItem item: UpdateGroups){
-                    Log.e("GroupsUpdates",item.id);
+                for(GroupsPlaceholderItem item: SelectesGroups){
+                    //Log.e("GroupsUpdates",item.id);
                     if(item.active){
                         //counterActiveGroups += 1;
                         Log.e("GroupsUpdates",item.id);
+                        ReposetoryElements.addGroupLink(
+                                Integer.valueOf(idSelectElem),
+                                Integer.valueOf(item.id)
+                        );
                         GroupPlaceholderContent.addElement(Integer.valueOf(item.id));
-                        cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_GROUP,item.id);
+                        /*cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_GROUP,item.id);
                         cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT,idSelectElem);
                         ContentProviderDB.insert(MainBaseContract.ElemGroup.TABLE_NAME,null,cv);
-                        cv.clear();
+                        cv.clear();*/
                     }
                     else{
                         GroupPlaceholderContent.deleteElement(Integer.valueOf(item.id));
-                        ContentProviderDB.delete(MainBaseContract.ElemGroup.TABLE_NAME,MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + " = "+item.id + " and "+ MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " = "+ idSelectElem,null);
+                        ReposetoryElements.dropGroupLink(
+                                Integer.valueOf(idSelectElem),
+                                Integer.valueOf(item.id)
+                        );
+
+                        //ContentProviderDB.delete(MainBaseContract.ElemGroup.TABLE_NAME,MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + " = "+item.id + " and "+ MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " = "+ idSelectElem,null);
                     }
                 }
                 callNotify.CallNotify();
@@ -120,18 +131,9 @@ ComponentPlaceholderContent {
     //загрузка групп с бд
     public static void loadGroupsData() {
         clearGroups();
-
         try{
             //выхватили данные элемента
-            Cursor cursor = ContentProviderDB.query(MainBaseContract.Groups.TABLE_NAME,
-                    new String[]{MainBaseContract.Groups._ID,
-                                MainBaseContract.Groups.COLUMN_NAME_NAME,
-/*волшебная строка*/            "(SELECT COUNT("+MainBaseContract.ElemGroup.COLUMN_NAME_GROUP+") FROM "+MainBaseContract.ElemGroup.TABLE_NAME+" WHERE "+MainBaseContract.ElemGroup.COLUMN_NAME_GROUP+"="+MainBaseContract.Groups._ID+" and "+MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT+" = "+idSelectElem+" ) AS Active"},
-                        null ,
-                     null,
-                         null,
-                          null,
-                         MainBaseContract.Groups.COLUMN_NAME_PRIORITY);
+            Cursor cursor = ReposetoryComponents.loadGroupsData(Integer.valueOf(idSelectElem));
             if(cursor.getCount() > 0)
             {
                 cursor.moveToFirst();
@@ -170,9 +172,8 @@ ComponentPlaceholderContent {
     //загрузка информации элемента из бд
     public static void loadElementData() {
         try{
-
+            Cursor cursor = ReposetoryComponents.loadElementData(Integer.valueOf(idSelectElem));
             //выхватили данные элемента
-            Cursor cursor = ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME, null, MainBaseContract.Elements._ID + "=" + idSelectElem, null, null, null, null);
             if(cursor.getCount() > 0)
             {
                 cursor.moveToFirst();
@@ -189,13 +190,12 @@ ComponentPlaceholderContent {
         clearComponents();
         Components.clear();
         try{
+            Cursor cursor = ReposetoryComponents.loadComponentsData(Integer.valueOf(idSelectElem));
             //выхватили список компонентов
-            Cursor cursor = ContentProviderDB.query(MainBaseContract.Components.TABLE_NAME, null, MainBaseContract.Components.COLUMN_NAME_ELEMENT + "=" + idSelectElem, null, null, null, MainBaseContract.Components.COLUMN_NAME_QUANTITY + " DESC");
             if(cursor.getCount() > 0)
             {
                 cursor.moveToFirst();
                 do {
-
                     addComponentsItem(new ComponentsPlaceholderItem(
                             cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Components._ID)),
                             cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_NAME)),

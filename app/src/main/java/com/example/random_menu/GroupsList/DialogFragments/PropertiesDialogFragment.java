@@ -1,7 +1,7 @@
 package com.example.random_menu.GroupsList.DialogFragments;
 
 import android.app.Dialog;
-import android.database.Cursor;
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,24 +20,21 @@ import androidx.fragment.app.DialogFragment;
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.R;
-import com.example.random_menu.databinding.MoreItemDialogBinding;
-import com.example.random_menu.placeholder.ComponentPlaceholderContent;
+import com.example.random_menu.databinding.InfoGroupDialogBinding;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
-
-public class MoreGroupDialogFragment extends DialogFragment {
-    MoreItemDialogBinding binding;
+public class PropertiesDialogFragment extends DialogFragment {
+    InfoGroupDialogBinding binding;
+    SetValues setValues;
     private static Integer listPositionCalledItem;
-    private static int screenPositionCalledItem;
     private static int dbId;
-    private static NotifyList callNotify,callInfoGroupDialog;
+    private static String name;
+    private static String comment;
 
-    //интерфейс для передачи лямбда функций
-    public interface NotifyList{
-        void CallNotify();
+    public interface SetValues{
+        void setValues();
     }
 
     @NonNull
@@ -46,13 +43,7 @@ public class MoreGroupDialogFragment extends DialogFragment {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         return dialog;
     }
-    public void setVars(Integer listPosition, int screenPosition, int dbId, NotifyList callNotify,NotifyList callInfoGroupDialog){
-        listPositionCalledItem = listPosition;
-        screenPositionCalledItem = screenPosition;
-        this.dbId = dbId;
-        this.callNotify = callNotify;
-        this.callInfoGroupDialog = callInfoGroupDialog;
-    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -66,12 +57,34 @@ public class MoreGroupDialogFragment extends DialogFragment {
             dialog.getWindow().setBackgroundDrawable(null);
 
         }
+        binding.inputName.setText(name);
+        binding.inputComment.setText(comment);
     }
-    public MoreGroupDialogFragment() {}
+    public void setVars(
+            int dbId,
+            Integer listPosition,
+            SetValues setValues
+    ){
+        listPositionCalledItem = listPosition;
+        this.setValues = setValues;
+        this.dbId = dbId;
+
+        try{
+            this.name = Objects.requireNonNull(GroupPlaceholderContent.ITEM_MAP.get(String.valueOf(dbId))).name;
+            this.comment = Objects.requireNonNull(GroupPlaceholderContent.ITEM_MAP.get(String.valueOf(dbId))).comment;
+        }
+        catch (Exception e){
+            Log.e("UpdateGroup",e.toString());
+        }
+
+    }
+    public PropertiesDialogFragment() {
+
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = MoreItemDialogBinding.inflate(inflater,container,false);
+        binding = InfoGroupDialogBinding.inflate(inflater,container,false);
         return binding.getRoot();
     }
 
@@ -80,22 +93,13 @@ public class MoreGroupDialogFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         Handler handler = new Handler(Looper.getMainLooper());
 
-
         //анимация рскрытия окна
         Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.anim_show);
         anim.setDuration(200);
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                ViewGroup.MarginLayoutParams lay = (ViewGroup.MarginLayoutParams) binding.moreItemView.getLayoutParams();
-                lay.topMargin = screenPositionCalledItem;
-                if((binding.moreItemView.getHeight() + screenPositionCalledItem) < binding.getRoot().getHeight()){
-                    binding.moreItemView.setLayoutParams(lay);
-                }
-                else{
-                    lay.topMargin = screenPositionCalledItem - binding.moreItemView.getHeight();
-                    binding.moreItemView.setLayoutParams(lay);
-                }
+
             }
 
             @Override
@@ -108,46 +112,25 @@ public class MoreGroupDialogFragment extends DialogFragment {
 
             }
         });
-        binding.moreItemView.startAnimation(anim);
-        binding.propertiesBut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callInfoGroupDialog.CallNotify();
-            }
-        });
-        //обработчик нажатия на кнопку удаления компонента
-        binding.deleteItemBut.setOnClickListener(new View.OnClickListener() {
+        binding.layout.startAnimation(anim);
+
+        binding.submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                GroupPlaceholderContent.deleteGroup(dbId);
-                callNotify.CallNotify();
-
-
-                Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(),R.anim.anim_hide);
-                anim.setDuration(100);
-                anim.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-
-                binding.moreItemView.startAnimation(anim);
-                getDialog().dismiss();
-
-
+                if(binding.inputName.getText().toString().length() != 0) {
+                    GroupPlaceholderContent.updateGroup(dbId,binding.inputName.getText().toString(),binding.inputComment.getText().toString());
+                    setValues.setValues();
+                    getDialog().dismiss();
+                }
             }
         });
-        //закрытия диалога
+        binding.cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getDialog().dismiss();
+            }
+        });
+
         binding.backFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -156,6 +139,4 @@ public class MoreGroupDialogFragment extends DialogFragment {
         });
 
     }
-
-
 }

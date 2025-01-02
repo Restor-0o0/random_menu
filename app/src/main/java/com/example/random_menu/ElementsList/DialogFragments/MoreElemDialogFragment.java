@@ -33,7 +33,7 @@ public class MoreElemDialogFragment extends DialogFragment {
     private static Integer listPositionCalledItem;
     private static int screenPositionCalledItem;
     private static int dbId;
-    private static NotifyList callNotify;
+    private static NotifyList callNotify,callProperties;
 
     public interface NotifyList{
         void CallNotify();
@@ -45,12 +45,15 @@ public class MoreElemDialogFragment extends DialogFragment {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         return dialog;
     }
-    public void setVars(Integer listPosition, int screenPosition, int dbId, NotifyList callNotify){
+
+    public void setVars(Integer listPosition, int screenPosition, int dbId, NotifyList callNotify,NotifyList callProperties){
         listPositionCalledItem = listPosition;
         screenPositionCalledItem = screenPosition;
         this.dbId = dbId;
         this.callNotify = callNotify;
+        this.callProperties = callProperties;
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -62,10 +65,11 @@ public class MoreElemDialogFragment extends DialogFragment {
             params.width = ViewGroup.LayoutParams.MATCH_PARENT;
             dialog.getWindow().setAttributes(params);
             dialog.getWindow().setBackgroundDrawable(null);
-
         }
     }
-    public MoreElemDialogFragment() {}
+    public MoreElemDialogFragment() {
+
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -77,7 +81,6 @@ public class MoreElemDialogFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Handler handler = new Handler(Looper.getMainLooper());
-
 
         //анимация рскрытия окна
         Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.anim_show);
@@ -134,11 +137,8 @@ public class MoreElemDialogFragment extends DialogFragment {
 
                         }
                     });
-
                     binding.moreItemView.startAnimation(anim);
                     getDialog().dismiss();
-
-
             }
         });
         //закрытия диалога
@@ -146,6 +146,12 @@ public class MoreElemDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 getDialog().dismiss();
+            }
+        });
+        binding.propertiesBut.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+            callProperties.CallNotify();
             }
         });
 

@@ -30,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class MoreGroupListDialogFragment extends DialogFragment {
     MoreListDialogBinding binding;
 
+    private static NotifyList callCheckList;
     @Inject
     SharedPreferences saveManager;
     @Inject
@@ -60,8 +61,10 @@ public class MoreGroupListDialogFragment extends DialogFragment {
 
         }
     }
-    public void setVars(){
-
+    public void setVars(
+            NotifyList callCheckList
+    ){
+        this.callCheckList = callCheckList;
     }
     public MoreGroupListDialogFragment() {}
     @Nullable
@@ -110,7 +113,13 @@ public class MoreGroupListDialogFragment extends DialogFragment {
                 getDialog().dismiss();
             }
         });
-
+        binding.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callCheckList.CallNotify();
+                dismiss();
+            }
+        });
         binding.themeButton.setOnClickListener(new View.OnClickListener(){
 
             @Override

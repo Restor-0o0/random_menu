@@ -63,6 +63,13 @@ public class ElementsListRecycleFragment extends Fragment {
                             Integer.valueOf(id),
                             ()->{
                                 binding.list1.getAdapter().notifyDataSetChanged();
+                            },
+                            ()->{
+                                ComponentPlaceholderContent.positionSelectElem = Integer.valueOf(listPosition);
+                                ComponentPlaceholderContent.idSelectElem = id;
+                                //ComponentPlaceholderContent.loadComponents();
+                                Intent intent = new Intent(getActivity(), ElementActivity.class);
+                                startActivity(intent);
                             }
                     );
                     moreElemDialogFragment.show(getParentFragmentManager(),"MoreItemDialog");
@@ -137,6 +144,13 @@ public class ElementsListRecycleFragment extends Fragment {
                             Integer.valueOf(id),
                             ()->{
                                 binding.list1.getAdapter().notifyDataSetChanged();
+                            },
+                            ()->{
+                                ComponentPlaceholderContent.positionSelectElem = Integer.valueOf(listPosition);
+                                ComponentPlaceholderContent.idSelectElem = id;
+                                //ComponentPlaceholderContent.loadComponents();
+                                Intent intent = new Intent(getActivity(), ElementActivity.class);
+                                startActivity(intent);
                             }
                     );
                     moreElemDialogFragment.show(getParentFragmentManager(),"MoreItemDialog");
