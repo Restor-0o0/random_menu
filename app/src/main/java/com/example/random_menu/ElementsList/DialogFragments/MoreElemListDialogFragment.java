@@ -28,6 +28,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class MoreElemListDialogFragment extends DialogFragment {
     MoreListDialogBinding binding;
+    private static NotifyList callCheckList;
+
+
     @Inject
     SharedPreferences saveManager;
     @Inject
@@ -57,8 +60,10 @@ public class MoreElemListDialogFragment extends DialogFragment {
 
         }
     }
-    public void setVars(){
-
+    public void setVars(
+            NotifyList callCheckList
+    ){
+        this.callCheckList = callCheckList;
     }
     public MoreElemListDialogFragment() {}
     @Nullable
@@ -99,7 +104,13 @@ public class MoreElemListDialogFragment extends DialogFragment {
         });
         binding.layout.startAnimation(anim);
 
-
+        binding.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callCheckList.CallNotify();
+                dismiss();
+            }
+        });
         //закрытия диалога
         binding.backFrame.setOnClickListener(new View.OnClickListener() {
             @Override

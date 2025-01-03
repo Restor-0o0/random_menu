@@ -12,19 +12,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.ItemElemCheckboxFragmentBinding;
-import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 import java.util.List;
 
 
-public class CheckListRecyclerViewAdapter extends RecyclerView.Adapter<CheckListRecyclerViewAdapter.ViewHolder> {
+public class GroupCheckListRecyclerViewAdapter extends RecyclerView.Adapter<GroupCheckListRecyclerViewAdapter.ViewHolder> {
 
     private static List<GroupPlaceholderContent.PlaceholderItem> mValues;
 
 
 
-    public CheckListRecyclerViewAdapter(List<GroupPlaceholderContent.PlaceholderItem> items) {
+    public GroupCheckListRecyclerViewAdapter(List<GroupPlaceholderContent.PlaceholderItem> items) {
         GroupPlaceholderContent.SelectesGroups.clear();
         mValues = items;
     }
@@ -77,8 +76,17 @@ public class CheckListRecyclerViewAdapter extends RecyclerView.Adapter<CheckList
                 public void onClick(View view) {
                     Log.e("list111",mIdView.getText().toString());
 
-                    GroupPlaceholderContent.checkGroups(mItem);
-                }
+                    if(active){
+                        active = false;
+
+                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
+                    }
+                    else{
+                        active = true;
+
+                        binding.checkButton.setImageResource(R.drawable.baseline_check_box_24);
+                    }
+                    GroupPlaceholderContent.checkGroups(mItem);                }
             });
             binding.checkButton.setOnClickListener(new View.OnClickListener() {
                 @Override

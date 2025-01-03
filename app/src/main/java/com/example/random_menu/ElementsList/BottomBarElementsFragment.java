@@ -23,6 +23,7 @@ import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.Element.ElementActivity;
 import com.example.random_menu.ElementsList.DialogFragments.AddElemDialogFragment;
+import com.example.random_menu.ElementsList.DialogFragments.DeleteElementsCheckListDialogFragment;
 import com.example.random_menu.ElementsList.DialogFragments.MoreElemListDialogFragment;
 import com.example.random_menu.ElementsList.DialogFragments.WinElemDialogFragment;
 import com.example.random_menu.GroupsList.DialogFragments.AddGroupDialogFragment;
@@ -39,6 +40,7 @@ public class BottomBarElementsFragment extends Fragment {
     AddElemDialogFragment addElemDialogFragment = new AddElemDialogFragment();
     WinElemDialogFragment winElemDialogFragment = new WinElemDialogFragment();
     MoreElemListDialogFragment moreElemListDialogFragment = new MoreElemListDialogFragment();
+    DeleteElementsCheckListDialogFragment deleteElementsCheckListDialogFragment = new DeleteElementsCheckListDialogFragment();
     private ObjectAnimator mAnimator;
     boolean isKeyboardShowing = false;
     @Override
@@ -93,6 +95,7 @@ public class BottomBarElementsFragment extends Fragment {
                     ElementsListRecycleFragment fm =(ElementsListRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
                     fm.binding.list1.getAdapter().notifyItemChanged(ElemPlaceholderContent.getCount() - 1);
                 });
+
                 addElemDialogFragment.show(getParentFragmentManager(),"AddGroupDialog");
             }
         });
@@ -100,6 +103,13 @@ public class BottomBarElementsFragment extends Fragment {
         binding.moreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                moreElemListDialogFragment.setVars(()->{
+                    deleteElementsCheckListDialogFragment.setVars(()->{
+                        ElementsListRecycleFragment fm =(ElementsListRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
+                        fm.binding.list1.getAdapter().notifyDataSetChanged();
+                    });
+                    deleteElementsCheckListDialogFragment.show(getParentFragmentManager(),"CheckListDialog");
+                });
                 moreElemListDialogFragment.show(getParentFragmentManager(),"MoreListDialog");
             }
         });

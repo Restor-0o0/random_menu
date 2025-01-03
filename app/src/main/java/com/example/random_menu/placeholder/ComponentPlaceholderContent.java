@@ -47,7 +47,6 @@ ComponentPlaceholderContent {
         void CallNotify();
     }
 
-
     //добавление компонента в список
     public static void addComponentsItem(ComponentsPlaceholderItem item) {
         Components.add(item);
@@ -65,9 +64,6 @@ ComponentPlaceholderContent {
         Groups.clear();
     }
     public static void clearUpdateGroups(){
-        for(GroupsPlaceholderItem item: SelectesGroups){
-            item.active = !item.active;
-        }
         SelectesGroups.clear();
     }
     public static void deleteComponent(int position,NotifyList callNotify){

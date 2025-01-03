@@ -19,7 +19,7 @@ import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 
-public class DeleteGroupsCheckListDialogFragment extends DialogFragment {
+public class ExportGroupsCheckListDialogFragment extends DialogFragment {
     public ListRedactorCheckboxDialogBinding binding;
     public static NotifyList notifyList;
     public interface NotifyList{
@@ -50,7 +50,7 @@ public class DeleteGroupsCheckListDialogFragment extends DialogFragment {
     ){
         this.notifyList = notifyList;
     }
-    public DeleteGroupsCheckListDialogFragment() {
+    public ExportGroupsCheckListDialogFragment() {
 
     }
     @Nullable
@@ -67,7 +67,7 @@ public class DeleteGroupsCheckListDialogFragment extends DialogFragment {
         //ActivityElementBinding elementActivity = ((ElementActivity) requireActivity()).getBinding();
         //ActivityElementBinding activityElementBinding = new ActivityElementBinding(getActivity());
         //подтверждения редактирования списка групп, к которым пренадлежит элемент
-        binding.titleText.setText(R.string.deleting_title);
+        binding.titleText.setText(R.string.export_title);
         binding.submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -91,6 +91,8 @@ public class DeleteGroupsCheckListDialogFragment extends DialogFragment {
         binding.backFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ComponentPlaceholderContent.clearUpdateGroups();
+                binding.checkList.getAdapter().notifyDataSetChanged();
                 getDialog().dismiss();
             }
         });

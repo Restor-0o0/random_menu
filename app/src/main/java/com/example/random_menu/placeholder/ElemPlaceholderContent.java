@@ -1,14 +1,11 @@
 package com.example.random_menu.placeholder;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
-import com.example.random_menu.ElementsList.DialogFragments.MoreElemDialogFragment;
 import com.example.random_menu.Reposetory.ReposetoryElements;
 import com.example.random_menu.Reposetory.ReposetoryGroups;
 
@@ -17,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.Consumer;
 
 /**
  * Helper class for providing sample content for user interfaces created by
@@ -32,7 +28,38 @@ public class ElemPlaceholderContent {
     private static Random randomizer = new Random();
     static public int maxPriority = 0;
     private static final List<PlaceholderItem> ELEMENTS = new ArrayList<PlaceholderItem>();
+    public static  List<PlaceholderItem> SelectesElements = new ArrayList<PlaceholderItem>();
 
+    //Проверка группны на наличие и добавление или удаление
+    public static void checkElement(PlaceholderItem item){
+        if(SelectesElements.remove(item)){
+        }
+        else{
+            SelectesElements.add(item);
+        }
+    }
+    public static void deleteSelectedElements(){
+        List<Integer> ids = new ArrayList<>();
+        for(PlaceholderItem item: SelectesElements){
+            ids.add(Integer.valueOf(item.id));
+        }
+        try {
+            for(PlaceholderItem item: SelectesElements) {
+                ELEMENTS.remove(item);
+            }
+        }
+        catch (Exception e){
+            Log.e("deleteGroup", e.toString());
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(Integer id: ids){
+                    ReposetoryElements.deleteElem(id);
+                }
+            }
+        }).start();
+    }
     public interface NotifyList{
         void CallNotify();
     }

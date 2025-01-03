@@ -62,13 +62,18 @@ public class GroupPlaceholderContent {
 
     //Проверка группны на наличие и добавление или удаление
     public static void checkGroups(PlaceholderItem item){
-        for(int i = 0; i < SelectesGroups.size(); i++){
-            if(SelectesGroups.get(i).id.equals(item.id)){
-                SelectesGroups.remove(i);
-                return;
-            }
+        if(SelectesGroups.remove(item)){
+         return;
         }
-        SelectesGroups.add(item);
+        else{
+            SelectesGroups.add(item);
+        }
+        /*for(PlaceholderItem sitem : SelectesGroups){
+
+        }
+        for(int i = 0; i < SelectesGroups.size(); i++){
+
+        }*/
     }
     public static void deleteSelectedGroups(){
         List<Integer> ids = new ArrayList<>();
@@ -269,6 +274,11 @@ public class GroupPlaceholderContent {
         }).start();
 
     }
+
+    public static void exportSelectedGroups(){
+
+    }
+
 
     public static class PlaceholderItem {
         public final String id;
