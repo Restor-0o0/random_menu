@@ -6,18 +6,26 @@ import android.util.Log;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
+import com.example.random_menu.Reposetory.ReposetoryComponents;
+import com.example.random_menu.Reposetory.ReposetoryElements;
 import com.example.random_menu.Reposetory.ReposetoryGroups;
+import com.example.random_menu.Utils.XMLUtils.Component;
+import com.example.random_menu.Utils.XMLUtils.Element;
+import com.example.random_menu.Utils.XMLUtils.Group;
+import com.example.random_menu.Utils.XMLUtils.XMLWrapper;
 
-import java.lang.reflect.Array;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
+
+import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+
+
 
 /**
  * Helper class for providing sample content for user interfaces created by
@@ -32,7 +40,7 @@ public class GroupPlaceholderContent {
     public static List<PlaceholderItem> GROUPS = new ArrayList<PlaceholderItem>();
     public static List<PlaceholderItem> noEmptyGROUPS = new ArrayList<PlaceholderItem>();
     public static  List<PlaceholderItem> SelectesGroups = new ArrayList<PlaceholderItem>();
-
+    public static XMLWrapper xmlResult;
     public static final Map<String, PlaceholderItem> ITEM_MAP = new HashMap<String, PlaceholderItem>();
     static public int maxPriority = 0;
 
@@ -275,10 +283,106 @@ public class GroupPlaceholderContent {
 
     }
 
-    public static void exportSelectedGroups(){
+    public static void exportSelectedGroups(NotifyList callBack){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    synchronized (SelectesGroups) {
+                        XMLWrapper xmlExport = new XMLWrapper();
+                        List<Group> groups = new ArrayList<>();
+                        for (PlaceholderItem currentGroup : SelectesGroups) {
+                            Group xmlGroup = new Group();
+
+                            xmlGroup.id = currentGroup.id;
+                            xmlGroup.name = currentGroup.name;
+                            xmlGroup.comment = currentGroup.comment;
+
+                            List<Element> elements = new ArrayList<>();
+
+                            Cursor cursorElements = ReposetoryElements.getAllElements(Integer.valueOf(currentGroup.id));
+                            if (cursorElements.getCount() > 0) {
+                                cursorElements.moveToFirst();
+                                do {
+                                    Element xmlElem = new Element();
+
+                                    xmlElem.id = cursorElements.getString(cursorElements.getColumnIndexOrThrow(MainBaseContract.Elements._ID));
+                                    xmlElem.name = cursorElements.getString(cursorElements.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME));
+                                    xmlElem.comment = cursorElements.getString(cursorElements.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_COMMENT));
+
+                                    List<Component> components = new ArrayList<>();
+
+                                    Cursor cursorComponents = ReposetoryComponents.loadComponentsData(Integer.valueOf(xmlElem.id));
+                                    if (cursorComponents.getCount() > 0) {
+                                        cursorComponents.moveToFirst();
+                                        do {
+                                            Component xmlComponent = new Component();
+
+                                            xmlComponent.id = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components._ID));
+                                            xmlComponent.name = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_NAME));
+                                            xmlComponent.comment = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_COMMENT));
+                                            xmlComponent.count = String.valueOf(cursorComponents.getFloat(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_QUANTITY)));
+
+                                            components.add(xmlComponent);
+                                        } while (cursorComponents.moveToNext());
+                                    }
+                                    xmlElem.components = components;
+                                    cursorComponents.close();
+                                    elements.add(xmlElem);
+                                } while (cursorElements.moveToNext());
+
+                            }
+                            xmlGroup.elements = elements;
+                            cursorElements.close();
+                            groups.add(xmlGroup);
+                        }
+
+                        xmlExport.groups = groups;
+                        xmlResult = xmlExport;
+                    }
+                    callBack.CallNotify();
+                }catch (Exception e){
+                    Log.e("XMLExportError",e.toString());
+                }
+                /*Groups groups = fetchDataFromDatabase(db);
+String xmlData = generateXML(groups);
+
+ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+ClipData clip = ClipData.newPlainText("XML Data", xmlData);
+clipboard.setPrimaryClip(clip);
+
+Toast.makeText(context, "XML copied to clipboard", Toast.LENGTH_SHORT).show();*/
+            }
+        }).start();
+    }
+    public static String groupsToXml(){
+        try {
+            Serializer serializer = new Persister();
+            StringWriter writer = new StringWriter();
+            serializer.write(xmlResult, writer);
+
+            //String xml = writer.toString();
+            //Log.d("SimpleXML", xml);
+
+            return writer.toString();
+        } catch (Exception e) {
+            Log.e("XMLConwertError",e.toString());
+            return null;
+        }
+    }
+    public static void xmlToClass(String xmlString){
+        try{
+            Serializer serializer = new Persister();
+            XMLWrapper root = serializer.read(XMLWrapper.class, xmlString);
+
+            xmlResult = root;
+
+            Log.d("RESULTTTT", String.valueOf(root.groups.get(0).name));
+        }catch (Exception e){
+
+        }
 
     }
-
 
     public static class PlaceholderItem {
         public final String id;

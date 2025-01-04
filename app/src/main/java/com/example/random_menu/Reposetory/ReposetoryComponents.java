@@ -21,7 +21,6 @@ public class ReposetoryComponents {
     }
     public static Cursor loadComponentsData(Integer idSelectElem) {
         return ContentProviderDB.query(MainBaseContract.Components.TABLE_NAME, null, MainBaseContract.Components.COLUMN_NAME_ELEMENT + "=" + idSelectElem, null, null, null, MainBaseContract.Components.COLUMN_NAME_QUANTITY + " DESC");
-
     }
     public static Cursor loadGroupsData(Integer idSelectElem) {
         return ContentProviderDB.query(MainBaseContract.Groups.TABLE_NAME,

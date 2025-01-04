@@ -19,7 +19,6 @@ public class ReposetoryElements {
                 null,
                 null,
                 MainBaseContract.Elements._ID);
-
     }
     public static void deleteElem(int dbId) {
         try {

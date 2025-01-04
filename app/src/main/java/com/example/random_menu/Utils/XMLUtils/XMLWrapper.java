@@ -1,14 +1,14 @@
 package com.example.random_menu.Utils.XMLUtils;
 
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Root;
+
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "root")
+@Root(name = "root")
 public class XMLWrapper {
-    @XmlElement(name = "group")
-    private List<Group> groups;
-
+    @ElementList(name = "group",inline = true,required = false)
+    public List<Group> groups;
 }
 

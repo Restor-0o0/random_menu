@@ -60,10 +60,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     implementation("androidx.activity:activity:1.9.3")
 
-    implementation("javax.xml.bind:jaxb-api:2.3.1")
-    implementation("com.sun.xml.bind:jaxb-impl:2.3.1")
-    kapt("com.sun.xml.bind:jaxb-impl:2.3.1")
-
+    implementation("org.simpleframework:simple-xml:2.7.1")
     // Hilt
     implementation("com.google.dagger:hilt-android:2.54")
     kapt("com.google.dagger:hilt-compiler:2.54")

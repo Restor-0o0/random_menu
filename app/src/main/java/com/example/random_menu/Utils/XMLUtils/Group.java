@@ -1,20 +1,21 @@
 package com.example.random_menu.Utils.XMLUtils;
 
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Root;
+
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
-@XmlAccessorType(XmlAccessType.FIELD)
+
+@Root(name="group")
 public class Group{
-    @XmlAttribute
+    @Attribute
     public String id;
-    @XmlAttribute
+    @Attribute
     public String name;
-    @XmlAttribute
+    @Attribute
     public String comment;
-    @XmlElement(name = "element")
+    @ElementList(name = "element",inline = true,required = false)
     public List<Element> elements;
 }

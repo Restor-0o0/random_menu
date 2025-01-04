@@ -15,13 +15,13 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.ListRedactorCheckboxDialogBinding;
-import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 
-public class DeleteGroupsCheckListDialogFragment extends DialogFragment {
+public class GroupsCheckListDialogFragment extends DialogFragment {
     public ListRedactorCheckboxDialogBinding binding;
-    public static NotifyList notifyList;
+
+    public static NotifyList callAction;
     public interface NotifyList{
         void CallNotify();
     }
@@ -46,11 +46,11 @@ public class DeleteGroupsCheckListDialogFragment extends DialogFragment {
         }
     }
     public void setVars(
-            NotifyList notifyList
+            NotifyList callAction
     ){
-        this.notifyList = notifyList;
+        this.callAction = callAction;
     }
-    public DeleteGroupsCheckListDialogFragment() {
+    public GroupsCheckListDialogFragment() {
 
     }
     @Nullable
@@ -71,11 +71,7 @@ public class DeleteGroupsCheckListDialogFragment extends DialogFragment {
         binding.submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                for(GroupPlaceholderContent.PlaceholderItem item : GroupPlaceholderContent.SelectesGroups){
-                    Log.e("DeletingSelect",item.name);
-                }
-                GroupPlaceholderContent.deleteSelectedGroups();
-                notifyList.CallNotify();
+                callAction.CallNotify();
                 //запускаем поток на обновление и потомв мейн поток возвращаем задачи на присваивание
                 getDialog().dismiss();
             }

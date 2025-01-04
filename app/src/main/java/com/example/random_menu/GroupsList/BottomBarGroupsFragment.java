@@ -1,6 +1,9 @@
 package com.example.random_menu.GroupsList;
 
 import android.animation.ObjectAnimator;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
 
@@ -16,13 +19,15 @@ import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.example.random_menu.GroupsList.DialogFragments.AddGroupDialogFragment;
-import com.example.random_menu.GroupsList.DialogFragments.DeleteGroupsCheckListDialogFragment;
+import com.example.random_menu.GroupsList.DialogFragments.GroupsCheckListDialogFragment;
 import com.example.random_menu.GroupsList.DialogFragments.MoreGroupListDialogFragment;
 import com.example.random_menu.GroupsList.DialogFragments.WinGroupElemDialogFragment;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.BottomBarFragmentBinding;
+import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 public class BottomBarGroupsFragment extends Fragment {
@@ -31,7 +36,7 @@ public class BottomBarGroupsFragment extends Fragment {
     AddGroupDialogFragment addGroupDialogFragment = new AddGroupDialogFragment();
     WinGroupElemDialogFragment winGroupElemDialogFragment = new WinGroupElemDialogFragment();
     MoreGroupListDialogFragment moreGroupListDialogFragment = new MoreGroupListDialogFragment();
-    DeleteGroupsCheckListDialogFragment deleteGroupsCheckListDialogFragment = new DeleteGroupsCheckListDialogFragment();
+    GroupsCheckListDialogFragment GroupsCheckListDialogFragment = new GroupsCheckListDialogFragment();
     private ObjectAnimator mAnimator;
     boolean isKeyboardShowing = false;
 
@@ -99,12 +104,44 @@ public class BottomBarGroupsFragment extends Fragment {
         binding.moreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 moreGroupListDialogFragment.setVars(()->{
-                    deleteGroupsCheckListDialogFragment.setVars(()->{
+
+                    //action для чеклиста на удаление групп
+                    //после подтверждения чеклиста вызывается функция удаления
+                    GroupsCheckListDialogFragment.setVars(()->{
+                        for(GroupPlaceholderContent.PlaceholderItem item : GroupPlaceholderContent.SelectesGroups){
+                            Log.e("DeletingSelect",item.name);
+                        }
+                        GroupPlaceholderContent.deleteSelectedGroups();
                         GroupsRecycleFragment fm =(GroupsRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
                         fm.binding.list1.getAdapter().notifyDataSetChanged();
                     });
-                    deleteGroupsCheckListDialogFragment.show(getParentFragmentManager(),"CheckListDialog");
+                    GroupsCheckListDialogFragment.show(getParentFragmentManager(),"CheckListDialog");
+                },()->{
+                    //action для чеклиста на экспорт групп
+                    //после подтверждения чеклиста вызывается функция экспорта
+                    GroupsCheckListDialogFragment.setVars(()->{
+                        for(GroupPlaceholderContent.PlaceholderItem item : GroupPlaceholderContent.SelectesGroups){
+                            Log.e("ExportingSelect",item.name);
+                        }
+                        Toast.makeText(binding.getRoot().getContext(), R.string.start_export, Toast.LENGTH_SHORT).show();
+                        GroupPlaceholderContent.exportSelectedGroups(()->{
+                            //суем данные в буффер, далеко не лучшая идея но надо без пермишнов.
+                            String result = GroupPlaceholderContent.groupsToXml();
+
+                            GroupPlaceholderContent.xmlToClass(result);
+                            Log.e("RESULTTTT",result);
+                            ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                            ClipData clip = ClipData.newPlainText("XML Data", result);
+                            clipboard.setPrimaryClip(clip);
+
+                            Toast.makeText(binding.getRoot().getContext(), R.string.xml_copied_to_clipboard, Toast.LENGTH_SHORT).show();
+                        });
+
+                    });
+                    GroupsCheckListDialogFragment.show(getParentFragmentManager(),"CheckListDialog");
+
                 });
                 moreGroupListDialogFragment.show(getParentFragmentManager(),"MoreListDialog");
             }

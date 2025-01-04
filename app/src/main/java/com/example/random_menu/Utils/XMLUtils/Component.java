@@ -1,18 +1,20 @@
 package com.example.random_menu.Utils.XMLUtils;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
-@XmlAccessorType(XmlAccessType.FIELD)
+
+
+@Root(name="component")
 public class Component {
-    @XmlAttribute
+    @Attribute
     public String id;
-    @XmlAttribute
+    @Attribute
     public String name;
-    @XmlAttribute
+    @Attribute
     public String comment;
-    @XmlAttribute
+    @Attribute
     public String count;
 
 }
