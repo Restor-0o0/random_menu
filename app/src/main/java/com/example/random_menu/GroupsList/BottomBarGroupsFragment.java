@@ -1,6 +1,7 @@
 package com.example.random_menu.GroupsList;
 
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -11,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,20 +26,23 @@ import android.widget.Toast;
 
 import com.example.random_menu.GroupsList.DialogFragments.AddGroupDialogFragment;
 import com.example.random_menu.GroupsList.DialogFragments.GroupsCheckListDialogFragment;
+import com.example.random_menu.Utils.ImportDialogFragment;
 import com.example.random_menu.GroupsList.DialogFragments.MoreGroupListDialogFragment;
 import com.example.random_menu.GroupsList.DialogFragments.WinGroupElemDialogFragment;
 import com.example.random_menu.R;
+import com.example.random_menu.databinding.AlertDialogBinding;
 import com.example.random_menu.databinding.BottomBarFragmentBinding;
-import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 public class BottomBarGroupsFragment extends Fragment {
     boolean imp = true;
     static BottomBarFragmentBinding binding;
+    AlertDialogBinding alertBinding;
     AddGroupDialogFragment addGroupDialogFragment = new AddGroupDialogFragment();
     WinGroupElemDialogFragment winGroupElemDialogFragment = new WinGroupElemDialogFragment();
     MoreGroupListDialogFragment moreGroupListDialogFragment = new MoreGroupListDialogFragment();
     GroupsCheckListDialogFragment GroupsCheckListDialogFragment = new GroupsCheckListDialogFragment();
+    ImportDialogFragment importDialogFragment = new ImportDialogFragment();
     private ObjectAnimator mAnimator;
     boolean isKeyboardShowing = false;
 
@@ -53,7 +59,7 @@ public class BottomBarGroupsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        Handler handler = new Handler(Looper.getMainLooper());
 
         //слушатель, который сначала скроет клавиатуру, а после второго тапа скроет view
         binding.getRoot().getViewTreeObserver().addOnGlobalLayoutListener(
@@ -110,12 +116,36 @@ public class BottomBarGroupsFragment extends Fragment {
                     //action для чеклиста на удаление групп
                     //после подтверждения чеклиста вызывается функция удаления
                     GroupsCheckListDialogFragment.setVars(()->{
-                        for(GroupPlaceholderContent.PlaceholderItem item : GroupPlaceholderContent.SelectesGroups){
-                            Log.e("DeletingSelect",item.name);
+
+                        LayoutInflater alertInflater = getLayoutInflater();
+                        alertBinding = AlertDialogBinding.inflate(alertInflater);
+                        AlertDialog dialog = new AlertDialog.Builder(binding.getRoot().getContext())
+                                .setView(alertBinding.getRoot())
+                                .create();
+                        alertBinding.getRoot().setBackground(null);
+                        alertBinding.positiveButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                for(GroupPlaceholderContent.PlaceholderItem item : GroupPlaceholderContent.SelectesGroups){
+                                    Log.e("DeletingSelect",item.name);
+                                }
+                                GroupPlaceholderContent.deleteSelectedGroups();
+                                GroupsRecycleFragment fm =(GroupsRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
+                                fm.binding.list1.getAdapter().notifyDataSetChanged();
+                                dialog.dismiss();
+                            }
+                        });
+                        alertBinding.negativeButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+                        if(dialog.getWindow() != null){
+                            dialog.getWindow().setBackgroundDrawable(binding.getRoot().getContext().getDrawable(R.drawable.back_item));
                         }
-                        GroupPlaceholderContent.deleteSelectedGroups();
-                        GroupsRecycleFragment fm =(GroupsRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
-                        fm.binding.list1.getAdapter().notifyDataSetChanged();
+                        dialog.show();
+
                     });
                     GroupsCheckListDialogFragment.show(getParentFragmentManager(),"CheckListDialog");
                 },()->{
@@ -142,6 +172,27 @@ public class BottomBarGroupsFragment extends Fragment {
                     });
                     GroupsCheckListDialogFragment.show(getParentFragmentManager(),"CheckListDialog");
 
+                },()->{
+                    importDialogFragment.setVars((xmlString)->{
+                        int res = GroupPlaceholderContent.xmlToClass(xmlString);
+                        switch (res){
+                            case 1:{
+                                Toast.makeText(binding.getRoot().getContext(), "Неверные данные", Toast.LENGTH_SHORT).show();
+                            }
+                            case 2:{
+                                Toast.makeText(binding.getRoot().getContext(), "Неизвестная ошибка", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        GroupPlaceholderContent.importIntoDB(()->{
+                            handler.post(() ->{
+                                GroupPlaceholderContent.loadGroups();
+                                GroupsRecycleFragment fm =(GroupsRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
+                                fm.binding.list1.getAdapter().notifyDataSetChanged();
+                            });
+                        });
+                        //запускаем поток на обновление и потомв мейн поток возвращаем задачи на присваивание
+                        });
+                    importDialogFragment.show(getParentFragmentManager(),"ImportDialog");
                 });
                 moreGroupListDialogFragment.show(getParentFragmentManager(),"MoreListDialog");
             }

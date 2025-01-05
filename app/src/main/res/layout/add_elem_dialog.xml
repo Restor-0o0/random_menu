@@ -38,6 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="20dp"
+                android:textColor="?attr/colorFont"
                 android:hint="Имя"/>
 
             <com.google.android.material.textfield.TextInputEditText
@@ -45,13 +46,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="20dp"
+                android:textColor="?attr/colorFont"
                 android:hint="Комментарий"/>
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/submit_button"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:text="Добавить"
+                android:textColor="?attr/colorFont"
                 android:background="@drawable/back_item"/>
 
 

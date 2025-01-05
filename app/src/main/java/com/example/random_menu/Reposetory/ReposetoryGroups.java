@@ -107,11 +107,11 @@ public class ReposetoryGroups {
             );
         }
     }
-    public static void add(String name, String commet){
+    public static long add(String name, String commet){
         ContentValues cv = new ContentValues();
         cv.put(MainBaseContract.Groups.COLUMN_NAME_NAME, name);
         cv.put(MainBaseContract.Groups.COLUMN_NAME_COMMENT, commet);
         cv.put(MainBaseContract.Groups.COLUMN_NAME_PRIORITY,String.valueOf(GroupPlaceholderContent.maxPriority + 1));
-        ContentProviderDB.insert(MainBaseContract.Groups.TABLE_NAME,null,cv);
+        return ContentProviderDB.insert(MainBaseContract.Groups.TABLE_NAME,null,cv);
     }
 }

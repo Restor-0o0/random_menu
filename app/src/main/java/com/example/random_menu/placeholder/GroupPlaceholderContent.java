@@ -15,6 +15,7 @@ import com.example.random_menu.Utils.XMLUtils.Group;
 import com.example.random_menu.Utils.XMLUtils.XMLWrapper;
 
 import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.PersistenceException;
 import org.simpleframework.xml.core.Persister;
 
 import java.io.StringWriter;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-
+import java.util.logging.Handler;
 
 
 /**
@@ -67,7 +68,9 @@ public class GroupPlaceholderContent {
         return GROUPS;
     }
 
-
+    public static PlaceholderItem getGroupByID(Integer id){
+        return ITEM_MAP.get(String.valueOf(id)) ;
+    }
     //Проверка группны на наличие и добавление или удаление
     public static void checkGroups(PlaceholderItem item){
         if(SelectesGroups.remove(item)){
@@ -217,6 +220,7 @@ public class GroupPlaceholderContent {
         }
         catch (Exception e){
             Log.e("ErrorLoadAllGroups",e.toString());
+
         }
     }
     public static void deleteElement(int idGroup){
@@ -309,7 +313,7 @@ public class GroupPlaceholderContent {
                                     xmlElem.id = cursorElements.getString(cursorElements.getColumnIndexOrThrow(MainBaseContract.Elements._ID));
                                     xmlElem.name = cursorElements.getString(cursorElements.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME));
                                     xmlElem.comment = cursorElements.getString(cursorElements.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_COMMENT));
-
+                                    xmlElem.priority = cursorElements.getString(cursorElements.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_PRIORITY));
                                     List<Component> components = new ArrayList<>();
 
                                     Cursor cursorComponents = ReposetoryComponents.loadComponentsData(Integer.valueOf(xmlElem.id));
@@ -344,14 +348,6 @@ public class GroupPlaceholderContent {
                 }catch (Exception e){
                     Log.e("XMLExportError",e.toString());
                 }
-                /*Groups groups = fetchDataFromDatabase(db);
-String xmlData = generateXML(groups);
-
-ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-ClipData clip = ClipData.newPlainText("XML Data", xmlData);
-clipboard.setPrimaryClip(clip);
-
-Toast.makeText(context, "XML copied to clipboard", Toast.LENGTH_SHORT).show();*/
             }
         }).start();
     }
@@ -370,7 +366,7 @@ Toast.makeText(context, "XML copied to clipboard", Toast.LENGTH_SHORT).show();*/
             return null;
         }
     }
-    public static void xmlToClass(String xmlString){
+    public static int xmlToClass(String xmlString){
         try{
             Serializer serializer = new Persister();
             XMLWrapper root = serializer.read(XMLWrapper.class, xmlString);
@@ -378,12 +374,53 @@ Toast.makeText(context, "XML copied to clipboard", Toast.LENGTH_SHORT).show();*/
             xmlResult = root;
 
             Log.d("RESULTTTT", String.valueOf(root.groups.get(0).name));
+        }catch (PersistenceException pe){
+            Log.e("XMLDeserializerError",pe.toString());
+            return 1;
         }catch (Exception e){
-
+            Log.e("XMLDeserializerError",e.toString());
+            return 2;
         }
+        return 0;
+    }
+    public static void importIntoDB(NotifyList callNotify){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    int groupID,elemID;
+                    if(xmlResult.groups != null) {
+                        for (Group group : xmlResult.groups) {
+                            groupID = (int) ReposetoryGroups.add(group.name, group.comment);
+                            if (group.elements != null) {
+
+
+                                for (Element elem : group.elements) {
+                                    elemID = (int) ReposetoryElements.add(elem.name, elem.comment, Integer.valueOf(elem.priority));
+                                    ReposetoryElements.addGroupLink(elemID, groupID);
+                                    if (elem.components != null) {
+                                        for (Component component : elem.components) {
+                                            ReposetoryComponents.addComponent(
+                                                    Integer.valueOf(elem.id),
+                                                    component.name,
+                                                    component.comment,
+                                                    component.count);
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                    callNotify.CallNotify();
+                }catch (Exception e){
+                    Log.e("ImportIntoDBError",e.toString());
+                }
+
+            }
+        }).start();
 
     }
-
     public static class PlaceholderItem {
         public final String id;
         public String name;

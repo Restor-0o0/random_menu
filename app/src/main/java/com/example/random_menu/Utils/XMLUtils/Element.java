@@ -17,6 +17,8 @@ public class Element {
     public String name;
     @Attribute
     public String comment;
+    @Attribute
+    public String priority;
     @ElementList(name = "component",inline = true,required = false)
     public List<Component> components;
 }

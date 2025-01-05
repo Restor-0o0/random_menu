@@ -2,6 +2,7 @@ package com.example.random_menu.ElementsList;
 
 import static android.widget.RelativeLayout.*;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -25,9 +26,11 @@ import com.example.random_menu.Data.Item;
 import com.example.random_menu.Element.ElementActivity;
 import com.example.random_menu.ElementsList.DialogFragments.MoreElemDialogFragment;
 import com.example.random_menu.R;
+import com.example.random_menu.databinding.AlertDialogBinding;
 import com.example.random_menu.databinding.ListFragmentBinding;
 import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
+import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +42,7 @@ public class ElementsListRecycleFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     ListFragmentBinding binding;
+    AlertDialogBinding alertBinding;
     MoreElemDialogFragment moreElemDialogFragment = new MoreElemDialogFragment();
     // TODO: Customize parameters
     //id элемента для которого вызвано moreView
@@ -61,7 +65,33 @@ public class ElementsListRecycleFragment extends Fragment {
                             Integer.valueOf(listPosition),
                             screenPosition,
                             Integer.valueOf(id),
-                            ()->{
+                            (dbID)->{
+                                LayoutInflater alertInflater = getLayoutInflater();
+                                alertBinding = AlertDialogBinding.inflate(alertInflater);
+                                AlertDialog dialog = new AlertDialog.Builder(binding.getRoot().getContext())
+                                        .setView(alertBinding.getRoot())
+                                        .create();
+                                alertBinding.getRoot().setBackground(null);
+                                alertBinding.positiveButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        ElemPlaceholderContent.deleteElem(Integer.valueOf(dbID));
+
+                                        //GroupPlaceholderContent.deleteGroup(dbID);
+                                        binding.list1.getAdapter().notifyDataSetChanged();
+                                        dialog.dismiss();
+                                    }
+                                });
+                                alertBinding.negativeButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                if(dialog.getWindow() != null){
+                                    dialog.getWindow().setBackgroundDrawable(binding.getRoot().getContext().getDrawable(R.drawable.back_item));
+                                }
+                                dialog.show();
                                 binding.list1.getAdapter().notifyDataSetChanged();
                             },
                             ()->{
@@ -142,7 +172,33 @@ public class ElementsListRecycleFragment extends Fragment {
                             Integer.valueOf(listPosition),
                             screenPosition,
                             Integer.valueOf(id),
-                            ()->{
+                            (dbID)->{
+                                LayoutInflater alertInflater = getLayoutInflater();
+                                alertBinding = AlertDialogBinding.inflate(alertInflater);
+                                AlertDialog dialog = new AlertDialog.Builder(binding.getRoot().getContext())
+                                        .setView(alertBinding.getRoot())
+                                        .create();
+                                alertBinding.getRoot().setBackground(null);
+                                alertBinding.positiveButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        ElemPlaceholderContent.deleteElem(Integer.valueOf(dbID));
+
+                                        //GroupPlaceholderContent.deleteGroup(dbID);
+                                        binding.list1.getAdapter().notifyDataSetChanged();
+                                        dialog.dismiss();
+                                    }
+                                });
+                                alertBinding.negativeButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                if(dialog.getWindow() != null){
+                                    dialog.getWindow().setBackgroundDrawable(binding.getRoot().getContext().getDrawable(R.drawable.back_item));
+                                }
+                                dialog.show();
                                 binding.list1.getAdapter().notifyDataSetChanged();
                             },
                             ()->{

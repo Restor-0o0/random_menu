@@ -31,4 +31,6 @@
     <string name="export_title">Экспорт</string>
     <string name="start_export">Экспорт...</string>
     <string name="xml_copied_to_clipboard">Данные скопированы в буффер обмена</string>
+    <string name="Deletring_alert_title">Удаление</string>
+    <string name="complete_delete">Точно удалить?!?</string>
 </resources>

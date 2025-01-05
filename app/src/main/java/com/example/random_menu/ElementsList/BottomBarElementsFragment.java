@@ -1,10 +1,14 @@
 package com.example.random_menu.ElementsList;
 
 import android.animation.ObjectAnimator;
-import android.content.ContentValues;
-import android.content.Intent;
+import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,34 +17,33 @@ import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
-import com.example.random_menu.ContentProvider.ContentProviderDB;
-import com.example.random_menu.DB.MainBaseContract;
-import com.example.random_menu.Element.ElementActivity;
 import com.example.random_menu.ElementsList.DialogFragments.AddElemDialogFragment;
-import com.example.random_menu.ElementsList.DialogFragments.DeleteElementsCheckListDialogFragment;
+import com.example.random_menu.ElementsList.DialogFragments.ElementsCheckListDialogFragment;
 import com.example.random_menu.ElementsList.DialogFragments.MoreElemListDialogFragment;
 import com.example.random_menu.ElementsList.DialogFragments.WinElemDialogFragment;
-import com.example.random_menu.GroupsList.DialogFragments.AddGroupDialogFragment;
-import com.example.random_menu.GroupsList.DialogFragments.MoreGroupListDialogFragment;
-import com.example.random_menu.GroupsList.DialogFragments.WinGroupElemDialogFragment;
+import com.example.random_menu.Utils.ImportDialogFragment;
 import com.example.random_menu.R;
+import com.example.random_menu.databinding.AlertDialogBinding;
 import com.example.random_menu.databinding.BottomBarFragmentBinding;
-import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
+import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 public class BottomBarElementsFragment extends Fragment {
     boolean imp = true;
     static BottomBarFragmentBinding binding;
+    AlertDialogBinding alertBinding;
     AddElemDialogFragment addElemDialogFragment = new AddElemDialogFragment();
     WinElemDialogFragment winElemDialogFragment = new WinElemDialogFragment();
     MoreElemListDialogFragment moreElemListDialogFragment = new MoreElemListDialogFragment();
-    DeleteElementsCheckListDialogFragment deleteElementsCheckListDialogFragment = new DeleteElementsCheckListDialogFragment();
+    ElementsCheckListDialogFragment elementsCheckListDialogFragment = new ElementsCheckListDialogFragment();
+    ImportDialogFragment importDialogFragment = new ImportDialogFragment();
+
     private ObjectAnimator mAnimator;
     boolean isKeyboardShowing = false;
     @Override
@@ -57,6 +60,7 @@ public class BottomBarElementsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Handler handler = new Handler(Looper.getMainLooper());
 
         binding.getRoot().getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -104,11 +108,78 @@ public class BottomBarElementsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 moreElemListDialogFragment.setVars(()->{
-                    deleteElementsCheckListDialogFragment.setVars(()->{
+                    elementsCheckListDialogFragment.setVars(()->{
+                        LayoutInflater alertInflater = getLayoutInflater();
+                        alertBinding = AlertDialogBinding.inflate(alertInflater);
+                        AlertDialog dialog = new AlertDialog.Builder(binding.getRoot().getContext())
+                                .setView(alertBinding.getRoot())
+                                .create();
+                        alertBinding.getRoot().setBackground(null);
+                        alertBinding.positiveButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                for(ElemPlaceholderContent.PlaceholderItem item : ElemPlaceholderContent.SelectesElements){
+                                    Log.e("DeletingSelect",item.name);
+                                }
+                                ElemPlaceholderContent.deleteSelectedElements();
+                                ElementsListRecycleFragment fm =(ElementsListRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
+                                fm.binding.list1.getAdapter().notifyDataSetChanged();
+                                dialog.dismiss();
+                            }
+                        });
+                        alertBinding.negativeButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+                        if(dialog.getWindow() != null){
+                            dialog.getWindow().setBackgroundDrawable(binding.getRoot().getContext().getDrawable(R.drawable.back_item));
+                        }
+                        dialog.show();
+
+                    });
+                    elementsCheckListDialogFragment.show(getParentFragmentManager(),"CheckListDialog");
+                },
+                ()->{
+                    elementsCheckListDialogFragment.setVars(()->{
+                        ElemPlaceholderContent.exportSelectedElements(()->{
+                            String result = ElemPlaceholderContent.groupsToXml();
+
+                            ElemPlaceholderContent.xmlToClass(result);
+                            Log.e("RESULTTTT",result);
+                            ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                            ClipData clip = ClipData.newPlainText("XML Data", result);
+                            clipboard.setPrimaryClip(clip);
+
+                            Toast.makeText(binding.getRoot().getContext(), R.string.xml_copied_to_clipboard, Toast.LENGTH_SHORT).show();
+                        });
                         ElementsListRecycleFragment fm =(ElementsListRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
                         fm.binding.list1.getAdapter().notifyDataSetChanged();
                     });
-                    deleteElementsCheckListDialogFragment.show(getParentFragmentManager(),"CheckListDialog");
+                    elementsCheckListDialogFragment.show(getParentFragmentManager(),"CheckListDialog");
+                },
+                ()->{
+                    importDialogFragment.setVars((xmlString)->{
+                        int res = ElemPlaceholderContent.xmlToClass(xmlString);
+                        switch (res){
+                            case 1:{
+                                Toast.makeText(binding.getRoot().getContext(), "Неверные данные", Toast.LENGTH_SHORT).show();
+                            }
+                            case 2:{
+                                Toast.makeText(binding.getRoot().getContext(), "Неизвестная ошибка", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        ElemPlaceholderContent.importIntoDB(()->{
+                            handler.post(() ->{
+                                ElemPlaceholderContent.loadElements();
+                                ElementsListRecycleFragment fm =(ElementsListRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
+                                fm.binding.list1.getAdapter().notifyDataSetChanged();
+                            });
+                        });
+                        //запускаем поток на обновление и потомв мейн поток возвращаем задачи на присваивание
+                    });
+                    importDialogFragment.show(getParentFragmentManager(),"ImportDialog");
                 });
                 moreElemListDialogFragment.show(getParentFragmentManager(),"MoreListDialog");
             }

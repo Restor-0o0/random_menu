@@ -6,9 +6,19 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.example.random_menu.DB.MainBaseContract;
+import com.example.random_menu.Reposetory.ReposetoryComponents;
 import com.example.random_menu.Reposetory.ReposetoryElements;
 import com.example.random_menu.Reposetory.ReposetoryGroups;
+import com.example.random_menu.Utils.XMLUtils.Component;
+import com.example.random_menu.Utils.XMLUtils.Element;
+import com.example.random_menu.Utils.XMLUtils.Group;
+import com.example.random_menu.Utils.XMLUtils.XMLWrapper;
 
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.PersistenceException;
+import org.simpleframework.xml.core.Persister;
+
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +37,7 @@ public class ElemPlaceholderContent {
     public static String nameSelectGroup;
     private static Random randomizer = new Random();
     static public int maxPriority = 0;
+    public static XMLWrapper xmlResult;
     private static final List<PlaceholderItem> ELEMENTS = new ArrayList<PlaceholderItem>();
     public static  List<PlaceholderItem> SelectesElements = new ArrayList<PlaceholderItem>();
 
@@ -71,16 +82,12 @@ public class ElemPlaceholderContent {
     public static List<PlaceholderItem> getElements(){
         return ELEMENTS;
     }
-    public static void deleteElem(int position, int dbId,NotifyList callNotify ){
+    public static void deleteElem(int dbId){
         Handler handler = new Handler(Looper.getMainLooper());
         new Thread(new Runnable() {
             @Override
             public void run() {
                 ReposetoryElements.deleteElem(dbId);
-                handler.post(()->{
-                    //Log.e("DeleteGrouperror", String.valueOf(GroupPlaceholderContent.getGroups().size()));
-                    callNotify.CallNotify();
-                });
             }
         }).start();
         ELEMENTS.remove(ITEM_MAP.get(String.valueOf(dbId)));
@@ -133,6 +140,7 @@ public class ElemPlaceholderContent {
                 addItem(new ElemPlaceholderContent.PlaceholderItem(
                         cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements._ID)),
                         cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_COMMENT)),
                         cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_PRIORITY))
                         ));
             }while(cursor.moveToNext());
@@ -151,6 +159,7 @@ public class ElemPlaceholderContent {
                 if(idElem > 0){
                     addItem(new PlaceholderItem(String.valueOf(idElem),
                             name,
+                            commet,
                             maxPriority + 1));
                     maxPriority += 1;
                     GroupPlaceholderContent.addElement(Integer.valueOf(idSelectGroup));
@@ -160,14 +169,152 @@ public class ElemPlaceholderContent {
         }).start();
     }
 
+
+
+    public static void exportSelectedElements(NotifyList callBack){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    synchronized (SelectesElements) {
+                        GroupPlaceholderContent.PlaceholderItem groupItem = GroupPlaceholderContent.getGroupByID(Integer.valueOf(idSelectGroup));
+                        if (groupItem != null) {
+
+                            XMLWrapper xmlExport = new XMLWrapper();
+                            List<Group> groups = new ArrayList<>();
+                            Group xmlGroup = new Group();
+
+
+                            xmlGroup.id = groupItem.id;
+                            xmlGroup.name = groupItem.name;
+                            xmlGroup.comment = groupItem.comment;
+
+                            List<Element> elements = new ArrayList<>();
+
+                            for (PlaceholderItem elem : SelectesElements) {
+
+                                Element xmlElem = new Element();
+
+                                xmlElem.id = elem.id;
+                                xmlElem.name = elem.name;
+                                xmlElem.comment = elem.comment;
+                                xmlElem.priority = String.valueOf(elem.priority);
+                                List<Component> components = new ArrayList<>();
+
+                                Cursor cursorComponents = ReposetoryComponents.loadComponentsData(Integer.valueOf(xmlElem.id));
+                                if (cursorComponents.getCount() > 0) {
+                                    cursorComponents.moveToFirst();
+                                    do {
+                                        Component xmlComponent = new Component();
+
+                                        xmlComponent.id = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components._ID));
+                                        xmlComponent.name = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_NAME));
+                                        xmlComponent.comment = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_COMMENT));
+                                        xmlComponent.count = String.valueOf(cursorComponents.getFloat(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_QUANTITY)));
+
+                                        components.add(xmlComponent);
+                                    } while (cursorComponents.moveToNext());
+                                }
+                                xmlElem.components = components;
+                                cursorComponents.close();
+                                elements.add(xmlElem);
+                            }
+                            xmlGroup.elements = elements;
+                            groups.add(xmlGroup);
+
+
+                            xmlExport.groups = groups;
+                            xmlResult = xmlExport;
+                        }
+                    }
+                    callBack.CallNotify();
+                } catch (Exception e) {
+                    Log.e("XMLExportError", e.toString());
+                }
+            }
+    }).start();
+}
+public static String groupsToXml(){
+    try {
+        Serializer serializer = new Persister();
+        StringWriter writer = new StringWriter();
+        serializer.write(xmlResult, writer);
+
+        //String xml = writer.toString();
+        //Log.d("SimpleXML", xml);
+
+        return writer.toString();
+    } catch (Exception e) {
+        Log.e("XMLConwertError",e.toString());
+        return null;
+    }
+}
+public static int xmlToClass(String xmlString){
+    try{
+        Serializer serializer = new Persister();
+        XMLWrapper root = serializer.read(XMLWrapper.class, xmlString);
+
+        xmlResult = root;
+
+        Log.d("RESULTTTT", String.valueOf(root.groups.get(0).name));
+    }catch (PersistenceException pe){
+        Log.e("XMLDeserializerError",pe.toString());
+        return 1;
+    }catch (Exception e){
+        Log.e("XMLDeserializerError",e.toString());
+        return 2;
+    }
+    return 0;
+}
+public static void importIntoDB(NotifyList callNotify){
+    new Thread(new Runnable() {
+        @Override
+        public void run() {
+            try{
+                int groupID = Integer.valueOf(idSelectGroup);
+                int elemID;
+                if(xmlResult.groups != null) {
+                    for (Group group : xmlResult.groups) {
+                        if (group.elements != null) {
+                            for (Element elem : group.elements) {
+                                elemID = (int) ReposetoryElements.add(elem.name, elem.comment, Integer.valueOf(elem.priority));
+                                ReposetoryElements.addGroupLink(elemID, groupID);
+                                if (elem.components != null) {
+                                    for (Component component : elem.components) {
+                                        ReposetoryComponents.addComponent(
+                                                Integer.valueOf(elem.id),
+                                                component.name,
+                                                component.comment,
+                                                component.count);
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+                callNotify.CallNotify();
+            }catch (Exception e){
+                Log.e("ImportIntoDBError",e.toString());
+            }
+
+        }
+    }).start();
+
+}
+
+
+
     public static class PlaceholderItem {
         public final String id;
         public String name;
+        public String comment;
         public Integer priority;
 
-        public PlaceholderItem(String id, String content,Integer priority) {
+        public PlaceholderItem(String id, String content,String comment,Integer priority) {
             this.id = id;
             this.name = content;
+            this.comment = comment;
             this.priority = priority;
         }
 

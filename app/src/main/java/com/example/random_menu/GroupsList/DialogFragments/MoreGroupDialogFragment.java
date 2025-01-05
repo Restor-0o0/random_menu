@@ -1,6 +1,9 @@
 package com.example.random_menu.GroupsList.DialogFragments;
 
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,8 +37,12 @@ public class MoreGroupDialogFragment extends DialogFragment {
     private static Integer listPositionCalledItem;
     private static int screenPositionCalledItem;
     private static int dbId;
-    private static NotifyList callNotify,callInfoGroupDialog;
+    private static NotifyList callInfoGroupDialog;
+    private static DeleteAction callNotify;
 
+    public interface DeleteAction{
+        void callAction(Integer dbID);
+    }
     //интерфейс для передачи лямбда функций
     public interface NotifyList{
         void CallNotify();
@@ -46,7 +54,7 @@ public class MoreGroupDialogFragment extends DialogFragment {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         return dialog;
     }
-    public void setVars(Integer listPosition, int screenPosition, int dbId, NotifyList callNotify,NotifyList callInfoGroupDialog){
+    public void setVars(Integer listPosition, int screenPosition, int dbId, DeleteAction callNotify,NotifyList callInfoGroupDialog){
         listPositionCalledItem = listPosition;
         screenPositionCalledItem = screenPosition;
         this.dbId = dbId;
@@ -116,11 +124,31 @@ public class MoreGroupDialogFragment extends DialogFragment {
             }
         });
         //обработчик нажатия на кнопку удаления компонента
+        binding.exportItemBut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GroupPlaceholderContent.SelectesGroups.clear();
+                GroupPlaceholderContent.checkGroups(GroupPlaceholderContent.ITEM_MAP.get(String.valueOf(dbId)));
+                Toast.makeText(binding.getRoot().getContext(), R.string.start_export, Toast.LENGTH_SHORT).show();
+                GroupPlaceholderContent.exportSelectedGroups(()->{
+                    //суем данные в буффер, далеко не лучшая идея но надо без пермишнов.
+                    String result = GroupPlaceholderContent.groupsToXml();
+
+                    //GroupPlaceholderContent.xmlToClass(result);
+                    //Log.e("RESULTTTT",result);
+                    ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("XML Data", result);
+                    clipboard.setPrimaryClip(clip);
+
+                    Toast.makeText(binding.getRoot().getContext(), R.string.xml_copied_to_clipboard, Toast.LENGTH_SHORT).show();
+                });
+                dismiss();
+            }
+        });
         binding.deleteItemBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                GroupPlaceholderContent.deleteGroup(dbId);
-                callNotify.CallNotify();
+                callNotify.callAction(dbId);
 
 
                 Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(),R.anim.anim_hide);

@@ -20,8 +20,7 @@ import java.util.Map;
  * <p>
  * TODO: Replace all uses of this class before publishing your app.
  */
-public class
-ComponentPlaceholderContent {
+public class ComponentPlaceholderContent {
     //Данные элемента
     public static String idSelectElem;
     public static String nameSelectElem;
@@ -47,6 +46,16 @@ ComponentPlaceholderContent {
         void CallNotify();
     }
 
+
+    public static void addComponent(String name, String comment,String qantity,NotifyList callNotify){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ReposetoryComponents.addComponent(Integer.valueOf(idSelectElem),name,comment,qantity);
+                callNotify.CallNotify();
+            }
+        }).start();
+    }
     //добавление компонента в список
     public static void addComponentsItem(ComponentsPlaceholderItem item) {
         Components.add(item);
@@ -160,9 +169,7 @@ ComponentPlaceholderContent {
         }
         if(countActive == 0){
             Log.e("ELEMDELETE","SNESLO");
-            ElemPlaceholderContent.deleteElem(positionSelectElem,Integer.valueOf(idSelectElem),()->{
-
-            });
+            ElemPlaceholderContent.deleteElem(Integer.valueOf(idSelectElem));
         }
     }
     //загрузка информации элемента из бд

@@ -81,6 +81,7 @@ public class ElementsListRecyclerViewAdapter extends RecyclerView.Adapter<Elemen
         mValues.set(position,new ElemPlaceholderContent.PlaceholderItem(
                 mValues.get(position).id,
                 name,
+                mValues.get(position).comment,
                 mValues.get(position).priority
         ));
     }

@@ -103,28 +103,18 @@ public class AddComponentDialogFragment extends DialogFragment {
             public void onClick(View view) {
                 Handler handler = new Handler(Looper.getMainLooper());
                 if(binding.addComponentName.getText().toString().length() != 0) {
-                    Runnable task = new Runnable() {
-                        @Override
-                        public void run() {
-                            ContentValues cv = new ContentValues();
-                            cv.put(MainBaseContract.Components.COLUMN_NAME_NAME, binding.addComponentName.getText().toString());
-                            cv.put(MainBaseContract.Components.COLUMN_NAME_COMMENT, binding.addComponentComment.getText().toString());
-                            cv.put(MainBaseContract.Components.COLUMN_NAME_QUANTITY, binding.addComponentQuantity.getText().toString());
-                            cv.put(MainBaseContract.Components.COLUMN_NAME_ELEMENT, ComponentPlaceholderContent.idSelectElem);
-                            ContentProviderDB.insert(MainBaseContract.Components.TABLE_NAME, null, cv);
-                            ComponentPlaceholderContent.loadComponentsData();
+                    ComponentPlaceholderContent.addComponent(
+                            binding.addComponentName.getText().toString(),
+                            binding.addComponentComment.getText().toString(),
+                            binding.addComponentQuantity.getText().toString(),
+                        ()->{
                             handler.post(() -> {
                                 notify.notifyList();
                             });
-                        }
-                    };
-                    Thread thread = new Thread(task);
-                    thread.start();
+                        });
                 }
                 getDialog().dismiss();
-
             }
-
         });
 
         binding.backFrame.setOnClickListener(new View.OnClickListener() {

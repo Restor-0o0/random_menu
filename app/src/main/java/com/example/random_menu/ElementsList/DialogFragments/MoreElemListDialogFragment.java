@@ -28,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class MoreElemListDialogFragment extends DialogFragment {
     MoreListDialogBinding binding;
-    private static NotifyList callCheckList;
+    private static NotifyList callCheckList,callImportCheckList,callExportCheckList;
 
 
     @Inject
@@ -61,9 +61,13 @@ public class MoreElemListDialogFragment extends DialogFragment {
         }
     }
     public void setVars(
-            NotifyList callCheckList
+            NotifyList callCheckList,
+            NotifyList callExportCheckList,
+            NotifyList callImportCheckList
     ){
         this.callCheckList = callCheckList;
+        this.callImportCheckList = callImportCheckList;
+        this.callExportCheckList = callExportCheckList;
     }
     public MoreElemListDialogFragment() {}
     @Nullable
@@ -111,6 +115,21 @@ public class MoreElemListDialogFragment extends DialogFragment {
                 dismiss();
             }
         });
+        binding.exportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callExportCheckList.CallNotify();
+                dismiss();
+            }
+        });
+
+        binding.importButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callImportCheckList.CallNotify();
+                dismiss();
+            }
+        });
         //закрытия диалога
         binding.backFrame.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,17 +142,6 @@ public class MoreElemListDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 themeManager.toggleTheme();
-                /*SharedPreferences.Editor editor = saveManager.edit();
-                if(saveManager.getString("theme","light") == "dark"){
-                    Log.e("ToggleTheme",saveManager.getString("theme","light"));
-                    binding.getRoot().getContext().setTheme(R.style.LightTheme);
-                    editor.putString("theme","light");
-                }else{
-                    Log.e("ToggleTheme",saveManager.getString("theme","light"));
-                    binding.getRoot().getContext().setTheme(R.style.DarkTheme);
-                    editor.putString("theme","dark");
-                }
-                editor.apply();*/
             }
         });
 

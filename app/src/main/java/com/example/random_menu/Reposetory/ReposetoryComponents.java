@@ -1,5 +1,6 @@
 package com.example.random_menu.Reposetory;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
@@ -9,6 +10,16 @@ import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import java.util.List;
 
 public class ReposetoryComponents {
+
+    public static void addComponent(Integer idElement,String name, String comment, String quantity){
+        ContentValues cv = new ContentValues();
+        cv.put(MainBaseContract.Components.COLUMN_NAME_NAME, name);
+        cv.put(MainBaseContract.Components.COLUMN_NAME_COMMENT, comment);
+        cv.put(MainBaseContract.Components.COLUMN_NAME_QUANTITY, quantity);
+        cv.put(MainBaseContract.Components.COLUMN_NAME_ELEMENT, idElement);
+        ContentProviderDB.insert(MainBaseContract.Components.TABLE_NAME, null, cv);
+        ComponentPlaceholderContent.loadComponentsData();
+    }
     public static void deleteComponent(Integer idComponent) {
         ContentProviderDB.delete(MainBaseContract.Components.TABLE_NAME,MainBaseContract.Components._ID + " = " + idComponent,null);
 
