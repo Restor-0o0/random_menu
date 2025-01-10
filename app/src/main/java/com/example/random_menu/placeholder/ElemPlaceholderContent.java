@@ -210,7 +210,7 @@ public class ElemPlaceholderContent {
                                         xmlComponent.id = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components._ID));
                                         xmlComponent.name = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_NAME));
                                         xmlComponent.comment = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_COMMENT));
-                                        xmlComponent.count = String.valueOf(cursorComponents.getFloat(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_QUANTITY)));
+                                        xmlComponent.count = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_QUANTITY));
 
                                         components.add(xmlComponent);
                                     } while (cursorComponents.moveToNext());

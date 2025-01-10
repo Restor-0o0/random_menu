@@ -3,9 +3,14 @@ package com.example.random_menu.ElementsList;
 import static android.widget.RelativeLayout.*;
 
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +31,7 @@ import com.example.random_menu.Data.Item;
 import com.example.random_menu.Element.ElementActivity;
 import com.example.random_menu.ElementsList.DialogFragments.MoreElemDialogFragment;
 import com.example.random_menu.R;
+import com.example.random_menu.Utils.ToastHelper;
 import com.example.random_menu.databinding.AlertDialogBinding;
 import com.example.random_menu.databinding.ListFragmentBinding;
 import com.example.random_menu.placeholder.ComponentPlaceholderContent;
@@ -35,9 +41,14 @@ import com.example.random_menu.placeholder.GroupPlaceholderContent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * A fragment representing a list of Items.
  */
+@AndroidEntryPoint
 public class ElementsListRecycleFragment extends Fragment {
 
     // TODO: Customize parameter argument names
@@ -45,6 +56,8 @@ public class ElementsListRecycleFragment extends Fragment {
     AlertDialogBinding alertBinding;
     MoreElemDialogFragment moreElemDialogFragment = new MoreElemDialogFragment();
     // TODO: Customize parameters
+    @Inject
+    ToastHelper toast;
     //id элемента для которого вызвано moreView
     private int moreViewItemId;
 
@@ -57,6 +70,7 @@ public class ElementsListRecycleFragment extends Fragment {
         binding = ListFragmentBinding.inflate(inflater, container, false);
         //View view = inflater.inflate(R.layout.list_elem_fragment, container, false);
 
+        Handler handler = new Handler(Looper.getMainLooper());
 
         adapter = new ElementsListRecyclerViewAdapter(ElemPlaceholderContent.getElements(),
                 (screenPosition,id, number,listPosition) ->{//функция для отрисовки moreView
@@ -100,6 +114,24 @@ public class ElementsListRecycleFragment extends Fragment {
                                 //ComponentPlaceholderContent.loadComponents();
                                 Intent intent = new Intent(getActivity(), ElementActivity.class);
                                 startActivity(intent);
+                            },(dbId)->{
+                                ElemPlaceholderContent.SelectesElements.clear();
+                                ElemPlaceholderContent.checkElement(ElemPlaceholderContent.ITEM_MAP.get(String.valueOf(dbId)));
+                                toast.showMessage(getString(R.string.start_export));
+
+                                ElemPlaceholderContent.exportSelectedElements(()->{
+                                    //суем данные в буффер, далеко не лучшая идея но надо без пермишнов.
+                                    String result = ElemPlaceholderContent.groupsToXml();
+
+                                    //ElemPlaceholderContent.xmlToClass(result);
+                                    ///Log.e("RESULTTTT",result);
+                                    ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                                    ClipData clip = ClipData.newPlainText("XML Data", result);
+                                    clipboard.setPrimaryClip(clip);
+                                    handler.post(()->{
+                                        toast.showMessage(getString(R.string.xml_copied_to_clipboard));
+                                    });
+                                });
                             }
                     );
                     moreElemDialogFragment.show(getParentFragmentManager(),"MoreItemDialog");
@@ -164,6 +196,7 @@ public class ElementsListRecycleFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        Handler handler = new Handler(Looper.getMainLooper());
 
         adapter = new ElementsListRecyclerViewAdapter(ElemPlaceholderContent.getElements(),
                 (screenPosition,id, number,listPosition) ->{//функция для отрисовки moreView
@@ -207,6 +240,24 @@ public class ElementsListRecycleFragment extends Fragment {
                                 //ComponentPlaceholderContent.loadComponents();
                                 Intent intent = new Intent(getActivity(), ElementActivity.class);
                                 startActivity(intent);
+                            },(dbId)->{
+                                ElemPlaceholderContent.SelectesElements.clear();
+                                ElemPlaceholderContent.checkElement(ElemPlaceholderContent.ITEM_MAP.get(String.valueOf(dbId)));
+                                toast.showMessage(getString(R.string.start_export));
+
+                                ElemPlaceholderContent.exportSelectedElements(()->{
+                                    //суем данные в буффер, далеко не лучшая идея но надо без пермишнов.
+                                    String result = ElemPlaceholderContent.groupsToXml();
+
+                                    //ElemPlaceholderContent.xmlToClass(result);
+                                    ///Log.e("RESULTTTT",result);
+                                    ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                                    ClipData clip = ClipData.newPlainText("XML Data", result);
+                                    clipboard.setPrimaryClip(clip);
+                                    handler.post(()->{
+                                        toast.showMessage(getString(R.string.xml_copied_to_clipboard));
+                                    });
+                                });
                             }
                     );
                     moreElemDialogFragment.show(getParentFragmentManager(),"MoreItemDialog");

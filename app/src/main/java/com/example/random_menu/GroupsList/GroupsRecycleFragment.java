@@ -1,6 +1,9 @@
 package com.example.random_menu.GroupsList;
 
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -12,10 +15,13 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.random_menu.Data.Item;
 import com.example.random_menu.ElementsList.ElementsListActivity;
@@ -23,6 +29,7 @@ import com.example.random_menu.GroupsList.DialogFragments.MoreGroupDialogFragmen
 
 import com.example.random_menu.GroupsList.DialogFragments.PropertiesDialogFragment;
 import com.example.random_menu.R;
+import com.example.random_menu.Utils.ToastHelper;
 import com.example.random_menu.databinding.AlertDialogBinding;
 import com.example.random_menu.databinding.ListFragmentBinding;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
@@ -31,14 +38,21 @@ import com.example.random_menu.placeholder.GroupPlaceholderContent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * A fragment representing a list of Items.
  */
+@AndroidEntryPoint
 public class GroupsRecycleFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     ListFragmentBinding binding;
     AlertDialogBinding alertBinding;
+    @Inject
+    ToastHelper toast;
     private final MoreGroupDialogFragment moreItemDialogFragment = new MoreGroupDialogFragment();
     private final PropertiesDialogFragment propertiesDialogFragment = new PropertiesDialogFragment();
     //private static List<Item> ITEMS;
@@ -54,6 +68,7 @@ public class GroupsRecycleFragment extends Fragment {
         binding = ListFragmentBinding.inflate(inflater, container, false);
         //View view = inflater.inflate(R.layout.list_elem_fragment, container, false);
 
+        Handler handler = new Handler(Looper.getMainLooper());
 
         adapter = new GroupsRecyclerViewAdapter(
                 GroupPlaceholderContent.GROUPS,
@@ -100,6 +115,22 @@ public class GroupsRecycleFragment extends Fragment {
                                 }
                         );
                         propertiesDialogFragment.show(getParentFragmentManager(),"PropertiesDialog");
+                    },(dbId)->{
+
+                        GroupPlaceholderContent.SelectesGroups.clear();
+                        GroupPlaceholderContent.checkGroups(GroupPlaceholderContent.ITEM_MAP.get(String.valueOf(dbId)));
+                        toast.showMessage(getString(R.string.start_export));
+                        GroupPlaceholderContent.exportSelectedGroups(()->{
+                            //суем данные в буффер, далеко не лучшая идея но надо без пермишнов.
+                            String result = GroupPlaceholderContent.groupsToXml();
+                            //GroupPlaceholderContent.xmlToClass(result);
+                            //Log.e("RESULTTTT",result);
+                            ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                            ClipData clip = ClipData.newPlainText("XML Data", result);
+                            clipboard.setPrimaryClip(clip);
+                            handler.post(()->{
+                                toast.showMessage(getString(R.string.xml_copied_to_clipboard));
+                            });                        });
                     }
             );
             moreItemDialogFragment.show(getParentFragmentManager(),"MoreItemDialog");

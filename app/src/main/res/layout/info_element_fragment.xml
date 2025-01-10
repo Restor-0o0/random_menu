@@ -61,13 +61,14 @@
             android:text="@string/elem_text_group"
             android:textSize="@dimen/main_text_size"
             />
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/group_button"
             android:layout_width="match_parent"
             android:background="@drawable/back_button"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
             android:visibility="gone"
             android:padding="@dimen/main_padding"
+            android:maxLines="1"
             android:textSize="@dimen/main_text_size"
             android:layout_gravity="start"
             />

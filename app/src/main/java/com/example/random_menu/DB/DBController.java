@@ -33,7 +33,7 @@ public class DBController extends SQLiteOpenHelper {
                     MainBaseContract.Components.COLUMN_NAME_ELEMENT + " INTEGER," +
                     MainBaseContract.Components.COLUMN_NAME_NAME + " TEXT," +
                     MainBaseContract.Components.COLUMN_NAME_COMMENT + " TEXT," +
-                    MainBaseContract.Components.COLUMN_NAME_QUANTITY + " REAL," +
+                    MainBaseContract.Components.COLUMN_NAME_QUANTITY + " TEXT," +
                     "FOREIGN KEY(" + MainBaseContract.Components.COLUMN_NAME_ELEMENT +") " + "REFERENCES " + MainBaseContract.Elements.TABLE_NAME + "(" + MainBaseContract.Elements._ID + ")" +
                     ");";
     private static final String SQL_CREATE_TEST_ElemGroup =

@@ -33,7 +33,7 @@ public class ComponentRecyclerViewAdapter extends RecyclerView.Adapter<Component
     }
     //слушатель нажатия на элемент
     public interface OnItemClickListener {
-        void onItemClick(int listPosition, int id);
+        void onItemClick(int listPosition, int id,String name,String comment,String quntity);
     }
 
     public ComponentRecyclerViewAdapter(List<ComponentPlaceholderContent.ComponentsPlaceholderItem> items, OnSettingItemClickListener settingClickListener, OnItemClickListener itemClickListener) {
@@ -55,7 +55,11 @@ public class ComponentRecyclerViewAdapter extends RecyclerView.Adapter<Component
 
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(String.valueOf(position+1));
-            holder.mNameView.setText(mValues.get(position).name);
+            if(mValues.get(position).quantity.isEmpty()){
+                holder.mNameView.setText(mValues.get(position).name);
+            }else{
+                holder.mNameView.setText(mValues.get(position).name + "\n" + "(" + mValues.get(position).quantity + ")");
+            }
         } catch (Exception e) {
             Log.e("dataBindElementsAdapter",e.toString());
         }
@@ -84,7 +88,10 @@ public class ComponentRecyclerViewAdapter extends RecyclerView.Adapter<Component
                     Log.e("list111",mIdView.getText().toString());
                     itemClickListener.onItemClick(
                             Integer.valueOf(mIdView.getText().toString())-1,
-                            Integer.valueOf(mItem.id)
+                            Integer.valueOf(mItem.id),
+                            mItem.name,
+                            mItem.comment,
+                            mItem.quantity
                     );
                 }
             });

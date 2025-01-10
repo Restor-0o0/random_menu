@@ -4,43 +4,41 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.random_menu.ContentProvider.ContentProviderDB;
-import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.R;
+import com.example.random_menu.Utils.ToastHelper;
 import com.example.random_menu.databinding.MoreItemDialogBinding;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
-import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class MoreElemDialogFragment extends DialogFragment {
     MoreItemDialogBinding binding;
     private static Integer listPositionCalledItem;
     private static int screenPositionCalledItem;
     private static int dbId;
+    @Inject
+    ToastHelper toast;
     private static NotifyList callProperties;
-    private static DeleteAction callNotify;
+    private static Action callNotify,callAction;
 
-    public interface DeleteAction{
+    public interface Action {
         void callAction(Integer dbID);
     }
     public interface NotifyList{
@@ -54,12 +52,21 @@ public class MoreElemDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    public void setVars(Integer listPosition, int screenPosition, int dbId, DeleteAction callNotify,NotifyList callProperties){
+    public void setVars(
+            Integer listPosition,
+            int screenPosition,
+            int dbId,
+            Action callNotify,
+            NotifyList callProperties,
+            Action callAction
+
+    ){
         listPositionCalledItem = listPosition;
         screenPositionCalledItem = screenPosition;
         this.dbId = dbId;
         this.callNotify = callNotify;
         this.callProperties = callProperties;
+        this.callAction = callAction;
     }
 
     @Override
@@ -121,21 +128,8 @@ public class MoreElemDialogFragment extends DialogFragment {
         binding.exportItemBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ElemPlaceholderContent.SelectesElements.clear();
-                ElemPlaceholderContent.checkElement(ElemPlaceholderContent.ITEM_MAP.get(String.valueOf(dbId)));
-                Toast.makeText(binding.getRoot().getContext(), R.string.start_export, Toast.LENGTH_SHORT).show();
-                ElemPlaceholderContent.exportSelectedElements(()->{
-                    //суем данные в буффер, далеко не лучшая идея но надо без пермишнов.
-                    String result = ElemPlaceholderContent.groupsToXml();
+                callAction.callAction(dbId);
 
-                    //ElemPlaceholderContent.xmlToClass(result);
-                    ///Log.e("RESULTTTT",result);
-                    ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("XML Data", result);
-                    clipboard.setPrimaryClip(clip);
-
-                    Toast.makeText(binding.getRoot().getContext(), R.string.xml_copied_to_clipboard, Toast.LENGTH_SHORT).show();
-                });
                 dismiss();
             }
         });

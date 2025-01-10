@@ -29,14 +29,22 @@ import com.example.random_menu.ElementsList.DialogFragments.MoreElemListDialogFr
 import com.example.random_menu.ElementsList.DialogFragments.WinElemDialogFragment;
 import com.example.random_menu.Utils.ImportDialogFragment;
 import com.example.random_menu.R;
+import com.example.random_menu.Utils.ToastHelper;
 import com.example.random_menu.databinding.AlertDialogBinding;
 import com.example.random_menu.databinding.BottomBarFragmentBinding;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class BottomBarElementsFragment extends Fragment {
     boolean imp = true;
     static BottomBarFragmentBinding binding;
+    @Inject
+    ToastHelper toast;
     AlertDialogBinding alertBinding;
     AddElemDialogFragment addElemDialogFragment = new AddElemDialogFragment();
     WinElemDialogFragment winElemDialogFragment = new WinElemDialogFragment();
@@ -143,6 +151,8 @@ public class BottomBarElementsFragment extends Fragment {
                 },
                 ()->{
                     elementsCheckListDialogFragment.setVars(()->{
+                        toast.showMessage(getString(R.string.start_export));
+
                         ElemPlaceholderContent.exportSelectedElements(()->{
                             String result = ElemPlaceholderContent.groupsToXml();
 
@@ -152,7 +162,9 @@ public class BottomBarElementsFragment extends Fragment {
                             ClipData clip = ClipData.newPlainText("XML Data", result);
                             clipboard.setPrimaryClip(clip);
 
-                            Toast.makeText(binding.getRoot().getContext(), R.string.xml_copied_to_clipboard, Toast.LENGTH_SHORT).show();
+                            handler.post(()->{
+                                toast.showMessage(getString(R.string.xml_copied_to_clipboard));
+                            });
                         });
                         ElementsListRecycleFragment fm =(ElementsListRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
                         fm.binding.list1.getAdapter().notifyDataSetChanged();

@@ -133,6 +133,21 @@ public class ComponentPlaceholderContent {
 
 
     }
+    public static void updateComponent(Integer id,String name,String comment, String quantity){
+        ComponentsPlaceholderItem item = ITEM_MAP.get(String.valueOf(id));
+        if(item != null) {
+            item.name = name;
+            item.comment = comment;
+            item.quantity = quantity;
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ReposetoryComponents.updateComponent(id, name, comment, quantity);
+                }
+            }).start();
+        }
+    }
     //загрузка групп с бд
     public static void loadGroupsData() {
         clearGroups();
@@ -203,7 +218,7 @@ public class ComponentPlaceholderContent {
                             cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Components._ID)),
                             cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_NAME)),
                             cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_COMMENT)),
-                            cursor.getFloat(cursor.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_QUANTITY))
+                            cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_QUANTITY))
                     ));
                 } while (cursor.moveToNext());
             }
@@ -239,9 +254,9 @@ public class ComponentPlaceholderContent {
         public final String id;
         public String name;
         public String comment;
-        public Float quantity;
+        public String quantity;
 
-        public ComponentsPlaceholderItem(String id, String name, String comment, Float quantity) {
+        public ComponentsPlaceholderItem(String id, String name, String comment, String quantity) {
             this.id = id;
             this.name = name;
             this.comment = comment;

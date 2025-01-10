@@ -27,6 +27,9 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.logging.Handler;
 
+import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
 
 /**
  * Helper class for providing sample content for user interfaces created by
@@ -34,6 +37,7 @@ import java.util.logging.Handler;
  * <p>
  * TODO: Replace all uses of this class before publishing your app.
  */
+
 public class GroupPlaceholderContent {
 
 
@@ -325,7 +329,7 @@ public class GroupPlaceholderContent {
                                             xmlComponent.id = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components._ID));
                                             xmlComponent.name = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_NAME));
                                             xmlComponent.comment = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_COMMENT));
-                                            xmlComponent.count = String.valueOf(cursorComponents.getFloat(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_QUANTITY)));
+                                            xmlComponent.count = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_QUANTITY));
 
                                             components.add(xmlComponent);
                                         } while (cursorComponents.moveToNext());

@@ -1,8 +1,8 @@
 package com.example.random_menu.DI;
 
-
 import android.content.Context;
-import android.content.SharedPreferences;
+
+import com.example.random_menu.Utils.ToastHelper;
 
 import javax.inject.Singleton;
 
@@ -12,15 +12,13 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 
-
 @Module
 @InstallIn(SingletonComponent.class)
-public class SharedPreferencesModule {
+public class ToastModule {
 
     @Provides
     @Singleton
-        public SharedPreferences getSharedPreferences(@ApplicationContext Context context){
-        return context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+    public ToastHelper provideToastManager(@ApplicationContext Context context) {
+        return new ToastHelper(context);
     }
-
 }

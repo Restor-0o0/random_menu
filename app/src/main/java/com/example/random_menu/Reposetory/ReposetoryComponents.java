@@ -20,6 +20,30 @@ public class ReposetoryComponents {
         ContentProviderDB.insert(MainBaseContract.Components.TABLE_NAME, null, cv);
         ComponentPlaceholderContent.loadComponentsData();
     }
+    public static void updateComponent(Integer id,String name,String comment, String quantity){
+        ContentValues contentValues = new ContentValues();
+        int counter = 0;
+        if(name != null){
+            contentValues.put(MainBaseContract.Components.COLUMN_NAME_NAME,name);
+            counter += 1;
+        }
+        if(comment != null){
+            contentValues.put(MainBaseContract.Components.COLUMN_NAME_COMMENT,comment);
+            counter += 1;
+        }
+        if(quantity != null){
+            contentValues.put(MainBaseContract.Components.COLUMN_NAME_QUANTITY,quantity);
+            counter += 1;
+        }
+        if(counter > 0){
+            ContentProviderDB.update(
+                    MainBaseContract.Components.TABLE_NAME,
+                    contentValues,
+                    MainBaseContract.Elements._ID + " = " + id,
+                    null
+            );
+        }
+    }
     public static void deleteComponent(Integer idComponent) {
         ContentProviderDB.delete(MainBaseContract.Components.TABLE_NAME,MainBaseContract.Components._ID + " = " + idComponent,null);
 
@@ -31,7 +55,7 @@ public class ReposetoryComponents {
         return ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME, null, MainBaseContract.Elements._ID + "=" + idSelectElem, null, null, null, null);
     }
     public static Cursor loadComponentsData(Integer idSelectElem) {
-        return ContentProviderDB.query(MainBaseContract.Components.TABLE_NAME, null, MainBaseContract.Components.COLUMN_NAME_ELEMENT + "=" + idSelectElem, null, null, null, MainBaseContract.Components.COLUMN_NAME_QUANTITY + " DESC");
+        return ContentProviderDB.query(MainBaseContract.Components.TABLE_NAME, null, MainBaseContract.Components.COLUMN_NAME_ELEMENT + "=" + idSelectElem, null, null, null, null);
     }
     public static Cursor loadGroupsData(Integer idSelectElem) {
         return ContentProviderDB.query(MainBaseContract.Groups.TABLE_NAME,

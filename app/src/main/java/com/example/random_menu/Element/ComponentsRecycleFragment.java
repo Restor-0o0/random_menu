@@ -62,17 +62,15 @@ public class ComponentsRecycleFragment extends Fragment {
 
 
         },
-                (listPosition,id) ->{//обработчик нажатия на элемент
+                (listPosition,id,name,comment,quantity) ->{//обработчик нажатия на элемент
                     componentInfoDialogFragment.setVars(
                             id,
                             listPosition,
-                            ComponentPlaceholderContent.getComponents().get(listPosition).name,
-                            ComponentPlaceholderContent.getComponents().get(listPosition).comment,
-                            ComponentPlaceholderContent.getComponents().get(listPosition).quantity.toString(),
-                            (name,comment)->{
-                                ComponentPlaceholderContent.getComponents().get(listPosition).name = name;
-                                ComponentPlaceholderContent.getComponents().get(listPosition).comment = comment;
-                                binding.list1.getAdapter().notifyDataSetChanged();
+                            name,
+                            comment,
+                            quantity,
+                            ()->{
+                                binding.list1.getAdapter().notifyItemChanged(listPosition);
                             }
 
                     );
@@ -96,7 +94,6 @@ public class ComponentsRecycleFragment extends Fragment {
                     binding.list1.getAdapter().notifyDataSetChanged();
                 });
                 addComponentDialogFragment.show(getParentFragmentManager(),"AddComponentDialog");
-
             }
         });
 

@@ -80,7 +80,9 @@ public class MoreItemDialogFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         Handler handler = new Handler(Looper.getMainLooper());
 
-
+        binding.exportItemBut.setVisibility(View.GONE);
+        binding.propertiesBut.setVisibility(View.GONE);
+        binding.deleteItemBut.setBackgroundColor(android.graphics.Color.TRANSPARENT);
         //анимация рскрытия окна
         Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(), R.anim.anim_show);
         anim.setDuration(200);

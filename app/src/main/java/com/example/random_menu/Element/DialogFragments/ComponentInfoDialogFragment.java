@@ -1,7 +1,6 @@
 package com.example.random_menu.Element.DialogFragments;
 
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,16 +15,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.random_menu.ContentProvider.ContentProviderDB;
-import com.example.random_menu.DB.MainBaseContract;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.InfoComponentDialogBinding;
-
+import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 
 
 public class ComponentInfoDialogFragment extends DialogFragment {
     InfoComponentDialogBinding binding;
-    SetValues setValues;
+    Notify setValues;
     private static Integer listPositionCalledItem;
     private static int dbId;
     private static String name;
@@ -33,8 +30,8 @@ public class ComponentInfoDialogFragment extends DialogFragment {
     private static String quantity;
 
 
-    public interface SetValues{
-        void setValues(String name, String comment);
+    public interface Notify {
+        void call();
     }
 
     @NonNull
@@ -59,6 +56,7 @@ public class ComponentInfoDialogFragment extends DialogFragment {
         }
         binding.inputName.setText(name);
         binding.inputComment.setText(comment);
+        binding.inputQuantity.setText(quantity);
     }
     public void setVars(
             int dbId,
@@ -66,7 +64,7 @@ public class ComponentInfoDialogFragment extends DialogFragment {
             String name,
             String comment,
             String quantity,
-            SetValues setValues
+            Notify setValues
     ){
         listPositionCalledItem = listPosition;
         this.setValues = setValues;
@@ -116,21 +114,13 @@ public class ComponentInfoDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 if(binding.inputName.getText().toString().length() != 0) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ContentValues cv = new ContentValues();
-                            cv.put(MainBaseContract.Components.COLUMN_NAME_NAME, binding.inputName.getText().toString());
-                            cv.put(MainBaseContract.Components.COLUMN_NAME_COMMENT, binding.inputComment.getText().toString());
-                            ContentProviderDB.update(
-                                    MainBaseContract.Components.TABLE_NAME,
-                                    cv,
-                                    MainBaseContract.Components._ID + " = " + dbId,
-                                    null
-                            );
-                        }
-                    }).start();
-                    setValues.setValues(binding.inputName.getText().toString(), binding.inputComment.getText().toString());
+                            ComponentPlaceholderContent.updateComponent(
+                                    dbId,
+                                    binding.inputName.getText().toString(),
+                                    binding.inputComment.getText().toString(),
+                                    binding.inputQuantity.getText().toString());
+
+                    setValues.call();
                 }
                 getDialog().dismiss();
             }

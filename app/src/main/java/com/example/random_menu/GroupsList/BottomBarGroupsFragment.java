@@ -30,13 +30,21 @@ import com.example.random_menu.Utils.ImportDialogFragment;
 import com.example.random_menu.GroupsList.DialogFragments.MoreGroupListDialogFragment;
 import com.example.random_menu.GroupsList.DialogFragments.WinGroupElemDialogFragment;
 import com.example.random_menu.R;
+import com.example.random_menu.Utils.ToastHelper;
 import com.example.random_menu.databinding.AlertDialogBinding;
 import com.example.random_menu.databinding.BottomBarFragmentBinding;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class BottomBarGroupsFragment extends Fragment {
     boolean imp = true;
     static BottomBarFragmentBinding binding;
+    @Inject
+    ToastHelper toast;
     AlertDialogBinding alertBinding;
     AddGroupDialogFragment addGroupDialogFragment = new AddGroupDialogFragment();
     WinGroupElemDialogFragment winGroupElemDialogFragment = new WinGroupElemDialogFragment();
@@ -155,18 +163,22 @@ public class BottomBarGroupsFragment extends Fragment {
                         for(GroupPlaceholderContent.PlaceholderItem item : GroupPlaceholderContent.SelectesGroups){
                             Log.e("ExportingSelect",item.name);
                         }
-                        Toast.makeText(binding.getRoot().getContext(), R.string.start_export, Toast.LENGTH_SHORT).show();
+
+                        toast.showMessage(getString(R.string.start_export));
+
                         GroupPlaceholderContent.exportSelectedGroups(()->{
                             //суем данные в буффер, далеко не лучшая идея но надо без пермишнов.
                             String result = GroupPlaceholderContent.groupsToXml();
 
-                            GroupPlaceholderContent.xmlToClass(result);
+                            //GroupPlaceholderContent.xmlToClass(result);
                             Log.e("RESULTTTT",result);
                             ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
                             ClipData clip = ClipData.newPlainText("XML Data", result);
                             clipboard.setPrimaryClip(clip);
+                            handler.post(()->{
+                                toast.showMessage(getString(R.string.xml_copied_to_clipboard));
+                            });
 
-                            Toast.makeText(binding.getRoot().getContext(), R.string.xml_copied_to_clipboard, Toast.LENGTH_SHORT).show();
                         });
 
                     });
