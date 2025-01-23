@@ -1,24 +1,18 @@
 package com.example.random_menu.ElementsList;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.util.AttributeSet;
-import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.random_menu.Data.Item;
-import com.example.random_menu.R;
+import com.example.random_menu.Reposetory.InterfaceSharedDataReposetory;
 import com.example.random_menu.Utils.ThemeManager;
 import com.example.random_menu.databinding.ActivityListElementsBinding;
-import com.example.random_menu.databinding.ActivityMainBinding;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
+import com.example.random_menu.Reposetory.SharedDataReposetory;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -27,6 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class ElementsListActivity extends AppCompatActivity {
 
+    private ElemPlaceholderContent viewModel;
     private ActivityListElementsBinding binding;
     private ArrayList<Item> ITEMS = new ArrayList<Item>();
     @Inject
@@ -36,15 +31,28 @@ public class ElementsListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityListElementsBinding.inflate(getLayoutInflater());
-        binding.groupNameTitle.setText(ElemPlaceholderContent.nameSelectGroup);
+
+        viewModel = new ViewModelProvider(this).get(ElemPlaceholderContent.class);
+        binding.groupNameTitle.setText(viewModel.getShareGroup().name);
+
 
         setContentView(binding.getRoot());
         themeManager.initDefaultTheme();
         //Objects.requireNonNull(getSupportActionBar()).hide();
-        ElemPlaceholderContent.loadElements();
+
 
     }
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //viewModel.checkElementOnEdit();
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+    }
 }

@@ -6,16 +6,20 @@ import android.util.Log;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
+import com.example.random_menu.Data.Group;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReposetoryGroups {
+import javax.inject.Singleton;
+
+@Singleton
+public class ReposetoryGroups implements InterfaceReposetoryGroups {
 
 
-
-    public static void deleteGroupAndNoHavingMoreLinksElements(int dbId){
+    @Override
+    public void deleteGroupAndNoHavingMoreLinksElements(int dbId){
         try {
             Cursor curr;
             curr = ContentProviderDB.query(
@@ -69,17 +73,34 @@ public class ReposetoryGroups {
             Log.e("DeleteGrouperror",e.toString());
         }
     }
-    public static Cursor getAll(){
-        return ContentProviderDB.query(MainBaseContract.Groups.TABLE_NAME,
+    @Override
+    public List<Group> getAll(){
+        List<Group> groups = new ArrayList<>();
+        Cursor cursor = ContentProviderDB.query(MainBaseContract.Groups.TABLE_NAME,
                 null,
                 null,
                 null,
                 null,
                 null,
                 MainBaseContract.Groups.COLUMN_NAME_PRIORITY);
-
+        cursor.moveToFirst();
+        do{
+            groups.add(new Group(
+                    cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Groups._ID)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_NAME)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_COMMENT)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_PRIORITY)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_COUNT_ELEMS))
+            ));
+            Log.e("LoadAllGroups",
+                    String.valueOf(cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_PRIORITY)))
+                    + " " + String.valueOf(cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_COUNT_ELEMS)))
+            );
+        }while(cursor.moveToNext());
+        return groups;
     }
-    public static void update(Integer id,String name, String comment, Integer priority, Integer countElements){
+    @Override
+    public void update(Integer id,String name, String comment, Integer priority, Integer countElements){
         ContentValues contentValues = new ContentValues();
         int counter = 0;
         if(name != null){
@@ -107,11 +128,12 @@ public class ReposetoryGroups {
             );
         }
     }
-    public static long add(String name, String commet){
+    @Override
+    public long add(String name, String commet,Integer maxPriority){
         ContentValues cv = new ContentValues();
         cv.put(MainBaseContract.Groups.COLUMN_NAME_NAME, name);
         cv.put(MainBaseContract.Groups.COLUMN_NAME_COMMENT, commet);
-        cv.put(MainBaseContract.Groups.COLUMN_NAME_PRIORITY,String.valueOf(GroupPlaceholderContent.maxPriority + 1));
+        cv.put(MainBaseContract.Groups.COLUMN_NAME_PRIORITY,(maxPriority + 1));
         return ContentProviderDB.insert(MainBaseContract.Groups.TABLE_NAME,null,cv);
     }
 }

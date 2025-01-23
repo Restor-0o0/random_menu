@@ -22,7 +22,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.random_menu.Data.Element;
 import com.example.random_menu.ElementsList.DialogFragments.AddElemDialogFragment;
 import com.example.random_menu.ElementsList.DialogFragments.ElementsCheckListDialogFragment;
 import com.example.random_menu.ElementsList.DialogFragments.MoreElemListDialogFragment;
@@ -42,7 +44,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class BottomBarElementsFragment extends Fragment {
     boolean imp = true;
-    static BottomBarFragmentBinding binding;
+    private BottomBarFragmentBinding binding;
+    private ElemPlaceholderContent viewModle;
     @Inject
     ToastHelper toast;
     AlertDialogBinding alertBinding;
@@ -60,6 +63,7 @@ public class BottomBarElementsFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         binding = BottomBarFragmentBinding.inflate(inflater, container, false);
+        viewModle = new ViewModelProvider(requireActivity()).get(ElemPlaceholderContent.class);
         return binding.getRoot();
 
     }
@@ -105,7 +109,7 @@ public class BottomBarElementsFragment extends Fragment {
             public void onClick(View view) {
                 addElemDialogFragment.setVars(()->{
                     ElementsListRecycleFragment fm =(ElementsListRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
-                    fm.binding.list1.getAdapter().notifyItemChanged(ElemPlaceholderContent.getCount() - 1);
+                    fm.binding.list1.getAdapter().notifyItemChanged(viewModle.getCount() - 1);
                 });
 
                 addElemDialogFragment.show(getParentFragmentManager(),"AddGroupDialog");
@@ -126,10 +130,10 @@ public class BottomBarElementsFragment extends Fragment {
                         alertBinding.positiveButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                for(ElemPlaceholderContent.PlaceholderItem item : ElemPlaceholderContent.SelectesElements){
+                                for(Element item : viewModle.SelectesElements){
                                     Log.e("DeletingSelect",item.name);
                                 }
-                                ElemPlaceholderContent.deleteSelectedElements();
+                                viewModle.deleteSelectedElements();
                                 ElementsListRecycleFragment fm =(ElementsListRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
                                 fm.binding.list1.getAdapter().notifyDataSetChanged();
                                 dialog.dismiss();
@@ -153,10 +157,10 @@ public class BottomBarElementsFragment extends Fragment {
                     elementsCheckListDialogFragment.setVars(()->{
                         toast.showMessage(getString(R.string.start_export));
 
-                        ElemPlaceholderContent.exportSelectedElements(()->{
-                            String result = ElemPlaceholderContent.groupsToXml();
+                        viewModle.exportSelectedElements(()->{
+                            String result = viewModle.groupsToXml();
 
-                            ElemPlaceholderContent.xmlToClass(result);
+                            viewModle.xmlToClass(result);
                             Log.e("RESULTTTT",result);
                             ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
                             ClipData clip = ClipData.newPlainText("XML Data", result);
@@ -173,7 +177,7 @@ public class BottomBarElementsFragment extends Fragment {
                 },
                 ()->{
                     importDialogFragment.setVars((xmlString)->{
-                        int res = ElemPlaceholderContent.xmlToClass(xmlString);
+                        int res = viewModle.xmlToClass(xmlString);
                         switch (res){
                             case 1:{
                                 Toast.makeText(binding.getRoot().getContext(), "Неверные данные", Toast.LENGTH_SHORT).show();
@@ -182,9 +186,9 @@ public class BottomBarElementsFragment extends Fragment {
                                 Toast.makeText(binding.getRoot().getContext(), "Неизвестная ошибка", Toast.LENGTH_SHORT).show();
                             }
                         }
-                        ElemPlaceholderContent.importIntoDB(()->{
+                        viewModle.importIntoDB(()->{
                             handler.post(() ->{
-                                ElemPlaceholderContent.loadElements();
+                                viewModle.loadElements();
                                 ElementsListRecycleFragment fm =(ElementsListRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
                                 fm.binding.list1.getAdapter().notifyDataSetChanged();
                             });

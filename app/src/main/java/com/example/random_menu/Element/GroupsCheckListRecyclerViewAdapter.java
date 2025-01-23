@@ -8,8 +8,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.random_menu.Data.GroupCheck;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.ItemElemCheckboxFragmentBinding;
 import com.example.random_menu.databinding.ItemElemSettFragmentBinding;
@@ -22,12 +24,19 @@ import java.util.List;
 
 public class GroupsCheckListRecyclerViewAdapter extends RecyclerView.Adapter<GroupsCheckListRecyclerViewAdapter.ViewHolder> {
 
-    private static List<ComponentPlaceholderContent.GroupsPlaceholderItem> mValues;
+    private static List<GroupCheck> mValues;
+    private CallBack callBack;
 
+    public interface CallBack{
+        void call(GroupCheck group);
+    }
 
-
-    public GroupsCheckListRecyclerViewAdapter(List<ComponentPlaceholderContent.GroupsPlaceholderItem> items) {
+    public GroupsCheckListRecyclerViewAdapter(
+            List<GroupCheck> items,
+            CallBack callBack
+    ) {
         mValues = items;
+        this.callBack = callBack;
     }
 
     @Override
@@ -60,11 +69,11 @@ public class GroupsCheckListRecyclerViewAdapter extends RecyclerView.Adapter<Gro
         return mValues.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView mIdView;
         private final TextView mNameView;
         private ImageButton mImageBut;
-        private ComponentPlaceholderContent.GroupsPlaceholderItem mItem;
+        private GroupCheck mItem;
 
         public ViewHolder(@NonNull ItemElemCheckboxFragmentBinding binding) {
             super(binding.getRoot());
@@ -84,7 +93,7 @@ public class GroupsCheckListRecyclerViewAdapter extends RecyclerView.Adapter<Gro
                         mItem.active = true;
                         binding.checkButton.setImageResource(R.drawable.baseline_check_box_24);
                     }
-                    ComponentPlaceholderContent.checkGroups(mItem);
+                    callBack.call(mItem);
                 }
             });
             binding.checkButton.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +109,7 @@ public class GroupsCheckListRecyclerViewAdapter extends RecyclerView.Adapter<Gro
 
                         binding.checkButton.setImageResource(R.drawable.baseline_check_box_24);
                     }
-                    ComponentPlaceholderContent.checkGroups(mItem);
+                    callBack.call(mItem);
                 }
             });
         }

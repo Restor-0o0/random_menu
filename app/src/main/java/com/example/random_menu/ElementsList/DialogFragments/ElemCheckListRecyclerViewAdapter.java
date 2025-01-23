@@ -8,8 +8,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.random_menu.Data.Element;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.ItemElemCheckboxFragmentBinding;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
@@ -20,12 +22,20 @@ import java.util.List;
 
 public class ElemCheckListRecyclerViewAdapter extends RecyclerView.Adapter<ElemCheckListRecyclerViewAdapter.ViewHolder> {
 
-    private static List<ElemPlaceholderContent.PlaceholderItem> mValues;
+    private static LiveData<List<Element>> mValues;
+    private CallBack callBack;
 
 
+    interface CallBack{
+        void call(Element elem);
+    }
 
-    public ElemCheckListRecyclerViewAdapter(List<ElemPlaceholderContent.PlaceholderItem> items) {
-        ElemPlaceholderContent.SelectesElements.clear();
+    public ElemCheckListRecyclerViewAdapter(
+            LiveData<List<Element>> items,
+            CallBack callBack
+    ) {
+        //ElemPlaceholderContent.SelectesElements.clear();
+        this.callBack = callBack;
         mValues = items;
     }
 
@@ -37,9 +47,9 @@ public class ElemCheckListRecyclerViewAdapter extends RecyclerView.Adapter<ElemC
     @Override
     public void onBindViewHolder( ViewHolder holder, int position) {
         try{
-            holder.mItem = mValues.get(position);
+            holder.mItem = mValues.getValue().get(position);
             holder.mIdView.setText(String.valueOf(position+1));
-            holder.mNameView.setText(mValues.get(position).name);
+            holder.mNameView.setText(mValues.getValue().get(position).name);
             if(holder.active){
                 holder.mImageBut.setImageResource(R.drawable.baseline_check_box_24);
             }
@@ -54,15 +64,15 @@ public class ElemCheckListRecyclerViewAdapter extends RecyclerView.Adapter<ElemC
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return mValues.getValue().size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView mIdView;
         private final TextView mNameView;
         private ImageButton mImageBut;
         private boolean active = false;
-        private ElemPlaceholderContent.PlaceholderItem mItem;
+        private Element mItem;
 
         public ViewHolder(@NonNull ItemElemCheckboxFragmentBinding binding) {
             super(binding.getRoot());
@@ -85,7 +95,8 @@ public class ElemCheckListRecyclerViewAdapter extends RecyclerView.Adapter<ElemC
 
                         binding.checkButton.setImageResource(R.drawable.baseline_check_box_24);
                     }
-                    ElemPlaceholderContent.checkElement(mItem);                }
+                    callBack.call(mItem);
+                }
             });
             binding.checkButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -98,7 +109,8 @@ public class ElemCheckListRecyclerViewAdapter extends RecyclerView.Adapter<ElemC
                         active = true;
                         binding.checkButton.setImageResource(R.drawable.baseline_check_box_24);
                     }
-                    ElemPlaceholderContent.checkElement(mItem);                }
+                    callBack.call(mItem);
+                }
             });
         }
 

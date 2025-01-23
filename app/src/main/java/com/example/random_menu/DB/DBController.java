@@ -42,8 +42,8 @@ public class DBController extends SQLiteOpenHelper {
                     MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + " INTEGER," +
                     MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " INTEGER," +
                     "PRIMARY KEY (" + MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + ","+ MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + "),"+
-                    "FOREIGN KEY(" + MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT +") " + "REFERENCES " + MainBaseContract.Elements.TABLE_NAME + "(" + MainBaseContract.Elements._ID + ")," +
-                    "FOREIGN KEY(" + MainBaseContract.ElemGroup.COLUMN_NAME_GROUP +") " + "REFERENCES " + MainBaseContract.Groups.TABLE_NAME + "(" + MainBaseContract.Groups._ID + ")" +
+                    "FOREIGN KEY(" + MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT +") " + "REFERENCES " + MainBaseContract.Elements.TABLE_NAME + "(" + MainBaseContract.Elements._ID + ") ON DELETE CASCADE," +
+                    "FOREIGN KEY(" + MainBaseContract.ElemGroup.COLUMN_NAME_GROUP +") " + "REFERENCES " + MainBaseContract.Groups.TABLE_NAME + "(" + MainBaseContract.Groups._ID + ") ON DELETE CASCADE" +
                     ");";
 
     private static final String SQL_INSERT_TEST =

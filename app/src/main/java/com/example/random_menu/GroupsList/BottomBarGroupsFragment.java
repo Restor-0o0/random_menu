@@ -11,6 +11,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -24,6 +25,7 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.example.random_menu.Data.Group;
 import com.example.random_menu.GroupsList.DialogFragments.AddGroupDialogFragment;
 import com.example.random_menu.GroupsList.DialogFragments.GroupsCheckListDialogFragment;
 import com.example.random_menu.Utils.ImportDialogFragment;
@@ -41,6 +43,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class BottomBarGroupsFragment extends Fragment {
+    private GroupPlaceholderContent viewModel;
     boolean imp = true;
     static BottomBarFragmentBinding binding;
     @Inject
@@ -60,8 +63,8 @@ public class BottomBarGroupsFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         binding = BottomBarFragmentBinding.inflate(inflater, container, false);
+        viewModel = new ViewModelProvider(requireActivity()).get(GroupPlaceholderContent.class);
         return binding.getRoot();
-
     }
 
     @Override
@@ -108,7 +111,7 @@ public class BottomBarGroupsFragment extends Fragment {
             public void onClick(View view) {
                 addGroupDialogFragment.setVars(()->{
                     GroupsRecycleFragment fm =(GroupsRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
-                    fm.binding.list1.getAdapter().notifyItemChanged(GroupPlaceholderContent.getCount() - 1);
+                    fm.binding.list1.getAdapter().notifyItemChanged(viewModel.getCount() - 1);
                 });
                 addGroupDialogFragment.show(getParentFragmentManager(),"AddGroupDialog");
             }
@@ -134,10 +137,10 @@ public class BottomBarGroupsFragment extends Fragment {
                         alertBinding.positiveButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                for(GroupPlaceholderContent.PlaceholderItem item : GroupPlaceholderContent.SelectesGroups){
+                                for(Group item : viewModel.SelectesGroups){
                                     Log.e("DeletingSelect",item.name);
                                 }
-                                GroupPlaceholderContent.deleteSelectedGroups();
+                                viewModel.deleteSelectedGroups();
                                 GroupsRecycleFragment fm =(GroupsRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
                                 fm.binding.list1.getAdapter().notifyDataSetChanged();
                                 dialog.dismiss();
@@ -160,18 +163,18 @@ public class BottomBarGroupsFragment extends Fragment {
                     //action для чеклиста на экспорт групп
                     //после подтверждения чеклиста вызывается функция экспорта
                     GroupsCheckListDialogFragment.setVars(()->{
-                        for(GroupPlaceholderContent.PlaceholderItem item : GroupPlaceholderContent.SelectesGroups){
-                            Log.e("ExportingSelect",item.name);
+                        for(Group item : viewModel.SelectesGroups){
+                            Log.d("ExportingSelect",item.name);
                         }
 
                         toast.showMessage(getString(R.string.start_export));
 
-                        GroupPlaceholderContent.exportSelectedGroups(()->{
+                        viewModel.exportSelectedGroups(()->{
                             //суем данные в буффер, далеко не лучшая идея но надо без пермишнов.
-                            String result = GroupPlaceholderContent.groupsToXml();
+                            String result = viewModel.groupsToXml();
 
                             //GroupPlaceholderContent.xmlToClass(result);
-                            Log.e("RESULTTTT",result);
+                            Log.d("RESULTTTT",result);
                             ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
                             ClipData clip = ClipData.newPlainText("XML Data", result);
                             clipboard.setPrimaryClip(clip);
@@ -186,22 +189,16 @@ public class BottomBarGroupsFragment extends Fragment {
 
                 },()->{
                     importDialogFragment.setVars((xmlString)->{
-                        int res = GroupPlaceholderContent.xmlToClass(xmlString);
-                        switch (res){
+                        viewModel.xmlToClass(xmlString);
+                        /*switch (res){
                             case 1:{
                                 Toast.makeText(binding.getRoot().getContext(), "Неверные данные", Toast.LENGTH_SHORT).show();
                             }
                             case 2:{
                                 Toast.makeText(binding.getRoot().getContext(), "Неизвестная ошибка", Toast.LENGTH_SHORT).show();
                             }
-                        }
-                        GroupPlaceholderContent.importIntoDB(()->{
-                            handler.post(() ->{
-                                GroupPlaceholderContent.loadGroups();
-                                GroupsRecycleFragment fm =(GroupsRecycleFragment) getParentFragmentManager().findFragmentById(R.id.frameMain);
-                                fm.binding.list1.getAdapter().notifyDataSetChanged();
-                            });
-                        });
+                        }*/
+                        viewModel.importIntoDB();
                         //запускаем поток на обновление и потомв мейн поток возвращаем задачи на присваивание
                         });
                     importDialogFragment.show(getParentFragmentManager(),"ImportDialog");

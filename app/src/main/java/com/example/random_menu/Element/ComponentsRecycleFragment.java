@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
@@ -26,12 +28,13 @@ import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class ComponentsRecycleFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
     ListComponentsFragmentBinding binding;
-    // TODO: Customize parameters
+    private ComponentPlaceholderContent viewModel;
     //id элемента для которого вызвано moreView
     private int moreViewItemId;
     private int listPositionItem;
@@ -46,15 +49,19 @@ public class ComponentsRecycleFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = ListComponentsFragmentBinding.inflate(inflater, container, false);
-
-        adapter = new ComponentRecyclerViewAdapter(ComponentPlaceholderContent.getComponents(),
-                (screenPosition,id, number,listPosition) ->{//функция для отрисовки moreView
+        viewModel = new ViewModelProvider(requireActivity()).get(ComponentPlaceholderContent.class);
+        adapter = new ComponentRecyclerViewAdapter(
+                viewModel.getComponents(),
+                (screenPosition,component, number,listPosition) ->{//функция для отрисовки moreView
             //выхватываем id элемента списка
             moreItemDialogFragment.setVars(
                     Integer.valueOf(listPosition),
-                    screenPosition,Integer.valueOf(id),
+                    screenPosition,
+                    component,
                     ()->{
-                        binding.list1.getAdapter().notifyDataSetChanged();
+                    },
+                    (comp)->{
+                        viewModel.deleteComponent(comp);
                     }
             );
             moreItemDialogFragment.show(getParentFragmentManager(),"MoreItemDialog");
@@ -62,22 +69,33 @@ public class ComponentsRecycleFragment extends Fragment {
 
 
         },
-                (listPosition,id,name,comment,quantity) ->{//обработчик нажатия на элемент
+                (listPosition,comp,name,comment,quantity) ->{//обработчик нажатия на элемент
                     componentInfoDialogFragment.setVars(
-                            id,
+                            comp.id,
                             listPosition,
                             name,
                             comment,
                             quantity,
                             ()->{
-                                binding.list1.getAdapter().notifyItemChanged(listPosition);
+                                //binding.list1.getAdapter().notifyItemChanged(listPosition);
                             }
 
                     );
                     componentInfoDialogFragment.show(getParentFragmentManager(),"ComponentInfoDialog");
         });
+        viewModel.getComponents().observe(getViewLifecycleOwner(), components ->{
+            if(components != null){
+                //binding.list1.getAdapter().notifyDataSetChanged();
+                Log.d("UpdateComponentsRecycle",String.valueOf(components.size()));
+                adapter.submitList(new ArrayList<>(components));
+            }
+        });
+        try{
+            binding.list1.setAdapter(adapter);
 
-        binding.list1.setAdapter(adapter);
+        }catch (Exception e){
+            Log.e("LoadAdapterComponentsError",e.toString());
+        }
         return binding.getRoot();
 
     }
@@ -91,7 +109,7 @@ public class ComponentsRecycleFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 addComponentDialogFragment.setVars(()->{
-                    binding.list1.getAdapter().notifyDataSetChanged();
+                    //binding.list1.getAdapter().notifyDataSetChanged();
                 });
                 addComponentDialogFragment.show(getParentFragmentManager(),"AddComponentDialog");
             }

@@ -1,33 +1,33 @@
 package com.example.random_menu.placeholder;
 
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.util.Log;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
-import com.example.random_menu.Reposetory.ReposetoryComponents;
-import com.example.random_menu.Reposetory.ReposetoryElements;
-import com.example.random_menu.Reposetory.ReposetoryGroups;
-import com.example.random_menu.Utils.XMLUtils.Component;
-import com.example.random_menu.Utils.XMLUtils.Element;
-import com.example.random_menu.Utils.XMLUtils.Group;
+import com.example.random_menu.Data.Element;
+import com.example.random_menu.Data.Group;
+import com.example.random_menu.Reposetory.InterfaceReposetoryGroups;
+import com.example.random_menu.Reposetory.InterfaceSharedDataReposetory;
+import com.example.random_menu.Utils.XMLUtils.InterfaceXmlManager;
 import com.example.random_menu.Utils.XMLUtils.XMLWrapper;
 
-import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.PersistenceException;
-import org.simpleframework.xml.core.Persister;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.logging.Handler;
 
-import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
 
@@ -37,25 +37,64 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
  * <p>
  * TODO: Replace all uses of this class before publishing your app.
  */
+@HiltViewModel
+public class GroupPlaceholderContent extends ViewModel {
 
-public class GroupPlaceholderContent {
+    InterfaceSharedDataReposetory sharedDataReposetory;
+    InterfaceReposetoryGroups reposetoryGroups;
+    InterfaceXmlManager xmlManager;
+    private Random randomizer = new Random();
+
+    public MutableLiveData<List<Group>> GROUPS = new MutableLiveData<>();
+    public List<Group> noEmptyGROUPS = new ArrayList<>();
+    public List<Group> SelectesGroups = new ArrayList<>();
+    public XMLWrapper xmlResult;
+    public final Map<Integer, Group> ITEM_MAP = new HashMap<Integer, Group>();
+    public int maxPriority = 0;
 
 
-    private static Random randomizer = new Random();
-    public static List<PlaceholderItem> GROUPS = new ArrayList<PlaceholderItem>();
-    public static List<PlaceholderItem> noEmptyGROUPS = new ArrayList<PlaceholderItem>();
-    public static  List<PlaceholderItem> SelectesGroups = new ArrayList<PlaceholderItem>();
-    public static XMLWrapper xmlResult;
-    public static final Map<String, PlaceholderItem> ITEM_MAP = new HashMap<String, PlaceholderItem>();
-    static public int maxPriority = 0;
 
+    @Inject
+    public GroupPlaceholderContent(
+            InterfaceReposetoryGroups reposetoryGroups,
+            InterfaceXmlManager xmlManager,
+            InterfaceSharedDataReposetory sharedDataReposetory
+    ){
+        this.reposetoryGroups = reposetoryGroups;
+        this.xmlManager = xmlManager;
+        this.sharedDataReposetory = sharedDataReposetory;
+    }
 
     public interface NotifyList{
         void CallNotify();
     }
 
+
+    public void setShareGroup(Group group){
+        this.sharedDataReposetory.setSharedGroup(group);
+    }
+    public void setShareElement(Element element){
+        this.sharedDataReposetory.setSharedElement(element);
+    }
+    /*public Element getShareElement(){
+        Element elem = sharedDataReposetory.getSharedElement();
+        return
+    }
+    public Group getShareGroup(){
+
+    }*/
+    public void makeNoEmpty(Group group){
+        for(int i = 0;i < noEmptyGROUPS.size();i++){
+            if(Integer.valueOf(noEmptyGROUPS.get(i).id).equals(group.id)){
+                return;
+            }
+        }
+        if(group != null){
+            noEmptyGROUPS.add(group);
+        }
+    }
     //запрос случайной группы
-    public static PlaceholderItem getRandom(){
+    public Group getRandom(){
         if(noEmptyGROUPS.size() > 0){
             return noEmptyGROUPS.get(randomizer.nextInt(noEmptyGROUPS.size()));
         }
@@ -64,19 +103,22 @@ public class GroupPlaceholderContent {
         }
     }
     //запрос количества
-    public static Integer getCount(){
-        return GROUPS.size();
+    public Integer getCount(){
+        return GROUPS.getValue().size();
     }
     //геттер
-    public static List<PlaceholderItem> getGroups(){
+    public LiveData<List<Group>> getGroups(){
+        if(GROUPS.getValue() != null){
+            Log.d("LoadGroup",String.valueOf(GROUPS.getValue().size()));
+        }
         return GROUPS;
     }
 
-    public static PlaceholderItem getGroupByID(Integer id){
-        return ITEM_MAP.get(String.valueOf(id)) ;
+    public Group getGroupByID(Integer id){
+        return ITEM_MAP.get(id);
     }
     //Проверка группны на наличие и добавление или удаление
-    public static void checkGroups(PlaceholderItem item){
+    public void checkGroups(Group item){
         if(SelectesGroups.remove(item)){
          return;
         }
@@ -90,14 +132,16 @@ public class GroupPlaceholderContent {
 
         }*/
     }
-    public static void deleteSelectedGroups(){
+    public void deleteSelectedGroups(){
         List<Integer> ids = new ArrayList<>();
-        for(PlaceholderItem item: SelectesGroups){
+        for(Group item: SelectesGroups){
             ids.add(Integer.valueOf(item.id));
         }
         try {
-            for(PlaceholderItem item: SelectesGroups) {
-                GROUPS.remove(item);
+            for(Group item: SelectesGroups) {
+                List<Group> groups = GROUPS.getValue();
+                groups.remove(item);
+                GROUPS.setValue(groups);
             }
         }
         catch (Exception e){
@@ -107,14 +151,19 @@ public class GroupPlaceholderContent {
             @Override
             public void run() {
                 for(Integer id: ids){
-                    ReposetoryGroups.deleteGroupAndNoHavingMoreLinksElements(id);
+                    reposetoryGroups.deleteGroupAndNoHavingMoreLinksElements(id);
                 }
             }
         }).start();
     }
-    public static void deleteGroup(int dbId){
+    public void deleteGroup(int dbId){
         try {
-            GROUPS.remove(ITEM_MAP.get(String.valueOf(dbId)));
+            Group item = ITEM_MAP.get(dbId);
+            Log.d("deleteGroup",String.valueOf(item.id));
+            List<Group> groups = GROUPS.getValue();
+            Log.d("deleteGroup",String.valueOf(groups.remove(item)));
+            GROUPS.setValue(new ArrayList<>(groups));
+
         }
         catch (Exception e){
             Log.e("deleteGroup", e.toString());
@@ -122,39 +171,44 @@ public class GroupPlaceholderContent {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ReposetoryGroups.deleteGroupAndNoHavingMoreLinksElements(dbId);
+                reposetoryGroups.deleteGroupAndNoHavingMoreLinksElements(dbId);
             }
         }).start();
     }
 
-    public static void swap(int fromPosition, int toPosition){
-        int temp = GROUPS.get((int) fromPosition).priority;
-        GROUPS.get( fromPosition).priority = GROUPS.get((int) toPosition).priority;;
-        GROUPS.get( toPosition).priority = temp;
+    public void swap(int fromPosition, int toPosition){
+        List<Group> groups = GROUPS.getValue();
+        int temp = groups.get(fromPosition).priority;
+        groups.get(fromPosition).priority = groups.get(toPosition).priority;;
+        groups.get(toPosition).priority = temp;
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ReposetoryGroups.update(
-                        Integer.valueOf(GROUPS.get( toPosition).id),
-                        null,
-                        null,
-                        GROUPS.get( toPosition).priority,
-                        null);
-                ReposetoryGroups.update(
-                        Integer.valueOf(GROUPS.get( fromPosition).id),
-                        null,
-                        null,
-                        GROUPS.get( fromPosition).priority,
-                        null);
-
+                try {
+                    reposetoryGroups.update(
+                            groups.get(toPosition).id,
+                            null,
+                            null,
+                            groups.get(toPosition).priority,
+                            null);
+                    reposetoryGroups.update(
+                            groups.get(fromPosition).id,
+                            null,
+                            null,
+                            groups.get(fromPosition).priority,
+                            null);
+                }
+                catch (Exception e){
+                    Log.e("UpdateGroupsError",e.toString());
+                }
             }
         }).start();
-
+        //GROUPS.setValue(groups);
     }
-    public static void updateGroup(Integer id, String name, String comment){
+    public void updateGroup(Integer id, String name, String comment){
         try{
-            Objects.requireNonNull(ITEM_MAP.get(String.valueOf(id))).name = name;
-            Objects.requireNonNull(ITEM_MAP.get(String.valueOf(id))).comment = comment;
+            Objects.requireNonNull(ITEM_MAP.get(id)).name = name;
+            Objects.requireNonNull(ITEM_MAP.get(id)).comment = comment;
         }
         catch (Exception e){
             Log.e("UpdateGroup",e.toString());
@@ -162,8 +216,14 @@ public class GroupPlaceholderContent {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ContentValues cv = new ContentValues();
-
+                reposetoryGroups.update(
+                        id,
+                        name,
+                        comment,
+                        null,
+                        null
+                );
+                /*ContentValues cv = new ContentValues();
                 cv.put(MainBaseContract.Groups.COLUMN_NAME_NAME, name);
                 cv.put(MainBaseContract.Groups.COLUMN_NAME_COMMENT, comment);
                 ContentProviderDB.update(
@@ -171,71 +231,61 @@ public class GroupPlaceholderContent {
                         cv,
                         MainBaseContract.Groups._ID + " = " + id,
                         null
-                );
+                );*/
             }
         }).start();
     }
-    public static void makeNoEmpty(Integer idGroup){
-        for(int i = 0;i < noEmptyGROUPS.size();i++){
-            if(Integer.valueOf(noEmptyGROUPS.get(i).id).equals(idGroup)){
-                return;
-            }
-        }
-        for(int i = 0;i < GROUPS.size();i++){
-            if(Integer.valueOf(GROUPS.get(i).id) == idGroup){
-                noEmptyGROUPS.add(GROUPS.get(i));
-            }
-        }
-    }
 
-    public static void addItem(PlaceholderItem item) {
+    public void addItem(Group item) {
+        List<Group> groups = GROUPS.getValue();
         //проверка на обновление приоритета
         if(Integer.valueOf(item.priority) > maxPriority){
             maxPriority = Integer.valueOf(item.priority);
         }
-        GROUPS.add(item);
-        ITEM_MAP.put(String.valueOf(item.id), item);
+        groups.add(item);
+        ITEM_MAP.put(item.id, item);
+        GROUPS.setValue(groups);
     }
-    public static void clearGroups(){
-        GROUPS.clear();
+    public void clearGroups(){
+        GROUPS.setValue(new ArrayList<>());
     }
-    public static void loadGroups(){
-        GROUPS.clear();
-        try{
-            Cursor cursor = ReposetoryGroups.getAll();
-            cursor.moveToFirst();
-            do{
-
-                addItem(new GroupPlaceholderContent.PlaceholderItem(
-                        cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups._ID)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_NAME)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_COMMENT)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_PRIORITY)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_COUNT_ELEMS))
-                ));
-            }while(cursor.moveToNext());
-            GROUPS.forEach(
-                it ->{
-                    if(it.countElems > 0){
-                        noEmptyGROUPS.add(it);
+    public void loadGroups(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    List<Group> groups = reposetoryGroups.getAll();
+                    //Log.e("LoadGroupsStart",String.valueOf(GROUPS.getValue().size()) + String.valueOf(groups.size()));
+                    noEmptyGROUPS.clear();
+                    for(Group item : groups){
+                        ITEM_MAP.put(item.id, item);
+                        if(item.priority > maxPriority){
+                            maxPriority = item.priority;
+                        }
+                        if(item.countElems > 0){
+                            noEmptyGROUPS.add(item);
+                        }
                     }
+                    GROUPS.postValue(groups);
+                    //Log.e("LoadGroupsEnd",String.valueOf(GROUPS.getValue().size()));
                 }
-            );
-        }
-        catch (Exception e){
-            Log.e("ErrorLoadAllGroups",e.toString());
+                catch (Exception e){
+                    Log.e("LoadGroupsError",e.toString());
 
-        }
+                }
+            }
+        }).start();
+
     }
-    public static void deleteElement(int idGroup){
-        if(ITEM_MAP.containsKey(String.valueOf(idGroup))){
+    public void deleteElement(int idGroup){
+        if(ITEM_MAP.containsKey(idGroup)){
             try{
-                if(Objects.requireNonNull(ITEM_MAP.get(String.valueOf(idGroup))).countElems > 0){
-                    Objects.requireNonNull(ITEM_MAP.get(String.valueOf(idGroup))).countElems -= 1;
+                if(Objects.requireNonNull(ITEM_MAP.get(idGroup)).countElems > 0){
+                    Objects.requireNonNull(ITEM_MAP.get(idGroup)).countElems -= 1;
                     new Thread(new Runnable(){
                         @Override
                         public void run() {
-                            ReposetoryGroups.update(
+                            reposetoryGroups.update(
                                     idGroup,
                                     null,
                                     null,
@@ -254,15 +304,15 @@ public class GroupPlaceholderContent {
 
         }
     }
-    public static void addElement(int idGroup){
+    public void addElement(int idGroup){
 
-        if(ITEM_MAP.containsKey(String.valueOf(idGroup))){
+        if(ITEM_MAP.containsKey(idGroup)){
             try{
-                Objects.requireNonNull(ITEM_MAP.get(String.valueOf(idGroup))).countElems += 1;
+                Objects.requireNonNull(ITEM_MAP.get(idGroup)).countElems += 1;
                 new Thread(new Runnable(){
                     @Override
                     public void run() {
-                        ReposetoryGroups.update(
+                        reposetoryGroups.update(
                                 idGroup,
                                 null,
                                 null,
@@ -270,7 +320,7 @@ public class GroupPlaceholderContent {
                                 Objects.requireNonNull(ITEM_MAP.get(String.valueOf(idGroup))).countElems);
                     }
                 }).start();
-                GroupPlaceholderContent.makeNoEmpty(idGroup);
+                makeNoEmpty(ITEM_MAP.get(idGroup));
 
             }
             catch (Exception e){
@@ -280,74 +330,23 @@ public class GroupPlaceholderContent {
         }
 
     }
-    public static void add(String name, String commet,Runnable notify ){
+    public void add(String name, String commet){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ReposetoryGroups.add(name,commet);
-                notify.run();
+                reposetoryGroups.add(name,commet,maxPriority);
+                maxPriority+=1;
+                loadGroups();
             }
         }).start();
-
     }
 
-    public static void exportSelectedGroups(NotifyList callBack){
+    public void exportSelectedGroups(NotifyList callBack){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    synchronized (SelectesGroups) {
-                        XMLWrapper xmlExport = new XMLWrapper();
-                        List<Group> groups = new ArrayList<>();
-                        for (PlaceholderItem currentGroup : SelectesGroups) {
-                            Group xmlGroup = new Group();
-
-                            xmlGroup.id = currentGroup.id;
-                            xmlGroup.name = currentGroup.name;
-                            xmlGroup.comment = currentGroup.comment;
-
-                            List<Element> elements = new ArrayList<>();
-
-                            Cursor cursorElements = ReposetoryElements.getAllElements(Integer.valueOf(currentGroup.id));
-                            if (cursorElements.getCount() > 0) {
-                                cursorElements.moveToFirst();
-                                do {
-                                    Element xmlElem = new Element();
-
-                                    xmlElem.id = cursorElements.getString(cursorElements.getColumnIndexOrThrow(MainBaseContract.Elements._ID));
-                                    xmlElem.name = cursorElements.getString(cursorElements.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME));
-                                    xmlElem.comment = cursorElements.getString(cursorElements.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_COMMENT));
-                                    xmlElem.priority = cursorElements.getString(cursorElements.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_PRIORITY));
-                                    List<Component> components = new ArrayList<>();
-
-                                    Cursor cursorComponents = ReposetoryComponents.loadComponentsData(Integer.valueOf(xmlElem.id));
-                                    if (cursorComponents.getCount() > 0) {
-                                        cursorComponents.moveToFirst();
-                                        do {
-                                            Component xmlComponent = new Component();
-
-                                            xmlComponent.id = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components._ID));
-                                            xmlComponent.name = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_NAME));
-                                            xmlComponent.comment = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_COMMENT));
-                                            xmlComponent.count = cursorComponents.getString(cursorComponents.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_QUANTITY));
-
-                                            components.add(xmlComponent);
-                                        } while (cursorComponents.moveToNext());
-                                    }
-                                    xmlElem.components = components;
-                                    cursorComponents.close();
-                                    elements.add(xmlElem);
-                                } while (cursorElements.moveToNext());
-
-                            }
-                            xmlGroup.elements = elements;
-                            cursorElements.close();
-                            groups.add(xmlGroup);
-                        }
-
-                        xmlExport.groups = groups;
-                        xmlResult = xmlExport;
-                    }
+                try{
+                    xmlResult = xmlManager.exportSelectedGroups(SelectesGroups);
                     callBack.CallNotify();
                 }catch (Exception e){
                     Log.e("XMLExportError",e.toString());
@@ -355,95 +354,30 @@ public class GroupPlaceholderContent {
             }
         }).start();
     }
-    public static String groupsToXml(){
-        try {
-            Serializer serializer = new Persister();
-            StringWriter writer = new StringWriter();
-            serializer.write(xmlResult, writer);
-
-            //String xml = writer.toString();
-            //Log.d("SimpleXML", xml);
-
-            return writer.toString();
+    public String groupsToXml(){
+        try{
+            return this.xmlManager.groupsToXml(xmlResult);
         } catch (Exception e) {
             Log.e("XMLConwertError",e.toString());
-            return null;
+            return "";
         }
     }
-    public static int xmlToClass(String xmlString){
+    public void xmlToClass(String xmlString){
         try{
-            Serializer serializer = new Persister();
-            XMLWrapper root = serializer.read(XMLWrapper.class, xmlString);
-
-            xmlResult = root;
-
-            Log.d("RESULTTTT", String.valueOf(root.groups.get(0).name));
+            this.xmlResult = this.xmlManager.xmlToClass(xmlString);
         }catch (PersistenceException pe){
             Log.e("XMLDeserializerError",pe.toString());
-            return 1;
+
         }catch (Exception e){
             Log.e("XMLDeserializerError",e.toString());
-            return 2;
-        }
-        return 0;
-    }
-    public static void importIntoDB(NotifyList callNotify){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    int groupID,elemID;
-                    if(xmlResult.groups != null) {
-                        for (Group group : xmlResult.groups) {
-                            groupID = (int) ReposetoryGroups.add(group.name, group.comment);
-                            if (group.elements != null) {
 
-
-                                for (Element elem : group.elements) {
-                                    elemID = (int) ReposetoryElements.add(elem.name, elem.comment, Integer.valueOf(elem.priority));
-                                    ReposetoryElements.addGroupLink(elemID, groupID);
-                                    if (elem.components != null) {
-                                        for (Component component : elem.components) {
-                                            ReposetoryComponents.addComponent(
-                                                    Integer.valueOf(elem.id),
-                                                    component.name,
-                                                    component.comment,
-                                                    component.count);
-                                        }
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-                    callNotify.CallNotify();
-                }catch (Exception e){
-                    Log.e("ImportIntoDBError",e.toString());
-                }
-
-            }
-        }).start();
-
-    }
-    public static class PlaceholderItem {
-        public final String id;
-        public String name;
-        public String comment;
-        public Integer priority;
-        public Integer countElems;
-
-        public PlaceholderItem(String id, String content, String comment, Integer priority,Integer countElems) {
-            this.id = id;
-            this.name = content;
-            this.comment = comment;
-            this.priority = priority;
-            this.countElems = countElems;
-        }
-
-        @Override
-        public String toString() {
-            return name;
         }
     }
-
+    public void importIntoDB(){
+        try{
+            this.xmlManager.importGroupsIntoDB(xmlResult,maxPriority);
+        }catch (Exception e){
+            Log.e("ImportIntoDBError",e.toString());
+        }
+    }
 }

@@ -5,13 +5,12 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,21 +20,23 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
+import com.example.random_menu.Data.Group;
 import com.example.random_menu.Data.Item;
 import com.example.random_menu.ElementsList.ElementsListActivity;
 import com.example.random_menu.GroupsList.DialogFragments.MoreGroupDialogFragment;
 
 import com.example.random_menu.GroupsList.DialogFragments.PropertiesDialogFragment;
 import com.example.random_menu.R;
+import com.example.random_menu.Reposetory.InterfaceSharedDataReposetory;
 import com.example.random_menu.Utils.ToastHelper;
 import com.example.random_menu.databinding.AlertDialogBinding;
 import com.example.random_menu.databinding.ListFragmentBinding;
-import com.example.random_menu.placeholder.ElemPlaceholderContent;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
+import com.example.random_menu.Reposetory.SharedDataReposetory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -48,7 +49,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class GroupsRecycleFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
+    private GroupPlaceholderContent viewModel;
     ListFragmentBinding binding;
     AlertDialogBinding alertBinding;
     @Inject
@@ -66,12 +67,14 @@ public class GroupsRecycleFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = ListFragmentBinding.inflate(inflater, container, false);
+        viewModel = new ViewModelProvider(requireActivity()).get(GroupPlaceholderContent.class);
         //View view = inflater.inflate(R.layout.list_elem_fragment, container, false);
 
         Handler handler = new Handler(Looper.getMainLooper());
+        viewModel.loadGroups();
 
         adapter = new GroupsRecyclerViewAdapter(
-                GroupPlaceholderContent.GROUPS,
+                viewModel.getGroups(),
                 (screenPosition,id, number,listPosition) ->{//функция для отрисовки moreView
             //выхватываем id элемента списка
             moreItemDialogFragment.setVars(
@@ -89,8 +92,8 @@ public class GroupsRecycleFragment extends Fragment {
                         alertBinding.positiveButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                GroupPlaceholderContent.deleteGroup(dbID);
-                                binding.list1.getAdapter().notifyDataSetChanged();
+                                viewModel.deleteGroup(dbID);
+                                //binding.list1.getAdapter().notifyDataSetChanged();
                                 dialog.dismiss();
                             }
                         });
@@ -108,21 +111,21 @@ public class GroupsRecycleFragment extends Fragment {
                     },()->{
                         propertiesDialogFragment.setVars(
                                 Integer.valueOf(id),
-                                Integer.valueOf(listPosition),
-                                ()->{
+                                Integer.valueOf(listPosition)
+                                /*()->{
                                     //обновляем только 1 элемент, потому что это таргетное редактирвоание свойств
                                     binding.list1.getAdapter().notifyItemChanged(Integer.valueOf(listPosition));
-                                }
+                                }*/
                         );
                         propertiesDialogFragment.show(getParentFragmentManager(),"PropertiesDialog");
                     },(dbId)->{
 
-                        GroupPlaceholderContent.SelectesGroups.clear();
-                        GroupPlaceholderContent.checkGroups(GroupPlaceholderContent.ITEM_MAP.get(String.valueOf(dbId)));
+                        viewModel.SelectesGroups.clear();
+                        viewModel.checkGroups(viewModel.ITEM_MAP.get(dbId));
                         toast.showMessage(getString(R.string.start_export));
-                        GroupPlaceholderContent.exportSelectedGroups(()->{
+                        viewModel.exportSelectedGroups(()->{
                             //суем данные в буффер, далеко не лучшая идея но надо без пермишнов.
-                            String result = GroupPlaceholderContent.groupsToXml();
+                            String result = viewModel.groupsToXml();
                             //GroupPlaceholderContent.xmlToClass(result);
                             //Log.e("RESULTTTT",result);
                             ClipboardManager clipboard = (ClipboardManager) binding.getRoot().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
@@ -139,9 +142,8 @@ public class GroupsRecycleFragment extends Fragment {
 
         },
                 //переход к элементам группы
-                (id,name) ->{
-                    ElemPlaceholderContent.idSelectGroup = id;
-                    ElemPlaceholderContent.nameSelectGroup = name;
+                (group) ->{
+                    viewModel.setShareGroup(group);
                     Intent intent = new Intent(getActivity(), ElementsListActivity.class);
                     startActivity(intent);
         });
@@ -155,7 +157,17 @@ public class GroupsRecycleFragment extends Fragment {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(TouchCallback);
         itemTouchHelper.attachToRecyclerView(binding.list1);
         //return view;
+        viewModel.getGroups().observe(getViewLifecycleOwner(), groups -> {
+            if (groups != null) {
+                Log.e("UpdateRecycle",String.valueOf(groups.size()));
+                try{
 
+                    adapter.submitList(new ArrayList<>(groups)); // Обновляем данные
+                }catch (Exception e){
+                    Log.e("UpdateRecycleError",e.toString());
+                }
+            }
+        });
         //binding = ListElemFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
@@ -169,15 +181,15 @@ public class GroupsRecycleFragment extends Fragment {
 
             int fromPosition = (int) viewHolder.getAbsoluteAdapterPosition();
             int toPosition = (int) target.getAbsoluteAdapterPosition();
-            GroupPlaceholderContent.swap(fromPosition,toPosition);
+            viewModel.swap(fromPosition,toPosition);
 
-            //Collections.swap((List<?>) GroupPlaceholderContent.GROUPS, fromPosition, toPosition);
+            Collections.swap((List<?>) viewModel.GROUPS.getValue(), fromPosition, toPosition);
             try{
                 binding.list1.getAdapter().notifyItemMoved(fromPosition, toPosition);
-                binding.list1.getAdapter().notifyItemChanged(fromPosition);
-                binding.list1.getAdapter().notifyItemChanged(toPosition);
+                //binding.list1.getAdapter().notifyItemChanged(fromPosition);
+                //binding.list1.getAdapter().notifyItemChanged(toPosition);
                 //binding.list1.getAdapter().notifyDataSetChanged();
-                GroupPlaceholderContent.loadGroups();
+                //viewModel.loadGroups();
             }
             catch(Exception e){
                 Log.e("onMoveListenerError",e.toString());

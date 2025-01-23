@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
@@ -28,11 +29,15 @@ import com.example.random_menu.databinding.AddGroupDialogBinding;
 import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class AddGroupDialogFragment extends DialogFragment {
+
+    private GroupPlaceholderContent viewModel;
+
     AddGroupDialogBinding binding;
     NotifyList notify;
-
 
 
     public interface NotifyList{
@@ -72,6 +77,7 @@ public class AddGroupDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = AddGroupDialogBinding.inflate(inflater,container,false);
+        viewModel = new ViewModelProvider(requireActivity()).get(GroupPlaceholderContent.class);
         return binding.getRoot();
     }
 
@@ -113,12 +119,8 @@ public class AddGroupDialogFragment extends DialogFragment {
                 if(name.length() != 0){
                     String finalName = name;
                     String finalComment = comment;
-                        GroupPlaceholderContent.add(finalName,finalComment,()->{
-                            handler.post(()->{
-                                GroupPlaceholderContent.loadGroups();
-                                notify.notifyList();
-                            });
-                        });
+                        viewModel.add(finalName,finalComment);
+                        //viewModel.loadGroups();
                 }
                 InputMethodManager imm = (InputMethodManager)binding.getRoot().getContext().getSystemService(binding.getRoot().getContext().INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(binding.getRoot().getWindowToken(), 0);

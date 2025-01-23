@@ -12,14 +12,19 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.ListRedactorCheckboxDialogBinding;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class ElementsCheckListDialogFragment extends DialogFragment {
     public ListRedactorCheckboxDialogBinding binding;
+    private ElemPlaceholderContent viewModel;
+
     public static NotifyList notifyList;
     public interface NotifyList{
         void CallNotify();
@@ -39,7 +44,12 @@ public class ElementsCheckListDialogFragment extends DialogFragment {
         if(dialog != null){
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
             dialog.getWindow().setBackgroundDrawable(null);
-            ElemCheckListRecyclerViewAdapter adapter = new ElemCheckListRecyclerViewAdapter(ElemPlaceholderContent.getElements());
+            ElemCheckListRecyclerViewAdapter adapter = new ElemCheckListRecyclerViewAdapter(
+                    viewModel.getElements(),
+                    (elem)->{
+                        viewModel.checkElement(elem);
+                    }
+            );
             binding.checkList.setAdapter(adapter);
 
         }
@@ -56,6 +66,7 @@ public class ElementsCheckListDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = ListRedactorCheckboxDialogBinding.inflate(inflater,container,false);
+        viewModel = new ViewModelProvider(requireActivity()).get(ElemPlaceholderContent.class);
         return binding.getRoot();
     }
 

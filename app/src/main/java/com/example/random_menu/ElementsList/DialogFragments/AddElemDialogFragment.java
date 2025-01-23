@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
@@ -25,9 +26,14 @@ import com.example.random_menu.databinding.AddGroupDialogBinding;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class AddElemDialogFragment extends DialogFragment {
     AddElemDialogBinding binding;
+
+    private ElemPlaceholderContent viewModel;
+
     NotifyList notify;
 
 
@@ -69,6 +75,7 @@ public class AddElemDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = AddElemDialogBinding.inflate(inflater,container,false);
+        viewModel = new ViewModelProvider(requireActivity()).get(ElemPlaceholderContent.class);
         return binding.getRoot();
     }
 
@@ -109,12 +116,7 @@ public class AddElemDialogFragment extends DialogFragment {
                 if(name.length() != 0){
                     String finalName = name;
                     String finalComment = comment;
-                    ElemPlaceholderContent.add(finalName,finalComment,() ->{
-                            handler.post(()->{
-                                ElemPlaceholderContent.loadElements();
-                                notify.notifyList();
-                            });
-                    });
+                    viewModel.add(finalName,finalComment);
                 }
                 InputMethodManager imm = (InputMethodManager)binding.getRoot().getContext().getSystemService(binding.getRoot().getContext().INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(binding.getRoot().getWindowToken(), 0);

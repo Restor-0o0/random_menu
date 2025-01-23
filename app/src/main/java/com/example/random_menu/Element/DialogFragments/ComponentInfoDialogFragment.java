@@ -14,14 +14,20 @@ import android.view.animation.AnimationUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.InfoComponentDialogBinding;
 import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class ComponentInfoDialogFragment extends DialogFragment {
     InfoComponentDialogBinding binding;
+
+    private ComponentPlaceholderContent viewModel;
+
     Notify setValues;
     private static Integer listPositionCalledItem;
     private static int dbId;
@@ -81,6 +87,8 @@ public class ComponentInfoDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = InfoComponentDialogBinding.inflate(inflater,container,false);
+        viewModel = new ViewModelProvider(requireActivity()).get(ComponentPlaceholderContent.class);
+
         return binding.getRoot();
     }
 
@@ -114,7 +122,7 @@ public class ComponentInfoDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 if(binding.inputName.getText().toString().length() != 0) {
-                            ComponentPlaceholderContent.updateComponent(
+                            viewModel.updateComponent(
                                     dbId,
                                     binding.inputName.getText().toString(),
                                     binding.inputComment.getText().toString(),

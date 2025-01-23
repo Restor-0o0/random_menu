@@ -9,6 +9,6 @@ import java.util.List;
 @Root(name = "root")
 public class XMLWrapper {
     @ElementList(name = "group",inline = true,required = false)
-    public List<Group> groups;
+    public List<GroupXml> groups;
 }
 

@@ -12,13 +12,19 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.ListRedactorCheckboxDialogBinding;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class GroupsCheckListDialogFragment extends DialogFragment {
+
+    private GroupPlaceholderContent viewModel;
+
     public ListRedactorCheckboxDialogBinding binding;
 
     public static NotifyList callAction;
@@ -40,7 +46,7 @@ public class GroupsCheckListDialogFragment extends DialogFragment {
         if(dialog != null){
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
             dialog.getWindow().setBackgroundDrawable(null);
-            GroupCheckListRecyclerViewAdapter adapter = new GroupCheckListRecyclerViewAdapter(GroupPlaceholderContent.getGroups());
+            GroupCheckListRecyclerViewAdapter adapter = new GroupCheckListRecyclerViewAdapter(viewModel,viewModel.getGroups());
             binding.checkList.setAdapter(adapter);
 
         }
@@ -57,6 +63,7 @@ public class GroupsCheckListDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = ListRedactorCheckboxDialogBinding.inflate(inflater,container,false);
+        viewModel = new ViewModelProvider(requireActivity()).get(GroupPlaceholderContent.class);
         return binding.getRoot();
     }
 

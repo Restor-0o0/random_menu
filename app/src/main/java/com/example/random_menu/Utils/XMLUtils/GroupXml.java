@@ -4,21 +4,18 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
-
 import java.util.List;
 
 
 
-@Root(name="element")
-public class Element {
+@Root(name="group")
+public class GroupXml {
     @Attribute
-    public String id;
+    public Integer id;
     @Attribute
     public String name;
     @Attribute
     public String comment;
-    @Attribute
-    public String priority;
-    @ElementList(name = "component",inline = true,required = false)
-    public List<Component> components;
+    @ElementList(name = "element",inline = true,required = false)
+    public List<ElementXml> elements;
 }

@@ -12,16 +12,23 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.random_menu.Element.GroupsCheckListRecyclerViewAdapter;
 
 import com.example.random_menu.R;
+import com.example.random_menu.Reposetory.InterfaceSharedDataReposetory;
 import com.example.random_menu.databinding.ListRedactorCheckboxDialogBinding;
 import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+
+@AndroidEntryPoint
 public class GroupCheckListDialogFragment extends DialogFragment {
     public ListRedactorCheckboxDialogBinding binding;
+    private ComponentPlaceholderContent viewModel;
+
     SetValueParentFragmentField setValueParentFragmentField;
 
 
@@ -53,13 +60,20 @@ public class GroupCheckListDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = ListRedactorCheckboxDialogBinding.inflate(inflater,container,false);
+        viewModel = new ViewModelProvider(requireActivity()).get(ComponentPlaceholderContent.class);
+
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        GroupsCheckListRecyclerViewAdapter adapter = new GroupsCheckListRecyclerViewAdapter(ComponentPlaceholderContent.getGroups());
+        GroupsCheckListRecyclerViewAdapter adapter = new GroupsCheckListRecyclerViewAdapter(
+                viewModel.getGroups(),
+                (group)->{
+                    viewModel.checkGroups(group);
+                }
+        );
         Handler handler = new Handler(Looper.getMainLooper());
         binding.checkList.setAdapter(adapter);
         //ActivityElementBinding elementActivity = ((ElementActivity) requireActivity()).getBinding();
@@ -71,12 +85,12 @@ public class GroupCheckListDialogFragment extends DialogFragment {
             public void onClick(View view) {
 
                 //запускаем поток на обновление и потомв мейн поток возвращаем задачи на присваивание
-                ComponentPlaceholderContent.UpdatedGroupsDB(()->{
+                viewModel.UpdatedGroupsDB(()->{
 
-                    ComponentPlaceholderContent.loadGroupsData();
+                    viewModel.loadGroupsData();
                     handler.post(() ->{
                         Log.e("ErrorBinding","Fuck");
-                        setValueParentFragmentField.setValues(ComponentPlaceholderContent.getActiveGroupsStr(),ComponentPlaceholderContent.getActiveGroupsStr());
+                        setValueParentFragmentField.setValues(viewModel.getActiveGroupsStr(),viewModel.getActiveGroupsStr());
                     });
 
                 });
@@ -87,7 +101,7 @@ public class GroupCheckListDialogFragment extends DialogFragment {
         binding.cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ComponentPlaceholderContent.clearUpdateGroups();
+                viewModel.clearUpdateGroups();
                 binding.checkList.getAdapter().notifyDataSetChanged();
                 getDialog().dismiss();
             }
@@ -96,7 +110,7 @@ public class GroupCheckListDialogFragment extends DialogFragment {
         binding.backFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ComponentPlaceholderContent.clearUpdateGroups();
+                viewModel.clearUpdateGroups();
                 binding.checkList.getAdapter().notifyDataSetChanged();
                 getDialog().dismiss();
             }

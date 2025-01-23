@@ -4,8 +4,18 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
+import com.example.random_menu.Data.Component;
+import com.example.random_menu.Data.Element;
+import com.example.random_menu.Data.GroupCheck;
+import com.example.random_menu.Reposetory.InterfaceReposetoryComponents;
+import com.example.random_menu.Reposetory.InterfaceReposetoryElements;
+import com.example.random_menu.Reposetory.InterfaceSharedDataReposetory;
 import com.example.random_menu.Reposetory.ReposetoryComponents;
 import com.example.random_menu.Reposetory.ReposetoryElements;
 
@@ -14,31 +24,39 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
 /**
  * Helper class for providing sample content for user interfaces created by
  * Android template wizards.
  * <p>
  * TODO: Replace all uses of this class before publishing your app.
  */
-public class ComponentPlaceholderContent {
+@HiltViewModel
+public class ComponentPlaceholderContent extends ViewModel {
+
+    private InterfaceReposetoryComponents reposetoryComponents;
+    private InterfaceReposetoryElements reposetoryElements;
+    private InterfaceSharedDataReposetory sharedDataReposetory;
+
     //Данные элемента
-    public static String idSelectElem;
-    public static String nameSelectElem;
-    public static String commentSelectElem;
-    public static Integer positionSelectElem;
+    public Element selectedElemen;
+    public Integer positionSelectElem;
     //Список компонентов
-    private static final List<ComponentsPlaceholderItem> Components = new ArrayList<ComponentsPlaceholderItem>();
+    private MutableLiveData<List<Component>> Components = new MutableLiveData<>();
     //Список групп
-    private static final List<GroupsPlaceholderItem> Groups = new ArrayList<GroupsPlaceholderItem>();
+    private  List<GroupCheck> Groups = new ArrayList<GroupCheck>();
     //Список групп на обновление в бд
-    private static final List<GroupsPlaceholderItem> SelectesGroups = new ArrayList<GroupsPlaceholderItem>();
+    private  List<GroupCheck> SelectesGroups = new ArrayList<GroupCheck>();
     //мапа хрен знаетзачем, уже не помню
-    public static final Map<String, ComponentsPlaceholderItem> ITEM_MAP = new HashMap<String, ComponentsPlaceholderItem>();
+    public  Map<Integer, Component> ITEM_MAP = new HashMap<Integer, Component>();
     //геттеры
-    public static List<ComponentsPlaceholderItem> getComponents(){
+    public LiveData<List<Component>> getComponents(){
         return Components;
     }
-    public static List<GroupsPlaceholderItem> getGroups(){
+    public List<GroupCheck> getGroups(){
         return Groups;
     }
 
@@ -46,47 +64,77 @@ public class ComponentPlaceholderContent {
         void CallNotify();
     }
 
+    @Inject
+    public ComponentPlaceholderContent(
+            InterfaceReposetoryComponents interfaceReposetoryComponents,
+            InterfaceReposetoryElements interfaceReposetoryElements,
+            InterfaceSharedDataReposetory sharedDataReposetory
+    ){
+        this.reposetoryComponents = interfaceReposetoryComponents;
+        this.reposetoryElements = interfaceReposetoryElements;
+        this.sharedDataReposetory = sharedDataReposetory;
+    }
 
-    public static void addComponent(String name, String comment,String qantity,NotifyList callNotify){
+    public Element getShareElement(){
+        this.selectedElemen = sharedDataReposetory.getSharedElement();
+        return selectedElemen;
+    }
+    public void setShareElement(Element element){
+        this.sharedDataReposetory.setSharedElement(element);
+    }
+
+
+    public void addComponent(String name, String comment,String qantity){
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ReposetoryComponents.addComponent(Integer.valueOf(idSelectElem),name,comment,qantity);
-                callNotify.CallNotify();
+                int id = (int) reposetoryComponents.addComponent(selectedElemen.id,name,comment,qantity);
+                List<Component> components = Components.getValue();
+                components.add(new Component(
+                        id,
+                        name,
+                        comment,
+                        qantity
+                ));
+                Components.postValue(new ArrayList<>(components));
             }
         }).start();
     }
     //добавление компонента в список
-    public static void addComponentsItem(ComponentsPlaceholderItem item) {
-        Components.add(item);
+    public void addComponentsItem(Component item) {
+        List<Component> components = Components.getValue();
+        components.add(item);
+        Components.setValue(components);
         ITEM_MAP.put(item.id, item);
     }
     //добавление Группы в список
-    public static void addGroupsItem(GroupsPlaceholderItem item) {
+    public void addGroupsItem(GroupCheck item) {
         Groups.add(item);
     }
     //отчистки
-    public static void clearComponents(){
-        Components.clear();
+    public void clearComponents(){
+        Components.postValue(new ArrayList<>());
     }
-    public static void clearGroups(){
+    public void clearGroups(){
         Groups.clear();
     }
-    public static void clearUpdateGroups(){
+    public void clearUpdateGroups(){
         SelectesGroups.clear();
     }
-    public static void deleteComponent(int position,NotifyList callNotify){
+    public void deleteComponent(Component component){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ReposetoryComponents.deleteComponent(Integer.valueOf(Components.get(position).id));
+                reposetoryComponents.deleteComponent(component.id);
             }
         }).start();
-        Components.remove(position);
-        callNotify.CallNotify();
+        List<Component> components = Components.getValue();
+        components.remove(component);
+        Components.setValue(components);
     }
     //Проверка группны на наличие и добавление или удаление
-    public static void checkGroups(GroupsPlaceholderItem item){
+    public void checkGroups(GroupCheck item){
         for(int i = 0; i < SelectesGroups.size(); i++){
             if(SelectesGroups.get(i).id == item.id){
                 SelectesGroups.remove(i);
@@ -96,32 +144,33 @@ public class ComponentPlaceholderContent {
         SelectesGroups.add(item);
     }
     //обновление групп из списка в бд
-    public static void UpdatedGroupsDB(NotifyList callNotify){
+    public void UpdatedGroupsDB(NotifyList callNotify){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 //ContentValues cv = new ContentValues();
                 //int counterActiveGroups = 0;
-                for(GroupsPlaceholderItem item: SelectesGroups){
+                for(GroupCheck item: SelectesGroups){
                     //Log.e("GroupsUpdates",item.id);
                     if(item.active){
                         //counterActiveGroups += 1;
-                        Log.e("GroupsUpdates",item.id);
-                        ReposetoryElements.addGroupLink(
-                                Integer.valueOf(idSelectElem),
-                                Integer.valueOf(item.id)
+                        Log.e("GroupsUpdates",String.valueOf(item.id));
+                        reposetoryElements.addGroupLink(
+                                selectedElemen.id,
+                                item.id
                         );
-                        GroupPlaceholderContent.addElement(Integer.valueOf(item.id));
+                        //GroupPlaceholderContent.addElement(Integer.valueOf(item.id));
+
                         /*cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_GROUP,item.id);
                         cv.put(MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT,idSelectElem);
                         ContentProviderDB.insert(MainBaseContract.ElemGroup.TABLE_NAME,null,cv);
                         cv.clear();*/
                     }
                     else{
-                        GroupPlaceholderContent.deleteElement(Integer.valueOf(item.id));
-                        ReposetoryElements.dropGroupLink(
-                                Integer.valueOf(idSelectElem),
-                                Integer.valueOf(item.id)
+                        //GroupPlaceholderContent.deleteElement(Integer.valueOf(item.id));
+                        reposetoryElements.dropGroupLink(
+                                selectedElemen.id,
+                                item.id
                         );
 
                         //ContentProviderDB.delete(MainBaseContract.ElemGroup.TABLE_NAME,MainBaseContract.ElemGroup.COLUMN_NAME_GROUP + " = "+item.id + " and "+ MainBaseContract.ElemGroup.COLUMN_NAME_ELEMENT + " = "+ idSelectElem,null);
@@ -133,8 +182,8 @@ public class ComponentPlaceholderContent {
 
 
     }
-    public static void updateComponent(Integer id,String name,String comment, String quantity){
-        ComponentsPlaceholderItem item = ITEM_MAP.get(String.valueOf(id));
+    public void updateComponent(Integer id,String name,String comment, String quantity){
+        Component item = ITEM_MAP.get(String.valueOf(id));
         if(item != null) {
             item.name = name;
             item.comment = comment;
@@ -143,29 +192,36 @@ public class ComponentPlaceholderContent {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    ReposetoryComponents.updateComponent(id, name, comment, quantity);
+                    reposetoryComponents.updateComponent(id, name, comment, quantity);
                 }
             }).start();
         }
     }
+    public void updateElem(Integer id, String name,String comment,Integer priority){
+        selectedElemen.name = name;
+        selectedElemen.comment = comment;
+
+        //ITEM_MAP.get(String.valueOf(id)).name = name;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                reposetoryElements.update(
+                        id,
+                        name,
+                        comment,
+                        priority
+                );
+
+            }
+        }).start();
+    }
     //загрузка групп с бд
-    public static void loadGroupsData() {
+    public void loadGroupsData() {
         clearGroups();
         try{
             //выхватили данные элемента
-            Cursor cursor = ReposetoryComponents.loadGroupsData(Integer.valueOf(idSelectElem));
-            if(cursor.getCount() > 0)
-            {
-                cursor.moveToFirst();
-                do {
-                    Log.e("LoadGroupsInfo",cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_NAME))+ " " +cursor.getString(cursor.getColumnIndexOrThrow("Active")));
-                    addGroupsItem(new GroupsPlaceholderItem(
-                            cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups._ID)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Groups.COLUMN_NAME_NAME)),
-                            cursor.getInt(cursor.getColumnIndexOrThrow("Active"))
-                    ));
-                } while (cursor.moveToNext());
-            }
+            List<GroupCheck> groups = reposetoryComponents.loadGroupsData(selectedElemen.id);
+            Groups = groups;
             Log.e("LoadGroupsInfo",Groups.toString());
         }
         catch (Exception e){
@@ -174,63 +230,54 @@ public class ComponentPlaceholderContent {
     }
 
     //Удалит элемент если он не закреплен ни за какой группой
-    public static void deleteIfNoGroups(){
+    public boolean deleteIfNoGroups(){
         Log.e("ELEMDELETE","TYT");
         int countActive = 0;
-        for (GroupsPlaceholderItem item: Groups) {
+        for (GroupCheck item: Groups) {
             if(item.active){
                 countActive+=1;
             }
         }
         if(countActive == 0){
             Log.e("ELEMDELETE","SNESLO");
-            ElemPlaceholderContent.deleteElem(Integer.valueOf(idSelectElem));
+            return true;
+            //ElemPlaceholderContent.deleteElem(Integer.valueOf(idSelectElem));
         }
+        return false;
     }
     //загрузка информации элемента из бд
-    public static void loadElementData() {
+    public void loadElementData() {
         try{
-            Cursor cursor = ReposetoryComponents.loadElementData(Integer.valueOf(idSelectElem));
+            Element element = reposetoryComponents.loadElementData(selectedElemen.id);
             //выхватили данные элемента
-            if(cursor.getCount() > 0)
-            {
-                cursor.moveToFirst();
-                nameSelectElem = cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME));
-                commentSelectElem = cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_COMMENT));
-            }
+
         }
         catch (Exception e){
             Log.e("LoadElemInfoError", e.toString());
         }
     }
     //загрузка списка компонентов с бд
-    public static void loadComponentsData() {
-        clearComponents();
-        Components.clear();
-        try{
-            Cursor cursor = ReposetoryComponents.loadComponentsData(Integer.valueOf(idSelectElem));
-            //выхватили список компонентов
-            if(cursor.getCount() > 0)
-            {
-                cursor.moveToFirst();
-                do {
-                    addComponentsItem(new ComponentsPlaceholderItem(
-                            cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Components._ID)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_NAME)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_COMMENT)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Components.COLUMN_NAME_QUANTITY))
-                    ));
-                } while (cursor.moveToNext());
-            }
-        }
-        catch (Exception e){
-            Log.e("LoadComponentslistError", e.toString());
-        }
+    public void loadComponentsData() {
+
+                clearComponents();
+                try{
+                    List<Component> components = reposetoryComponents.loadComponentsData(selectedElemen.id);
+                    if(components.size() > 0 && components != null){
+                        Components.postValue(components);
+                    }
+                    Log.e("LoadComponentslistError", String.valueOf(components.size()));
+
+                    //выхватили список компонентов
+                }
+                catch (Exception e){
+                    Log.e("LoadComponentslistError", e.toString());
+                }
+
     }
     //возвращает группы в которых состоит элемент в строчку через ","
-    public static String getActiveGroupsStr(){
+    public String getActiveGroupsStr(){
         String str = "";
-        for (GroupsPlaceholderItem item: Groups) {
+        for (GroupCheck item: Groups) {
             if(item.active){
                 str+= item.name+", ";
             }
@@ -243,56 +290,18 @@ public class ComponentPlaceholderContent {
         }
     }
     //загрузка всех данных для экрана
-    public static void loadData() {
-        loadElementData();
-        loadGroupsData();
-        loadComponentsData();
-    }
-
-    //Компонент списка элементов
-    public static class ComponentsPlaceholderItem {
-        public final String id;
-        public String name;
-        public String comment;
-        public String quantity;
-
-        public ComponentsPlaceholderItem(String id, String name, String comment, String quantity) {
-            this.id = id;
-            this.name = name;
-            this.comment = comment;
-            this.quantity = quantity;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-    }
-    //компонент списка групп
-    public static class GroupsPlaceholderItem {
-        public final String id;
-        public final String name;
-        public boolean active;
-
-
-        public GroupsPlaceholderItem(String id, String name,int active) {
-            this.id = id;
-            this.name = name;
-            if(active == 1)
-            {
-                this.active = true;
+    public void loadData() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                loadElementData();
+                loadGroupsData();
+                loadComponentsData();
             }
-            else{
-                this.active = false;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
+        }).start();
 
     }
+
 
 
 }

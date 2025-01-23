@@ -1,6 +1,9 @@
 package com.example.random_menu.GroupsList;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -10,38 +13,56 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.example.random_menu.ContentProvider.ContentProviderDB;
-import com.example.random_menu.DB.MainBaseContract;
+import com.example.random_menu.Data.Group;
 import com.example.random_menu.Data.Item;
 import com.example.random_menu.databinding.ItemElemSettFragmentBinding;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 import java.util.List;
+import java.util.Objects;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Item}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecyclerViewAdapter.ViewHolder> {
+public class GroupsRecyclerViewAdapter extends ListAdapter<Group,GroupsRecyclerViewAdapter.ViewHolder> {
 
-    private static List<GroupPlaceholderContent.PlaceholderItem> mValues;
+    private static LiveData<List<Group>> mValues;
     private static OnSettingItemClickListener settingClickListener;
     private static OnItemClickListener itemClickListener;
 
     //слушатель нажатия на кнопку настроек
     public interface OnSettingItemClickListener {
-        void onButtonClick(int screenPosition,String id, String number,String listPosition);
+        void onButtonClick(int screenPosition,Integer id, String number,String listPosition);
     }
 
     //слушатель нажатия на элемент
     public interface OnItemClickListener {
-        void onItemClick(String id, String name);
+        void onItemClick(Group group);
     }
 
 
 
-    public GroupsRecyclerViewAdapter(List<GroupPlaceholderContent.PlaceholderItem> items, OnSettingItemClickListener settingClickListener, OnItemClickListener itemClickListener) {
-        mValues = items;
+    public GroupsRecyclerViewAdapter(
+            LiveData<List<Group>> items,
+            OnSettingItemClickListener settingClickListener,
+            OnItemClickListener itemClickListener) {
+        super(new DiffUtil.ItemCallback<Group>() {
+            @Override
+            public boolean areItemsTheSame(@NonNull Group oldItem, @NonNull Group newItem) {
+                return Objects.equals(oldItem.id, newItem.id);
+            }
+
+            @Override
+            public boolean areContentsTheSame(@NonNull Group oldItem, @NonNull Group newItem) {
+                return oldItem.equals(newItem);
+            }
+        });
+        if(items != null){
+            mValues = items;
+        }
         this.settingClickListener = settingClickListener;
         this.itemClickListener = itemClickListener;
     }
@@ -57,27 +78,32 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
     public void onBindViewHolder( ViewHolder holder, int position) {
         try{
             //Log.e("errrrrr",mValues.get(0).name);
-            holder.mItem = mValues.get(position);
+            holder.mItem = mValues.getValue().get(position);
             holder.mIdView.setText(String.valueOf(position+1));
-            holder.mNameView.setText(mValues.get(position).name);
+            holder.mNameView.setText(mValues.getValue().get(position).name);
 
 
         } catch (Exception e) {
-            Log.e("GroupAdapterErr",e.toString());
+            Log.e("GroupAdapterError",e.toString());
         }
 
     }
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        if(mValues.getValue() != null){
+            return mValues.getValue().size();
+        }
+        else{
+            return 0;
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView mIdView;
         private final TextView mNameView;
         private ImageButton mImageBut;
-        private GroupPlaceholderContent.PlaceholderItem mItem;
+        private Group mItem;
 
         public ViewHolder(@NonNull ItemElemSettFragmentBinding binding) {
             super(binding.getRoot());
@@ -89,8 +115,7 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    itemClickListener.onItemClick((String) mItem.id,(String) mNameView.getText());
-                    Log.e("list111",mIdView.getText().toString());
+                    itemClickListener.onItemClick(mItem);
                 }
             });
             binding.settButton.setOnClickListener(new View.OnClickListener() {
@@ -101,7 +126,7 @@ public class GroupsRecyclerViewAdapter extends RecyclerView.Adapter<GroupsRecycl
                     binding.settButton.getLocationOnScreen(cord);
                     settingClickListener.onButtonClick(
                             cord[1],
-                            (String) mItem.id,
+                            mItem.id,
                             (String) mNameView.getText(),
                             position.toString()
                     );

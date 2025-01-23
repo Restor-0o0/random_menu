@@ -1,15 +1,14 @@
 package com.example.random_menu.Utils.XMLUtils;
 
 import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 
 
 @Root(name="component")
-public class Component {
+public class ComponentXml {
     @Attribute
-    public String id;
+    public Integer id;
     @Attribute
     public String name;
     @Attribute

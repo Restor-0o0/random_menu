@@ -18,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 
-//@Singleton
+@Singleton
 public class ThemeManager {
     private SharedPreferences saveManager;
     private Context context;

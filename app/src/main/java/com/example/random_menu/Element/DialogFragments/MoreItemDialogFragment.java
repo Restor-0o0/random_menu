@@ -18,6 +18,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
+import com.example.random_menu.Data.Component;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.MoreItemDialogBinding;
 import com.example.random_menu.placeholder.ComponentPlaceholderContent;
@@ -25,10 +26,16 @@ import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 
 public class MoreItemDialogFragment extends DialogFragment {
     MoreItemDialogBinding binding;
-    private static Integer listPositionCalledItem;
-    private static int screenPositionCalledItem;
-    private static int dbId;
-    private static NotifyList callNotify;
+    private Integer listPositionCalledItem;
+    private int screenPositionCalledItem;
+    private Component component;
+    private NotifyList callNotify;
+    private CallBack callDeleteComp;
+
+    public interface CallBack{
+        void call(Component component);
+    }
+
     public interface NotifyList{
         void CallNotify();
     }
@@ -54,10 +61,17 @@ public class MoreItemDialogFragment extends DialogFragment {
 
         }
     }
-    public void setVars(Integer listPosition,int screenPosition,int dbId,NotifyList callNotify){
+    public void setVars(
+            Integer listPosition,
+            int screenPosition,
+            Component component,
+            NotifyList callNotify,
+            CallBack deleteCompCall
+            ){
         listPositionCalledItem = listPosition;
         screenPositionCalledItem = screenPosition;
-        this.dbId = dbId;
+        this.component = component;
+        this.callDeleteComp = deleteCompCall;
         this.callNotify = callNotify;
     }
     public MoreItemDialogFragment() {}
@@ -118,9 +132,7 @@ public class MoreItemDialogFragment extends DialogFragment {
             public void onClick(View view) {
 
 
-                ComponentPlaceholderContent.deleteComponent(listPositionCalledItem,()->{
-                        callNotify.CallNotify();
-                });
+                callDeleteComp.call(component);
                 //нимация скрытия
                 Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(),R.anim.anim_hide);
                 anim.setDuration(100);

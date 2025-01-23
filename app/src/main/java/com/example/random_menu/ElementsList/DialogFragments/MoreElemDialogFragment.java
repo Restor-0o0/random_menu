@@ -1,9 +1,6 @@
 package com.example.random_menu.ElementsList.DialogFragments;
 
 import android.app.Dialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,7 +14,9 @@ import android.view.animation.AnimationUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.random_menu.Data.Element;
 import com.example.random_menu.R;
 import com.example.random_menu.Utils.ToastHelper;
 import com.example.random_menu.databinding.MoreItemDialogBinding;
@@ -30,16 +29,21 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class MoreElemDialogFragment extends DialogFragment {
     MoreItemDialogBinding binding;
-    private static Integer listPositionCalledItem;
-    private static int screenPositionCalledItem;
-    private static int dbId;
+
+    private ElemPlaceholderContent viewModel;
+
+
+
+    private Integer listPositionCalledItem;
+    private int screenPositionCalledItem;
+    private Element currentElement;
     @Inject
     ToastHelper toast;
-    private static NotifyList callProperties;
-    private static Action callNotify,callAction;
+    private NotifyList callProperties;
+    private Action callNotify,callAction;
 
     public interface Action {
-        void callAction(Integer dbID);
+        void callAction(Element element);
     }
     public interface NotifyList{
         void CallNotify();
@@ -55,7 +59,7 @@ public class MoreElemDialogFragment extends DialogFragment {
     public void setVars(
             Integer listPosition,
             int screenPosition,
-            int dbId,
+            Element element,
             Action callNotify,
             NotifyList callProperties,
             Action callAction
@@ -63,7 +67,7 @@ public class MoreElemDialogFragment extends DialogFragment {
     ){
         listPositionCalledItem = listPosition;
         screenPositionCalledItem = screenPosition;
-        this.dbId = dbId;
+        this.currentElement = element;
         this.callNotify = callNotify;
         this.callProperties = callProperties;
         this.callAction = callAction;
@@ -89,6 +93,8 @@ public class MoreElemDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = MoreItemDialogBinding.inflate(inflater,container,false);
+        viewModel = new ViewModelProvider(requireActivity()).get(ElemPlaceholderContent.class);
+
         return binding.getRoot();
     }
 
@@ -128,7 +134,7 @@ public class MoreElemDialogFragment extends DialogFragment {
         binding.exportItemBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callAction.callAction(dbId);
+                callAction.callAction(currentElement);
 
                 dismiss();
             }
@@ -137,7 +143,7 @@ public class MoreElemDialogFragment extends DialogFragment {
         binding.deleteItemBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                callNotify.callAction(dbId);
+                callNotify.callAction(currentElement);
                     Animation anim = AnimationUtils.loadAnimation(binding.getRoot().getContext(),R.anim.anim_hide);
                     anim.setDuration(100);
                     anim.setAnimationListener(new Animation.AnimationListener() {
@@ -170,6 +176,7 @@ public class MoreElemDialogFragment extends DialogFragment {
         binding.propertiesBut.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                viewModel.setShareElement(currentElement);
             callProperties.CallNotify();
             }
         });

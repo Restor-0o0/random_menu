@@ -17,21 +17,29 @@ import android.view.animation.AnimationUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
+import com.example.random_menu.Data.Element;
+import com.example.random_menu.Data.Group;
 import com.example.random_menu.Element.ElementActivity;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.WinElemDialogBinding;
-import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class WinGroupElemDialogFragment extends DialogFragment {
+
+    private GroupPlaceholderContent viewModel;
+
     WinElemDialogBinding binding;
     String nameElem;
     String nameGroup;
-    GroupPlaceholderContent.PlaceholderItem win;
+    Group winGroup;
+    Element winElement;
     Cursor cursor;
     @NonNull
     @Override
@@ -52,25 +60,30 @@ public class WinGroupElemDialogFragment extends DialogFragment {
             dialog.getWindow().setAttributes(params);
             dialog.getWindow().setBackgroundDrawable(null);
 
-            win = GroupPlaceholderContent.getRandom();
+            winGroup = viewModel.getRandom();
             //выхватываем запросом случайный элемент из БД
-            if(win != null){
-                cursor = ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME, null, "_ID IN (SELECT Element from ElemGroup where Group_ = " + win.id + ")", null, null, null, "RANDOM()");
+            if(winGroup != null){
+                cursor = ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME, null, "_ID IN (SELECT Element from ElemGroup where Group_ = " + winGroup.id + ")", null, null, null, "RANDOM()");
                 //Цикл если попали на пустую группу
                 while (cursor.getCount() == 0) {
                     Log.e("Resel", "res");
                     //выхватываем группу
-                    win = GroupPlaceholderContent.getRandom();
+                    winGroup = viewModel.getRandom();
                     //выхватываем запросом случайный элемент из БД
-                    cursor = ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME, null, "_ID IN (SELECT Element from ElemGroup where Group_ = " + win.id + ")", null, null, null, "RANDOM()");
+                    cursor = ContentProviderDB.query(MainBaseContract.Elements.TABLE_NAME, null, "_ID IN (SELECT Element from ElemGroup where Group_ = " + winGroup.id + ")", null, null, null, "RANDOM()");
 
                 }
                 cursor.moveToFirst();
                 this.nameElem = cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME));
-                this.nameGroup = win.name;
+                this.nameGroup = winGroup.name;
                 binding.elemName.setText(nameElem);
                 binding.groupName.setText(nameGroup);
-                ComponentPlaceholderContent.idSelectElem = cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements._ID));
+                winElement = new Element(
+                        cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Elements._ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_COMMENT)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_PRIORITY))
+                );
                 Log.e("winElem",cursor.getString(cursor.getColumnIndexOrThrow(MainBaseContract.Elements.COLUMN_NAME_NAME)));
             }else{
                 getDialog().dismiss();
@@ -85,6 +98,7 @@ public class WinGroupElemDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = WinElemDialogBinding.inflate(inflater,container,false);
+        viewModel = new ViewModelProvider(requireActivity()).get(GroupPlaceholderContent.class);
         return binding.getRoot();
     }
 
@@ -120,6 +134,8 @@ public class WinGroupElemDialogFragment extends DialogFragment {
         binding.goTo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                viewModel.setShareGroup(winGroup);
+                viewModel.setShareElement(winElement);
                 Intent intent = new Intent(getActivity(), ElementActivity.class);
                 startActivity(intent);
             }

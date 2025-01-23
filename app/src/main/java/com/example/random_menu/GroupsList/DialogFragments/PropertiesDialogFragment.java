@@ -16,6 +16,7 @@ import android.view.animation.AnimationUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
@@ -25,8 +26,13 @@ import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
 import java.util.Objects;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class PropertiesDialogFragment extends DialogFragment {
     InfoGroupDialogBinding binding;
+
+    private GroupPlaceholderContent viewModel;
     SetValues setValues;
     private static Integer listPositionCalledItem;
     private static int dbId;
@@ -55,6 +61,13 @@ public class PropertiesDialogFragment extends DialogFragment {
             params.width = ViewGroup.LayoutParams.MATCH_PARENT;
             dialog.getWindow().setAttributes(params);
             dialog.getWindow().setBackgroundDrawable(null);
+            try{
+                this.name = Objects.requireNonNull(viewModel.ITEM_MAP.get(dbId)).name;
+                this.comment = Objects.requireNonNull(viewModel.ITEM_MAP.get(dbId)).comment;
+            }
+            catch (Exception e){
+                Log.e("UpdateGroup",e.toString());
+            }
 
         }
         binding.inputName.setText(name);
@@ -62,20 +75,14 @@ public class PropertiesDialogFragment extends DialogFragment {
     }
     public void setVars(
             int dbId,
-            Integer listPosition,
-            SetValues setValues
+            Integer listPosition//,
+            //SetValues setValues
     ){
         listPositionCalledItem = listPosition;
         this.setValues = setValues;
         this.dbId = dbId;
 
-        try{
-            this.name = Objects.requireNonNull(GroupPlaceholderContent.ITEM_MAP.get(String.valueOf(dbId))).name;
-            this.comment = Objects.requireNonNull(GroupPlaceholderContent.ITEM_MAP.get(String.valueOf(dbId))).comment;
-        }
-        catch (Exception e){
-            Log.e("UpdateGroup",e.toString());
-        }
+
 
     }
     public PropertiesDialogFragment() {
@@ -85,6 +92,8 @@ public class PropertiesDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = InfoGroupDialogBinding.inflate(inflater,container,false);
+        viewModel = new ViewModelProvider(requireActivity()).get(GroupPlaceholderContent.class);
+
         return binding.getRoot();
     }
 
@@ -118,7 +127,7 @@ public class PropertiesDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 if(binding.inputName.getText().toString().length() != 0) {
-                    GroupPlaceholderContent.updateGroup(dbId,binding.inputName.getText().toString(),binding.inputComment.getText().toString());
+                    viewModel.updateGroup(dbId,binding.inputName.getText().toString(),binding.inputComment.getText().toString());
                     setValues.setValues();
                     getDialog().dismiss();
                 }

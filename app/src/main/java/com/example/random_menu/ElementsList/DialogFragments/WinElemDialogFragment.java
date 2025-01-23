@@ -17,9 +17,11 @@ import android.view.animation.AnimationUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
+import com.example.random_menu.Data.Element;
 import com.example.random_menu.Element.ElementActivity;
 import com.example.random_menu.R;
 import com.example.random_menu.databinding.WinElemDialogBinding;
@@ -27,12 +29,15 @@ import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
 import com.example.random_menu.placeholder.GroupPlaceholderContent;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class WinElemDialogFragment extends DialogFragment {
     WinElemDialogBinding binding;
-    String nameElem;
-    String nameGroup;
-    ElemPlaceholderContent.PlaceholderItem win;
+    private ElemPlaceholderContent viewModel;
+
+
+    Element win;
     Cursor cursor;
     @NonNull
     @Override
@@ -53,13 +58,12 @@ public class WinElemDialogFragment extends DialogFragment {
             dialog.getWindow().setAttributes(params);
             dialog.getWindow().setBackgroundDrawable(null);
 
-            if(ElemPlaceholderContent.getCount() == 0){
+            if(viewModel.getCount() == 0){
                 getDialog().dismiss();
             }else{
-                win = ElemPlaceholderContent.getRandom();
+                win = viewModel.getRandom();
                 binding.elemName.setText(win.name);
-
-                ComponentPlaceholderContent.idSelectElem = win.id;
+                viewModel.setShareElement(win);
             }
 
 
@@ -72,7 +76,7 @@ public class WinElemDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = WinElemDialogBinding.inflate(inflater,container,false);
-
+        viewModel = new ViewModelProvider(requireActivity()).get(ElemPlaceholderContent.class);
         return binding.getRoot();
     }
 

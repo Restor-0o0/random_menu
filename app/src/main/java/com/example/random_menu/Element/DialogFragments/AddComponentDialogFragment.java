@@ -15,6 +15,7 @@ import android.view.animation.AnimationUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.random_menu.ContentProvider.ContentProviderDB;
 import com.example.random_menu.DB.MainBaseContract;
@@ -22,9 +23,14 @@ import com.example.random_menu.R;
 import com.example.random_menu.databinding.AddComponentDialogBinding;
 import com.example.random_menu.placeholder.ComponentPlaceholderContent;
 
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class AddComponentDialogFragment extends DialogFragment {
     AddComponentDialogBinding binding;
+    private ComponentPlaceholderContent viewModel;
+
+
     NotifyList notify;
     private static Integer listPositionCalledItem;
     private static int dbId;
@@ -69,6 +75,7 @@ public class AddComponentDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = AddComponentDialogBinding.inflate(inflater,container,false);
+        viewModel = new ViewModelProvider(requireActivity()).get(ComponentPlaceholderContent.class);
         return binding.getRoot();
     }
 
@@ -103,15 +110,11 @@ public class AddComponentDialogFragment extends DialogFragment {
             public void onClick(View view) {
                 Handler handler = new Handler(Looper.getMainLooper());
                 if(binding.addComponentName.getText().toString().length() != 0) {
-                    ComponentPlaceholderContent.addComponent(
+                    viewModel.addComponent(
                             binding.addComponentName.getText().toString(),
                             binding.addComponentComment.getText().toString(),
-                            binding.addComponentQuantity.getText().toString(),
-                        ()->{
-                            handler.post(() -> {
-                                notify.notifyList();
-                            });
-                        });
+                            binding.addComponentQuantity.getText().toString()
+                        );
                 }
                 getDialog().dismiss();
             }

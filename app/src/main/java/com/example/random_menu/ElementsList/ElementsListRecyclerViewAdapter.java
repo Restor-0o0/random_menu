@@ -8,8 +8,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.random_menu.Data.Element;
 import com.example.random_menu.Data.Item;
 import com.example.random_menu.databinding.ItemElemSettFragmentBinding;
 
@@ -17,30 +21,48 @@ import com.example.random_menu.databinding.ListFragmentBinding;
 import com.example.random_menu.placeholder.ElemPlaceholderContent;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Item}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class ElementsListRecyclerViewAdapter extends RecyclerView.Adapter<ElementsListRecyclerViewAdapter.ViewHolder> {
+public class ElementsListRecyclerViewAdapter extends ListAdapter<Element,ElementsListRecyclerViewAdapter.ViewHolder> {
 
-    private static List<ElemPlaceholderContent.PlaceholderItem> mValues;
+    private static LiveData<List<Element>> mValues;
     private static OnSettingItemClickListener settingClickListener;
     private static OnItemClickListener itemClickListener;
 
     //слушатель нажатия на кнопку настроек
     public interface OnSettingItemClickListener {
-        void onButtonClick(int screenPosition,String id, String number,String listPosition);
+        void onButtonClick(int screenPosition,Element element, String number,String listPosition);
     }
     //слушатель нажатия на элемент
     public interface OnItemClickListener {
-        void onItemClick(String id, String number, int position);
+        void onItemClick(Element elem, int position);
     }
 
-    public ElementsListRecyclerViewAdapter(List<ElemPlaceholderContent.PlaceholderItem> items, OnSettingItemClickListener settingClickListener, OnItemClickListener itemClickListener) {
-        mValues = items;
-        ElementsListRecyclerViewAdapter.settingClickListener = settingClickListener;
-        ElementsListRecyclerViewAdapter.itemClickListener = itemClickListener;
+    public ElementsListRecyclerViewAdapter(
+            LiveData<List<Element>> items,
+            OnSettingItemClickListener settingClickListener,
+            OnItemClickListener itemClickListener
+    ) {
+        super(new DiffUtil.ItemCallback<Element>() {
+            @Override
+            public boolean areItemsTheSame(@NonNull Element oldItem, @NonNull Element newItem) {
+                return Objects.equals(oldItem.id,newItem.id);
+            }
+
+            @Override
+            public boolean areContentsTheSame(@NonNull Element oldItem, @NonNull Element newItem) {
+                return oldItem.equals(newItem);
+            }
+        });
+        if(items != null){
+            mValues = items;
+        }
+        this.settingClickListener = settingClickListener;
+        this.itemClickListener = itemClickListener;
     }
 
     @Override
@@ -54,9 +76,9 @@ public class ElementsListRecyclerViewAdapter extends RecyclerView.Adapter<Elemen
     public void onBindViewHolder( ViewHolder holder, int position) {
         try{
             //Log.e("errrrrr",mValues.get(0).name);
-            holder.mItem = mValues.get(position);
+            holder.mItem = mValues.getValue().get(position);
             holder.mIdView.setText(String.valueOf(position+1));
-            holder.mNameView.setText(mValues.get(position).name);
+            holder.mNameView.setText(mValues.getValue().get(position).name);
             /*if(mValues.get(position).details == false){
                 holder.mImageBut.setImageResource(R.drawable.baseline_check_box_outline_blank_24);
             }
@@ -74,15 +96,15 @@ public class ElementsListRecyclerViewAdapter extends RecyclerView.Adapter<Elemen
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return mValues.getValue().size();
     }
 
     public void UpdateItem(String name, Integer position){
-        mValues.set(position,new ElemPlaceholderContent.PlaceholderItem(
-                mValues.get(position).id,
+        mValues.getValue().set(position,new Element(
+                mValues.getValue().get(position).id,
                 name,
-                mValues.get(position).comment,
-                mValues.get(position).priority
+                mValues.getValue().get(position).comment,
+                mValues.getValue().get(position).priority
         ));
     }
 
@@ -90,7 +112,7 @@ public class ElementsListRecyclerViewAdapter extends RecyclerView.Adapter<Elemen
         private final TextView mIdView;
         private final TextView mNameView;
         private ImageButton mImageBut;
-        private ElemPlaceholderContent.PlaceholderItem mItem;
+        private Element mItem;
 
 
         public ViewHolder(@NonNull ItemElemSettFragmentBinding binding) {
@@ -104,8 +126,7 @@ public class ElementsListRecyclerViewAdapter extends RecyclerView.Adapter<Elemen
                 @Override
                 public void onClick(View view) {
                     itemClickListener.onItemClick(
-                            (String) mItem.id,
-                            (String) mNameView.getText(),
+                            mItem,
                             getBindingAdapterPosition()
 
                     );
@@ -120,7 +141,7 @@ public class ElementsListRecyclerViewAdapter extends RecyclerView.Adapter<Elemen
                     binding.settButton.getLocationOnScreen(cord);
                     settingClickListener.onButtonClick(
                             cord[1],
-                            (String) mItem.id,
+                            mItem,
                             (String) mNameView.getText(),
                             position.toString()
                     );
